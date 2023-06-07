@@ -6,7 +6,7 @@
 //
 import Foundation
 import SwiftUI
-
+#if os(macOS)
 public struct SKEffectsView: NSViewRepresentable {
     var material: NSVisualEffectView.Material
     var blendingMode: NSVisualEffectView.BlendingMode
@@ -29,3 +29,4 @@ public struct SKEffectsView: NSViewRepresentable {
         visualEffectView.blendingMode = blendingMode
     }
 }
+#endif
