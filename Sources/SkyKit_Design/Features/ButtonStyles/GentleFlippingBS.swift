@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  GentleFlippingBS.swift
 //  
 //
 //  Created by Adélaïde Sky on 04/06/2023.
@@ -8,9 +8,9 @@
 import Foundation
 import SwiftUI
 
-struct GentleFlippingButtonStyle: ButtonStyle {
+public struct GentleFlippingButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
-    func makeBody(configuration: Self.Configuration) -> some View {
+    public func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .rotationEffect(Angle(degrees: configuration.isPressed ? 90 : 0))
             .clipShape(RoundedRectangle(cornerRadius: 5))
@@ -26,6 +26,6 @@ struct GentleFlippingButtonStyle: ButtonStyle {
     }
 }
 
-extension ButtonStyle where Self == GentleFlippingButtonStyle {
+public extension ButtonStyle where Self == GentleFlippingButtonStyle {
     static var gentleFlipping: Self { Self() }
 }

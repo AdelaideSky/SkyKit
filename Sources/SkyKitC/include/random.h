@@ -9,5 +9,5 @@
 #define random_h
 
 #include <stdio.h>
-int *random(int n);
+int *randomAlpha(int n);
 #endif /* random_h */
