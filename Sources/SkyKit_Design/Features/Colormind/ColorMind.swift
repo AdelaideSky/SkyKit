@@ -52,9 +52,13 @@ public class SKColorMind: ObservableObject {
                 do {
                     var json = try? JSON(data: response.data!)
                     for color in json!["result"].arrayValue {
-                        
+                        #if os(macOS)
                         let color = NSColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
                         self.palette.append(Color(nsColor: color))
+                        #else
+                        let color = UIColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
+                        self.palette.append(Color(uiColor: color))
+                        #endif
                     }
                 }
             }
