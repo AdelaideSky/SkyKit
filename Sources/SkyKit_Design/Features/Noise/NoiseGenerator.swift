@@ -45,8 +45,6 @@ public struct SKNoiseGenerator {
                 
                 completionHandler(image)
                 
-                // Release the resources
-                cgImage.release()
             }
         }
     }
