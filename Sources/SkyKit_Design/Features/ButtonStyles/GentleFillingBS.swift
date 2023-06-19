@@ -10,6 +10,14 @@ import SwiftUI
 
 public struct GentleFillingButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
+    
+    @State var multicolorIconOnClick = false
+    
+    public init(multicolorIconOnClick: Bool = false) {
+        self.multicolorIconOnClick = multicolorIconOnClick
+    }
+    public init() {}
+    
     public func makeBody(configuration: Self.Configuration) -> some View {
         VStack {
             Spacer(minLength: 0)
@@ -25,6 +33,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
         }
         .cornerRadius(5)
         .symbolVariant(configuration.isPressed ? .fill : .none)
+        .symbolRenderingMode(multicolorIconOnClick ? .monochrome : configuration.isPressed ? .multicolor : .monochrome)
     }
 }
 
