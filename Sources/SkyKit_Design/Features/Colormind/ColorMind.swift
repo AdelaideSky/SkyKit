@@ -111,4 +111,10 @@ public extension SKColorMind {
                 }
             }
     }
+    
+    func shufflePalette() {
+        let shuffledPalette = self.palette.shuffled()
+        self.palette = []
+        self.palette = shuffledPalette
+    }
 }

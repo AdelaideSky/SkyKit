@@ -10,6 +10,11 @@ import SwiftUI
 import CoreGraphics
 import SkyKitC
 
+#if os(iOS)
+typealias SystemImage = UIImage
+#else
+typealias SystemImage = NSImage
+#endif
 
 public struct SKNoiseGenerator {
     @AppStorage("fr.adesky.skyKit.noiseCache") var cache: [UInt32] = []
@@ -23,33 +28,7 @@ public struct SKNoiseGenerator {
     public init(cachingEnabled: Bool) {
         self.cachingEnabled = cachingEnabled
     }
-    
-    #if os(iOS)
-    func image(width: Int, height: Int, completionHandler: @escaping (UIImage?) -> Void) {
-        DispatchQueue.global(qos: .utility).async {
-            autoreleasepool {
-                let colorSpace       = CGColorSpaceCreateDeviceRGB()
-                let bytesPerPixel    = 4
-                let bitsPerComponent = 8
-                let bytesPerRow      = bytesPerPixel * width
-                let bitmapInfo       = CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
-                
-                guard let context = CGContext(data: randomAlpha(Int32(width * height)), width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo) else {
-                    completionHandler(nil)
-                    return
-                }
-                
-                let cgImage = context.makeImage()!
-                
-                let image = UIImage(cgImage: cgImage)
-                
-                completionHandler(image)
-                
-            }
-        }
-    }
-    #else
-    func image(width: Int, height: Int, completionHandler: @escaping (NSImage?) -> Void) {
+    func image(width: Int, height: Int, completionHandler: @escaping (SystemImage?) -> Void) {
         DispatchQueue.global(qos: .utility).async {
             autoreleasepool {
                 let colorSpace       = CGColorSpaceCreateDeviceRGB()
@@ -65,14 +44,18 @@ public struct SKNoiseGenerator {
                 
                 let cgImage = context.makeImage()!
                 
-                let image = NSImage(cgImage: cgImage, size: .init(width: CGFloat(width), height: CGFloat(height)))
+                #if os(macOS)
+                let image = SystemImage(cgImage: cgImage, size: .init(width: CGFloat(width), height: CGFloat(height)))
+                #else
+                let image = SystemImage(cgImage: cgImage)
+
+                #endif
                 
                 completionHandler(image)
                 random?.deallocate()
             }
         }
     }
-    #endif
     func clearCache() {
         self.cache = []
     }

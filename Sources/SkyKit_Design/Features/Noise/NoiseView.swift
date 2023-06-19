@@ -17,6 +17,18 @@ public struct SKNoiseTexture: View {
         
     }
     
+    private func regenerate(geo: GeometryProxy) {
+        generator.image(width: Int(geo.size.width), height: Int(geo.size.height), completionHandler: { noise in
+            if noise != nil {
+                #if os(iOS)
+                image = Image(uiImage: noise!)
+                #else
+                image = Image(nsImage: noise!)
+                #endif
+            }
+        })
+    }
+    
     public var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -28,26 +40,10 @@ public struct SKNoiseTexture: View {
                 }
                 
             }.onChange(of: geo.size) { _ in
-                generator.image(width: Int(geo.size.width), height: Int(geo.size.height), completionHandler: { noise in
-                    if noise != nil {
-                        #if os(iOS)
-                        image = Image(uiImage: noise!)
-                        #else
-                        image = Image(nsImage: noise!)
-                        #endif
-                    }
-                })
+                regenerate(geo: geo)
             }
             .onAppear {
-                generator.image(width: Int(geo.size.width), height: Int(geo.size.height), completionHandler: { noise in
-                    if noise != nil {
-                        #if os(iOS)
-                        image = Image(uiImage: noise!)
-                        #else
-                        image = Image(nsImage: noise!)
-                        #endif
-                    }
-                })
+                regenerate(geo: geo)
             }
         }
     }
