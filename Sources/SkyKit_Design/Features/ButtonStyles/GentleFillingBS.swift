@@ -16,6 +16,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
     public init(multicolorIconOnClick: Bool = false) {
         self.multicolorIconOnClick = multicolorIconOnClick
     }
+    
     public init() {}
     
     public func makeBody(configuration: Self.Configuration) -> some View {
