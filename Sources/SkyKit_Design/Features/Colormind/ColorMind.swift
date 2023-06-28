@@ -56,7 +56,7 @@ public class SKColorMind: ObservableObject {
                         let color = NSColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
                         self.palette.append(Color(nsColor: color))
                         #else
-                        let color = UIColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
+                        let color = UIColor(red: CGFloat(color[0].floatValue/255), green: CGFloat(color[1].floatValue/255), blue: CGFloat(color[2].floatValue/255), alpha: CGFloat(1))
                         self.palette.append(Color(uiColor: color))
                         #endif
                     }
@@ -84,7 +84,7 @@ public extension SKColorMind {
                         let color = NSColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
                         self.palette.append(Color(nsColor: color))
                         #else
-                        let color = UIColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
+                        let color = UIColor(red: CGFloat(color[0].floatValue/255), green: CGFloat(color[1].floatValue/255), blue: CGFloat(color[2].floatValue/255), alpha: CGFloat(1))
                         self.palette.append(Color(uiColor: color))
                         #endif
                     }
