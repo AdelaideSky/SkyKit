@@ -11,6 +11,9 @@ import Alamofire
 import SwiftyJSON
 
 public class SKColorMind: ObservableObject {
+    
+    static public var shared: SKColorMind = .init()
+    
     @Published public var models: [String] = []
     @Published public var palette: [Color] = []
     
