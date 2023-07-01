@@ -69,7 +69,7 @@ public class SKColorMind: ObservableObject {
 }
 
 public extension SKColorMind {
-    func generate(using model: String) {
+    func generate(using model: String = SKColorMind.shared.model) {
         self.model = model
         let request = AF.request(self.apiURL, method: .post, parameters: self.body, encoding: JSONEncoding.default)
             .validate()
