@@ -11,9 +11,9 @@ import CoreGraphics
 import SkyKitC
 
 #if os(iOS)
-typealias SystemImage = UIImage
+public typealias SystemImage = UIImage
 #else
-typealias SystemImage = NSImage
+public typealias SystemImage = NSImage
 #endif
 
 public struct SKNoiseGenerator {
@@ -28,7 +28,7 @@ public struct SKNoiseGenerator {
     public init(cachingEnabled: Bool) {
         self.cachingEnabled = cachingEnabled
     }
-    func image(width: Int, height: Int, completionHandler: @escaping (SystemImage?) -> Void) {
+    public func image(width: Int, height: Int, completionHandler: @escaping (SystemImage?) -> Void) {
         DispatchQueue.global(qos: .utility).async {
             autoreleasepool {
                 let colorSpace       = CGColorSpaceCreateDeviceRGB()
