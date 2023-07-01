@@ -80,7 +80,7 @@ public extension SKColorMind {
                 }
                 
                 do {
-                    var tmpColors: [Colors] = []
+                    var tmpColors: [Color] = []
                     
                     var json = try? JSON(data: response.data!)
                     for color in json!["result"].arrayValue {
