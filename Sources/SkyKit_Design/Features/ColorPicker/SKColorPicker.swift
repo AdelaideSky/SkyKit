@@ -28,11 +28,12 @@ public struct SKColorPicker: View {
                 GeometryReader { geo in
                     SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, onSubmit: onSubmit)
                 }.frame(minHeight: 150)
+                    .padding(2)
             }
             GroupBox {
                 SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
                     .frame(height: 25)
-                    .padding(1)
+                    .padding(5)
             }
         }.frame(minWidth: 150)
      }

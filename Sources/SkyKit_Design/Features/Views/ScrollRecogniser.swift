@@ -36,7 +36,8 @@ fileprivate class ScrollView: NSView {
         // pass the event on to the delegate
         let horizontal = abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY)
         
-        if (horizontal && wantedAxis == .horizontal) || (!horizontal && wantedAxis == .vertical){
+        if (horizontal && wantedAxis == .horizontal) || (!horizontal && wantedAxis == .vertical) {
+            print(horizontal)
             delegate.scrollWheel(with: event)
         } else {
             if let cgEvent: CGEvent = event.cgEvent?.copy() {
