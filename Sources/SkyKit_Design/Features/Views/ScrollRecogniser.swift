@@ -66,7 +66,9 @@ struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol 
             if (currentScrollIsHorizontal && scrollAxis == .horizontal) || (!currentScrollIsHorizontal && scrollAxis == .vertical) || scrollAxis == nil {
                 scrollAction(event)
             } else {
-                NSApplication.shared.sendEvent(event)
+                if let responder = self.findNextResponder() {
+                    responder.scrollWheel(with: event)
+                }
             }
         }
     }
@@ -76,6 +78,21 @@ struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol 
         var newSelf = self
         newSelf.scrollAction = action
         return newSelf
+    }
+}
+extension View {
+    func findNextResponder() -> NSResponder? {
+        guard let window = NSApp.keyWindow, let initialFirstResponder = window.firstResponder else {
+            return nil
+        }
+
+        var nextResponder: NSResponder? = initialFirstResponder.nextResponder
+
+        while nextResponder != nil && nextResponder != initialFirstResponder {
+            return nextResponder
+        }
+
+        return nil
     }
 }
 
