@@ -16,15 +16,31 @@ protocol ScrollViewDelegateProtocol {
 /// The AppKit view that captures scroll wheel events
 @available(macOS, introduced: 12.0)
 class ScrollView: NSView {
-  /// Connection to the SwiftUI view that serves as the interface to our AppKit view.
-  var delegate: ScrollViewDelegateProtocol!
-  /// Let the responder chain know we will respond to events.
-  override var acceptsFirstResponder: Bool { true }
-  /// Informs the receiver that the mouse’s scroll wheel has moved.
-  override func scrollWheel(with event: NSEvent) {
-    // pass the event on to the delegate
-    delegate.scrollWheel(with: event)
-  }
+    
+    fileprivate init(_ axis: Axis?) {
+        super.init(frame: CGRectZero)
+        self.wantedAxis = axis
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    var wantedAxis: Axis?
+    /// Connection to the SwiftUI view that serves as the interface to our AppKit view.
+    var delegate: ScrollViewDelegateProtocol!
+    /// Let the responder chain know we will respond to events.
+    override var acceptsFirstResponder: Bool { true }
+    /// Informs the receiver that the mouse’s scroll wheel has moved.
+    override func scrollWheel(with event: NSEvent) {
+        // pass the event on to the delegate
+        let horizontal = abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY)
+        
+        if (horizontal && wantedAxis == .horizontal) || (!horizontal && wantedAxis == .vertical){
+            delegate.scrollWheel(with: event)
+        }
+        self.nextResponder?.scrollWheel(with: event)
+    }
 }
 
 /// The SwiftUI view that serves as the interface to our AppKit view.
@@ -36,7 +52,6 @@ struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol 
     /// What the SwiftUI content wants us to do when the mouse's scroll wheel is moved.
     private var scrollAction: ((NSEvent) -> Void)?
     private var scrollAxis: Axis?
-    @State private var currentScrollIsHorizontal: Bool = false
     
     fileprivate init(_ scrollAxis: Axis? = nil) {
         self.scrollAxis = scrollAxis
@@ -45,7 +60,7 @@ struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol 
     /// Creates the view object and configures its initial state.
     func makeNSView(context: Context) -> ScrollView {
         // Make a scroll view and become its delegate
-        let view = ScrollView()
+        let view = ScrollView(scrollAxis)
         view.delegate = self;
         return view
     }
@@ -54,22 +69,11 @@ struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol 
     func updateNSView(_ nsView: NSViewType, context: Context) {
     }
     
+    
     /// Informs the representable view  that the mouse’s scroll wheel has moved.
     func scrollWheel(with event: NSEvent) {
-        // Do whatever the content view wants
-        // us to do when the scroll wheel moved
-        
-        if (event.phase == .began || (event.phase == .ended && event.momentumPhase == .ended)) {
-            currentScrollIsHorizontal = abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY);
-        }
         if let scrollAction = scrollAction {
-            if (currentScrollIsHorizontal && scrollAxis == .horizontal) || (!currentScrollIsHorizontal && scrollAxis == .vertical) || scrollAxis == nil {
-                scrollAction(event)
-            } else {
-                if let responder = self.findNextResponder() {
-                    responder.scrollWheel(with: event)
-                }
-            }
+            scrollAction(event)
         }
     }
     
@@ -78,21 +82,6 @@ struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol 
         var newSelf = self
         newSelf.scrollAction = action
         return newSelf
-    }
-}
-extension View {
-    func findNextResponder() -> NSResponder? {
-        guard let window = NSApp.keyWindow, let initialFirstResponder = window.firstResponder else {
-            return nil
-        }
-
-        var nextResponder: NSResponder? = initialFirstResponder.nextResponder
-
-        while nextResponder != nil && nextResponder != initialFirstResponder {
-            return nextResponder
-        }
-
-        return nil
     }
 }
 
