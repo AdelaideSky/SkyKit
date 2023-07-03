@@ -101,3 +101,40 @@ public struct ScrollReader<Content: View>: View {
             }
     }
 }
+
+@available(macOS, introduced: 12.0)
+public struct BindableScrollReader<Content: View>: View {
+    let content: () -> Content
+    @Binding var offset: CGSize
+    
+    let bounds: ClosedRange<CGFloat>
+    let invert: Bool
+    
+    public init(_ inRange: ClosedRange<CGFloat> = 0...0, value: Binding<CGSize>, invert: Bool = false, content: @escaping () -> Content) {
+        self.content = content
+        self.bounds = inRange
+        self._offset = value
+        self.invert = invert
+    }
+    
+    var scrollView: some View {
+        // A view that will update the offset state variable
+        // when the scroll wheel moves
+        RepresentableScrollView()
+          .onScroll { event in
+              if self.bounds == 0...0 {
+                  offset = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+              } else {
+                  offset = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), bounds.lowerBound), bounds.upperBound),
+                                  height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), bounds.lowerBound), bounds.upperBound))
+              }
+          }
+      }
+    
+    public var body: some View {
+        content()
+            .overlay {
+                scrollView
+            }
+    }
+}
