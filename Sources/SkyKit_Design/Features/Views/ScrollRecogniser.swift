@@ -66,20 +66,16 @@ struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol 
 }
 
 @available(macOS, introduced: 12.0)
-public struct OnScrollRecogniser<Content: View>: View {
+public struct ScrollReader<Content: View>: View {
     let content: (CGSize) -> Content
-    @State var offset: CGSize = CGSize(width: 0.0, height: 0.0)
+    @State var offset: CGSize
     
     let bounds: ClosedRange<CGFloat>
     
-    public init(content: @escaping (CGSize) -> Content) {
-        self.content = content
-        self.bounds = 0...0
-    }
-    
-    public init(_ inRange: ClosedRange<CGFloat>, content: @escaping (CGSize) -> Content) {
+    public init(_ inRange: ClosedRange<CGFloat> = 0...0, initialValue: CGSize = CGSize(width: 0.0, height: 0.0), content: @escaping (CGSize) -> Content) {
         self.content = content
         self.bounds = inRange
+        self._offset = .init(initialValue: initialValue)
     }
     
     var scrollView: some View {
