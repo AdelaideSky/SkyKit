@@ -35,16 +35,18 @@ public struct SKColorPicker: View {
                 }.frame(minHeight: 150)
                     .padding(5)
             }, label: {
-                if title != "" {
-                    if icon == "" {
-                        Label(title, systemImage: icon)
-                            .labelStyle(.titleOnly)
+                Group {
+                    if title != "" {
+                        if icon == "" {
+                            Label(title, systemImage: icon)
+                                .labelStyle(.titleOnly)
+                        } else {
+                            Label(title, systemImage: icon)
+                        }
                     } else {
-                        Label(title, systemImage: icon)
+                        EmptyView()
                     }
-                } else {
-                    EmptyView()
-                }
+                }.bold()
             })
             GroupBox {
                 SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
