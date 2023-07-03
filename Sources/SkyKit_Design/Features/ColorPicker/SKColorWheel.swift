@@ -13,6 +13,7 @@ public struct SKColorWheel: View {
     @Binding var selection: Color
     var geo: GeometryProxy
     var showingKnob: Bool = true
+    var onSubmit: () -> Void
     
     @State private var knobPosition: CGPoint
     @State private var isDragging: Bool = false
@@ -23,7 +24,7 @@ public struct SKColorWheel: View {
     
     let doublePi = CGFloat.pi*2
     
-    public init(_ selection: Binding<Color>, geo: GeometryProxy) {
+    public init(_ selection: Binding<Color>, geo: GeometryProxy, showingKnob: Bool = true, onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
         self.geo = geo
         
@@ -48,12 +49,10 @@ public struct SKColorWheel: View {
         }
         
         self._knobPosition = .init(initialValue: .init(x: (geo.size.width/2)+w*cos(hsb.0*CGFloat.pi*2), y: y2 + w * sinHDPI))
+        self.showingKnob = showingKnob
+        self.onSubmit = onSubmit
     }
     
-    public init(_ selection: Binding<Color>, geo: GeometryProxy, showingKnob: Bool) {
-        self.init(selection, geo: geo)
-        self.showingKnob = showingKnob
-    }
     
     var y0: CGFloat {
         geo.size.height/2
@@ -128,6 +127,7 @@ public struct SKColorWheel: View {
                             }
                             .onEnded { _ in
                                 isDragging = false
+                                onSubmit()
                             }
                     )
                     .onChange(of: geometry.size) { newValue in

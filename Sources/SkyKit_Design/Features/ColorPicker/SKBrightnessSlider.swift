@@ -11,6 +11,7 @@ import SwiftUI
 public struct SKBrightnessSlider: View {
     @Binding var selection: Color
     @Binding var isDragging: Bool
+    var onSubmit: () -> Void
     
     var hue: Double {
         return Double(selection.getHSB().0)
@@ -22,19 +23,14 @@ public struct SKBrightnessSlider: View {
         return Double(selection.getHSB().2)
     }
     
-    public init(_ selection: Binding<Color>) {
+    public init(_ selection: Binding<Color>, isDragging: Binding<Bool> = .constant(false), onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
-        self._isDragging = .constant(false)
+        self._isDragging = isDragging
+        self.onSubmit = onSubmit
         
         let hsb = selection.wrappedValue.getHSB()
     }
     
-    public init(_ selection: Binding<Color>, isDragging: Binding<Bool>) {
-        self._selection = selection
-        self._isDragging = isDragging
-        
-        let hsb = selection.wrappedValue.getHSB()
-    }
     
     
     
