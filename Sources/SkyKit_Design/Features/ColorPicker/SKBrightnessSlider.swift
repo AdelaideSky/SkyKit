@@ -10,6 +10,7 @@ import SwiftUI
 @available(macOS, introduced: 12)
 public struct SKBrightnessSlider: View {
     @Binding var selection: Color
+    @Binding var isDragging: Bool
     
     var hue: Double {
         return Double(selection.getHSB().0)
@@ -23,10 +24,19 @@ public struct SKBrightnessSlider: View {
     
     public init(_ selection: Binding<Color>) {
         self._selection = selection
+        self._isDragging = .constant(false)
         
         let hsb = selection.wrappedValue.getHSB()
-              
     }
+    
+    public init(_ selection: Binding<Color>, isDragging: Binding<Bool>) {
+        self._selection = selection
+        self._isDragging = isDragging
+        
+        let hsb = selection.wrappedValue.getHSB()
+    }
+    
+    
     
     public var body: some View {
         GeometryReader { geo in
@@ -58,7 +68,11 @@ public struct SKBrightnessSlider: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
+                        isDragging = true
                         selection = .init(hue: hue, saturation: saturation, brightness: min(max(value.location.x, 0.01), geo.size.width)/geo.size.width)
+                    }
+                    .onEnded { _ in
+                        isDragging = false
                     }
             )
         }

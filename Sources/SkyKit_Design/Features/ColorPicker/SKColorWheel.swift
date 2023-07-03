@@ -12,6 +12,7 @@ public struct SKColorWheel: View {
     
     @Binding var selection: Color
     var geo: GeometryProxy
+    var showingKnob: Bool = true
     
     @State private var knobPosition: CGPoint
     @State private var isDragging: Bool = false
@@ -19,6 +20,8 @@ public struct SKColorWheel: View {
     var brightness: Double {
         return Double(selection.getHSB().2)
     }
+    
+    let doublePi = CGFloat.pi*2
     
     public init(_ selection: Binding<Color>, geo: GeometryProxy) {
         self._selection = selection
@@ -28,10 +31,11 @@ public struct SKColorWheel: View {
         let doublePi = CGFloat.pi*2
         let hDPi = hsb.0*doublePi
         
-        let cosHDPI = cos(hDPi)
+        let y2 = geo.size.height/2
+        
         let sinHDPI = sin(hDPi)
         
-        var w = (geo.size.height-(geo.size.height/2))*hsb.1
+        var w = (geo.size.height-(y2))*hsb.1
         
         let lim = atan(geo.size.height/geo.size.width)/(2*CGFloat.pi)
         
@@ -39,11 +43,16 @@ public struct SKColorWheel: View {
             w = abs(geo.size.height*hsb.1*0.5/sinHDPI)
             
         } else {
-            w = abs(geo.size.width*hsb.1*0.5/cosHDPI)
+            w = abs(geo.size.width*hsb.1*0.5/cos(hDPi))
             
         }
         
-        self._knobPosition = .init(initialValue: .init(x: (geo.size.width/2)+w*cos(hsb.0*CGFloat.pi*2), y: (geo.size.height/2) + w * sinHDPI))
+        self._knobPosition = .init(initialValue: .init(x: (geo.size.width/2)+w*cos(hsb.0*CGFloat.pi*2), y: y2 + w * sinHDPI))
+    }
+    
+    public init(_ selection: Binding<Color>, geo: GeometryProxy, showingKnob: Bool) {
+        self.init(selection, geo: geo)
+        self.showingKnob = showingKnob
     }
     
     var y0: CGFloat {
@@ -55,7 +64,7 @@ public struct SKColorWheel: View {
     
     func r(_ pos: CGPoint) -> CGFloat {
         let angle = angle(pos)
-        let lim = atan(geo.size.height/geo.size.width)/(2*CGFloat.pi)
+        let lim = atan(geo.size.height/geo.size.width)/doublePi
         
         if (angle >= lim && angle <= 0.5-lim) || (angle >= 0.5+lim && angle <= 1-lim) {
             return abs((pos.y-y0)/(geo.size.height-y0))
@@ -75,12 +84,12 @@ public struct SKColorWheel: View {
         } else {
             if pos.x > x0 {
                 if y0 >= pos.y {
-                    return 1+(atan( (pos.y-y0) / (pos.x-x0) ) / (2*CGFloat.pi))
+                    return 1+(atan( (pos.y-y0) / (pos.x-x0) ) / doublePi)
                 }
-                return atan( (pos.y-y0) / (pos.x-x0) ) / (2*CGFloat.pi)
+                return atan( (pos.y-y0) / (pos.x-x0) ) / doublePi
                 
             } else if pos.x < x0 {
-                return 0.5-(atan( (y0-pos.y) / (pos.x-x0) ) / (2*CGFloat.pi))
+                return 0.5-(atan( (y0-pos.y) / (pos.x-x0) ) / doublePi)
                 
             } else {
                 return 0
@@ -95,16 +104,20 @@ public struct SKColorWheel: View {
             GeometryReader { geometry in
                 Wheel(brightness: brightness)
                     .overlay {
-                        Circle()
-                            .stroke(Color.primary, lineWidth: 2)
-                            .background {
-                                SKEffectsView(.hudWindow, blendingMode: .withinWindow)
-                                    .opacity(0.2)
-                                    .clipShape(Circle())
+                        Group {
+                            if showingKnob {
+                                Circle()
+                                    .stroke(isDragging ? Color.primary : Color.secondary, lineWidth: 2)
+                                    .background {
+                                        Circle()
+                                            .foregroundStyle(.tertiary)
+                                            .opacity(0.3)
+                                    }
+                                    .frame(width: isDragging ? 25 : 20, height: isDragging ? 25 : 20)
+                                    .animation(.spring, value: isDragging)
+                                    .position(knobPosition)
                             }
-                            .frame(width: isDragging ? 25 : 20, height: isDragging ? 25 : 20)
-                            .animation(.spring, value: isDragging)
-                            .position(knobPosition)
+                        }.animation(.easeInOut, value: showingKnob)
                     }
                     .gesture(
                         DragGesture(minimumDistance: 0)
