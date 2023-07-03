@@ -16,10 +16,10 @@ public struct SKColorPicker: View {
     var dynamicKnobHiding: Bool = true
     var onSubmit: () -> Void
     
-    var title: String?
-    var icon: String?
+    var title: String = ""
+    var icon: String = ""
     
-    public init(_ selection: Binding<Color>, dynamicKnobHiding: Bool = true, title: String? = nil, systemImage: String? = nil, onSubmit: @escaping () -> Void = {}) {
+    public init(_ selection: Binding<Color>, dynamicKnobHiding: Bool = true, title: String = "", systemImage: String = "", onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
         self.dynamicKnobHiding = dynamicKnobHiding
         self.onSubmit = onSubmit
@@ -29,16 +29,23 @@ public struct SKColorPicker: View {
 
     public var body: some View {
         VStack {
-            if let title = title, let icon = icon {
-                GroupBox(content: {
-                    GeometryReader { geo in
-                        SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, onSubmit: onSubmit)
-                    }.frame(minHeight: 150)
-                        .padding(5)
-                }, label: {
-                    Label(title, systemImage: icon)
-                })
-            }
+            GroupBox(content: {
+                GeometryReader { geo in
+                    SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, onSubmit: onSubmit)
+                }.frame(minHeight: 150)
+                    .padding(5)
+            }, label: {
+                if title != "" {
+                    if icon == "" {
+                        Label(title, systemImage: icon)
+                            .labelStyle(.titleOnly)
+                    } else {
+                        Label(title, systemImage: icon)
+                    }
+                } else {
+                    EmptyView()
+                }
+            })
             GroupBox {
                 SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
                     .frame(height: 25)
