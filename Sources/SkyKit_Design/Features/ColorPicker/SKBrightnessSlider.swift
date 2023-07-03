@@ -69,6 +69,7 @@ public struct SKBrightnessSlider: View {
                     }
                     .onEnded { _ in
                         isDragging = false
+                        onSubmit()
                     }
             )
         }
