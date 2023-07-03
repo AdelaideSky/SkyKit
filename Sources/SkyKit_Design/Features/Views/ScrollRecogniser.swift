@@ -98,7 +98,6 @@ public struct ScrollReader<Content: View>: View {
         content(offset)
             .overlay {
                 scrollView
-                    .allowsHitTesting(false)
             }
     }
 }
