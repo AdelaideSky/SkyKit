@@ -65,6 +65,8 @@ struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol 
         if let scrollAction = scrollAction {
             if (currentScrollIsHorizontal && scrollAxis == .horizontal) || (!currentScrollIsHorizontal && scrollAxis == .vertical) || scrollAxis == nil {
                 scrollAction(event)
+            } else {
+                NSApplication.shared.sendEvent(event)
             }
         }
     }
