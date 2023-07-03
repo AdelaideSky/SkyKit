@@ -38,24 +38,25 @@ fileprivate class ScrollView: NSView {
         
         if (horizontal && wantedAxis == .horizontal) || (!horizontal && wantedAxis == .vertical){
             delegate.scrollWheel(with: event)
-        }
-        if let cgEvent: CGEvent = event.cgEvent?.copy() {
-            if wantedAxis == .horizontal {
-                cgEvent.setDoubleValueField(.scrollWheelEventDeltaAxis2, value: Double(event.scrollingDeltaY/8))
-                
-                if let nsEvent = NSEvent(cgEvent: cgEvent) {
-                    self.nextResponder?.scrollWheel(with: nsEvent)
-                }
-            } else if wantedAxis == .vertical {
+        } else {
+            if let cgEvent: CGEvent = event.cgEvent?.copy() {
+                if wantedAxis == .horizontal {
+                    cgEvent.setDoubleValueField(.scrollWheelEventDeltaAxis2, value: Double(event.scrollingDeltaY/8))
+                    
+                    if let nsEvent = NSEvent(cgEvent: cgEvent) {
+                        self.nextResponder?.scrollWheel(with: nsEvent)
+                    }
+                } else if wantedAxis == .vertical {
 
-                cgEvent.setDoubleValueField(.scrollWheelEventDeltaAxis1, value: Double(event.scrollingDeltaX/8))
-                if let nsEvent = NSEvent(cgEvent: cgEvent) {
-                    self.nextResponder?.scrollWheel(with: nsEvent)
+                    cgEvent.setDoubleValueField(.scrollWheelEventDeltaAxis1, value: Double(event.scrollingDeltaX/8))
+                    if let nsEvent = NSEvent(cgEvent: cgEvent) {
+                        self.nextResponder?.scrollWheel(with: nsEvent)
+                    }
+                    
+                } else {
+                    self.nextResponder?.scrollWheel(with: event)
                 }
-                
-            } else {
-                self.nextResponder?.scrollWheel(with: event)
-            }  
+            }
         }
         
     }
