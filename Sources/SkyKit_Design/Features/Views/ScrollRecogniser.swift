@@ -15,7 +15,7 @@ protocol ScrollViewDelegateProtocol {
 
 /// The AppKit view that captures scroll wheel events
 @available(macOS, introduced: 12.0)
-class ScrollView: NSView {
+fileprivate class ScrollView: NSView {
     
     fileprivate init(_ axis: Axis?) {
         super.init(frame: CGRectZero)
@@ -41,15 +41,18 @@ class ScrollView: NSView {
         }
         if let cgEvent: CGEvent = event.cgEvent?.copy() {
             if wantedAxis == .horizontal {
-                cgEvent.setDoubleValueField(.scrollWheelEventDeltaAxis1, value: Double(event.scrollingDeltaY))
+                cgEvent.setDoubleValueField(.scrollWheelEventDeltaAxis2, value: Double(event.scrollingDeltaY/8))
+                
                 if let nsEvent = NSEvent(cgEvent: cgEvent) {
                     self.nextResponder?.scrollWheel(with: nsEvent)
                 }
-            } else if wantedAxis == .vertical{
-                cgEvent.setDoubleValueField(.scrollWheelEventDeltaAxis2, value: Double(event.scrollingDeltaX))
+            } else if wantedAxis == .vertical {
+
+                cgEvent.setDoubleValueField(.scrollWheelEventDeltaAxis1, value: Double(event.scrollingDeltaX/8))
                 if let nsEvent = NSEvent(cgEvent: cgEvent) {
                     self.nextResponder?.scrollWheel(with: nsEvent)
                 }
+                
             } else {
                 self.nextResponder?.scrollWheel(with: event)
             }  
@@ -60,7 +63,7 @@ class ScrollView: NSView {
 
 /// The SwiftUI view that serves as the interface to our AppKit view.
 @available(macOS, introduced: 12.0)
-struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol {
+fileprivate struct RepresentableScrollView: NSViewRepresentable, ScrollViewDelegateProtocol {
     /// The AppKit view our SwiftUI view manages.
     typealias NSViewType = ScrollView
     
