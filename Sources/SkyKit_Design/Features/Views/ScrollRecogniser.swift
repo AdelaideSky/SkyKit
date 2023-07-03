@@ -71,11 +71,13 @@ public struct ScrollReader<Content: View>: View {
     @State var offset: CGSize
     
     let bounds: ClosedRange<CGFloat>
+    let invert: Bool
     
-    public init(_ inRange: ClosedRange<CGFloat> = 0...0, initialValue: CGSize = CGSize(width: 0.0, height: 0.0), content: @escaping (CGSize) -> Content) {
+    public init(_ inRange: ClosedRange<CGFloat> = 0...0, initialValue: CGSize = CGSize(width: 0.0, height: 0.0), invert: Bool = false, content: @escaping (CGSize) -> Content) {
         self.content = content
         self.bounds = inRange
         self._offset = .init(initialValue: initialValue)
+        self.invert = invert
     }
     
     var scrollView: some View {
@@ -84,10 +86,10 @@ public struct ScrollReader<Content: View>: View {
         RepresentableScrollView()
           .onScroll { event in
               if self.bounds == 0...0 {
-                  offset = CGSize(width: offset.width + event.deltaX, height: offset.height + event.deltaY)
+                  offset = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
               } else {
-                  offset = CGSize(width: min(max(offset.width + event.deltaX, bounds.lowerBound), bounds.upperBound),
-                                  height: min(max(offset.height + event.deltaY, bounds.lowerBound), bounds.upperBound))
+                  offset = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), bounds.lowerBound), bounds.upperBound),
+                                  height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), bounds.lowerBound), bounds.upperBound))
               }
           }
       }
