@@ -12,6 +12,7 @@ public struct SKColorPicker: View {
     @Binding var selection: Color
     
     @State var isDraggingBrightness: Bool = false
+    @State var isDragging: Bool = false
     
     var dynamicKnobHiding: Bool = true
     var onSubmit: () -> Void
@@ -33,7 +34,7 @@ public struct SKColorPicker: View {
         VStack {
             GroupBox(content: {
                     GeometryReader { geo in
-                        SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDraggingBrightness, onSubmit: onSubmit)
+                        SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
                     }.frame(minHeight: 150)
                         .padding(5)
                     SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
@@ -58,7 +59,7 @@ public struct SKColorPicker: View {
                     .padding(10)
             }
         }.frame(minWidth: 150)
-            .onChange(of: isDraggingBrightness) { newValue in
+            .onChange(of: isDraggingBrightness || isDragging) { newValue in
                 onDraggingChange(newValue)
             }
      }
@@ -68,6 +69,7 @@ public struct SKCompactColorPicker: View {
     @Binding var selection: Color
     
     @State var isDraggingBrightness: Bool = false
+    @State var isDragging: Bool = false
     @State var isOpen: Bool = false
     
     var dynamicKnobHiding: Bool = true
@@ -97,7 +99,7 @@ public struct SKCompactColorPicker: View {
                 VStack {
                     GroupBox {
                         GeometryReader { geo in
-                            SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDraggingBrightness, onSubmit: onSubmit)
+                            SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
                         }.frame(width: 220, height: 200)
                             .padding(.bottom, 3)
                         SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
@@ -108,7 +110,7 @@ public struct SKCompactColorPicker: View {
                             .frame(width: 220, height: 25)
                     }
                 }.frame(width: 250, height: 310)
-                    .onChange(of: isDraggingBrightness) { newValue in
+                    .onChange(of: isDraggingBrightness || isDragging) { newValue in
                         onDraggingChange(newValue)
                     }
 //                    .padding()
