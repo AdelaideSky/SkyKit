@@ -30,23 +30,25 @@ public struct SKColorPicker: View {
     public var body: some View {
         VStack {
             GroupBox(content: {
-                GeometryReader { geo in
-                    SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, onSubmit: onSubmit)
-                }.frame(minHeight: 150)
+                    GeometryReader { geo in
+                        SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, onSubmit: onSubmit)
+                    }.frame(minHeight: 150)
+                        .padding(5)
+                    SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
                     .padding(5)
-            }, label: {
-                Group {
-                    if title != "" {
-                        if icon == "" {
-                            Label(title, systemImage: icon)
-                                .labelStyle(.titleOnly)
+                }, label: {
+                    Group {
+                        if title != "" {
+                            if icon == "" {
+                                Label(title, systemImage: icon)
+                                    .labelStyle(.titleOnly)
+                            } else {
+                                Label(title, systemImage: icon)
+                            }
                         } else {
-                            Label(title, systemImage: icon)
+                            EmptyView()
                         }
-                    } else {
-                        EmptyView()
-                    }
-                }.bold()
+                    }.bold()
             })
             GroupBox {
                 SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
@@ -54,5 +56,51 @@ public struct SKColorPicker: View {
                     .padding(10)
             }
         }.frame(minWidth: 150)
+     }
+}
+public struct SKCompactColorPicker: View {
+    
+    @Binding var selection: Color
+    
+    @State var isDraggingBrightness: Bool = false
+    @State var isOpen: Bool = false
+    
+    var dynamicKnobHiding: Bool = true
+    var onSubmit: () -> Void
+    
+    public init(_ selection: Binding<Color>, dynamicKnobHiding: Bool = true, onSubmit: @escaping () -> Void = {}) {
+        self._selection = selection
+        self.dynamicKnobHiding = dynamicKnobHiding
+        self.onSubmit = onSubmit
+    }
+
+    public var body: some View {
+        Circle()
+            .fill(selection)
+            .overlay(
+                    Circle()
+                        .stroke(Color.secondary, lineWidth: 2)
+                )
+            .frame(width: 20, height: 20)
+            .onTapGesture {
+                isOpen.toggle()
+            }
+            .popover(isPresented: $isOpen, content: {
+                VStack {
+                    GroupBox {
+                        GeometryReader { geo in
+                            SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, onSubmit: onSubmit)
+                        }.frame(width: 210, height: 200)
+                            .padding(.bottom, 3)
+                        SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
+                            .frame(width: 190)
+                    }
+                    GroupBox {
+                        SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
+                            .frame(width: 210, height: 25)
+                    }
+                }.frame(width: 240, height: 310)
+//                    .padding()
+            })
      }
 }

@@ -37,21 +37,21 @@ public struct SKBrightnessSlider: View {
     public var body: some View {
         GeometryReader { geo in
             VStack {
-                Wave(strength: (10*brightness), frequency: geo.size.width/7)
+                Wave(strength: (10*brightness), frequency: geo.size.width/8)
                     .stroke(LinearGradient(gradient: Gradient(stops: [
-                        Gradient.Stop(color: .primary, location: brightness),
-                        Gradient.Stop(color: .secondary.opacity(0.7), location: brightness),
-                    ]), startPoint: .leading, endPoint: .trailing), lineWidth: 3)
-                    .padding(.vertical, 5)
+                        Gradient.Stop(color: .primary.opacity(0.7), location: brightness),
+                        Gradient.Stop(color: .secondary.opacity(0.5), location: brightness),
+                    ]), startPoint: .leading, endPoint: .trailing), lineWidth: 4)
+                    .padding(.vertical, 7)
                     .clipped()
             }.overlay {
                 HStack {
                     Spacer()
                         .frame(width: geo.size.width*brightness)
-                    RoundedRectangle(cornerRadius: 5)
+                    RoundedRectangle(cornerRadius: 20)
                         .fill(.white)
                         .padding(.vertical, -5)
-                        .frame(width: 15, height: geo.size.height)
+                        .frame(width: 10, height: geo.size.height-3)
                     Spacer()
                 }
             }
