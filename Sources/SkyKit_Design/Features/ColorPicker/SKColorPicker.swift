@@ -90,16 +90,16 @@ public struct SKCompactColorPicker: View {
                     GroupBox {
                         GeometryReader { geo in
                             SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, onSubmit: onSubmit)
-                        }.frame(width: 210, height: 200)
+                        }.frame(width: 220, height: 200)
                             .padding(.bottom, 3)
                         SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
-                            .frame(width: 190)
+                            .frame(width: 210)
                     }
                     GroupBox {
                         SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
-                            .frame(width: 210, height: 25)
+                            .frame(width: 220, height: 25)
                     }
-                }.frame(width: 240, height: 310)
+                }.frame(width: 250, height: 310)
 //                    .padding()
             })
      }

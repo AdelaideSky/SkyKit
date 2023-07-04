@@ -10,8 +10,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int *randomAlpha(int n)
-{
+int *randomAlpha(int n) {
     int *array = malloc(n * sizeof(int));
     int i;
     srand(time(NULL));

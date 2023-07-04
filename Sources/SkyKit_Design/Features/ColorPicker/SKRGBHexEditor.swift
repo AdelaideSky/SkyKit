@@ -106,14 +106,14 @@ public struct SKRGBHexEditor: View {
                                 hex = value
                             }
                         })).focused($focusedField, equals: 4)
-                            .frame(maxWidth: 50)
+                            .frame(maxWidth: 60)
                             .onSubmit {
                                 hex = selection.hex.uppercased()
                             }
                             .padding(.leading, 1)
                             .multilineTextAlignment(.leading)
                         Spacer(minLength: 0)
-                    }.frame(minWidth: 60, maxWidth: .infinity)
+                    }.frame(minWidth: 75, maxWidth: .infinity)
                         .padding(3)
                         .background {
                             RoundedRectangle(cornerRadius: 5)
@@ -135,7 +135,7 @@ public struct SKRGBHexEditor: View {
             .onChange(of: selection) { newValue in
                 hex = selection.hex.uppercased()
             }
-            .frame(minWidth: 190)
+            .frame(minWidth: 220)
             .padding(.trailing, 2)
     }
 }

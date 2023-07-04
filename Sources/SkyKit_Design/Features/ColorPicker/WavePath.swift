@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SkyKitC
 
 struct Wave: Shape {
     // how high our waves should be
@@ -16,31 +17,24 @@ struct Wave: Shape {
     
     func path(in rect: CGRect) -> Path {
         let path = CGMutablePath()
-
+        
         // calculate some important values up front
         let width = Double(rect.width)
         let height = Double(rect.height)
         let midHeight = height / 2
 
-        // split our total width up based on the frequency
-        let wavelength = width / frequency
 
         // start at the left center
         path.move(to: CGPoint(x: 0, y: midHeight))
+        
+        let data = wave(width, height, frequency, strength, midHeight)
+        
+//        data.se
 
         // now count across individual horizontal points one by one
-        for x in stride(from: 0, through: width, by: 1) {
-            // find our current position relative to the wavelength
-            let relativeX = x / wavelength
-
-            // calculate the sine of that position
-            let sine = sin(relativeX)
-
-            // multiply that sine by our strength to determine final offset, then move it down to the middle of our view
-            let y = strength * sine + midHeight
-
-            // add a line to here
-            path.addLine(to: CGPoint(x: x, y: y))
+        for point in Array(UnsafeBufferPointer(start: data, count: Int(width))) {
+            
+            path.addLine(to: CGPoint(x: point.x, y: point.y))
         }
 
         return Path(path)

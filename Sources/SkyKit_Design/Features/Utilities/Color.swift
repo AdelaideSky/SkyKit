@@ -7,14 +7,13 @@
 
 import Foundation
 import SwiftUI
-
+import SkyKitC
 
 public extension Color {
     var hex: String {
         let components = self.getRGB()
-        let rgb: Int = (Int)(components.0*255)<<16 | (Int)(components.1*255)<<8 | (Int)(components.2*255)<<0
-        
-        return NSString(format:"%06x", rgb) as String
+        guard let str = rgbToHexString(Double(components.0), Double(components.1), Double(components.2)) else { return "ERROR" }
+        return String(cString: str)
     }
     
     init?(hex: String) {
