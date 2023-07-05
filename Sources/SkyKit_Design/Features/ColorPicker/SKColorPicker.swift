@@ -21,6 +21,7 @@ public struct SKColorPicker<Label: View>: View {
     var label: (() -> Label)?
     
     var style: SKColorPickerStyle = .compact
+    var optimisation: Bool = true
     
     public enum SKColorPickerStyle {
         case compact
@@ -44,6 +45,11 @@ public struct SKColorPicker<Label: View>: View {
         answer.style = style
         return answer
     }
+    public func disableRGBHexEditorOptimisation(_ disable: Bool = true) -> SKColorPicker {
+        var answer = self
+        answer.style = style
+        return answer
+    }
     
     var expandedView: some View {
         VStack {
@@ -53,7 +59,7 @@ public struct SKColorPicker<Label: View>: View {
                         SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
                     }.frame(minHeight: 150)
                         .padding(10)
-                    SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
+                    SKRGBHexEditor(selection: $selection, holdUpdates: optimisation ? .init(get: {isDragging || isDraggingBrightness}, set: {_ in}) : .constant(false), onSubmit: onSubmit)
                         .frame(height: 40)
                         .padding(.horizontal, 10)
                         .padding(.top, -5)
@@ -96,7 +102,7 @@ public struct SKColorPicker<Label: View>: View {
                                 SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
                             }.frame(width: 230, height: 210)
                                 .padding(.bottom, 3)
-                            SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
+                            SKRGBHexEditor(selection: $selection, holdUpdates: optimisation ? .init(get: {isDragging || isDraggingBrightness}, set: {_ in}) : .constant(false), onSubmit: onSubmit)
                                 .frame(width: 210, height: 30)
                                 .padding(.bottom, 2)
                         }.padding(3)

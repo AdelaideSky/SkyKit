@@ -10,14 +10,16 @@ import SwiftUI
 public struct SKRGBHexEditor: View {
     @Binding var selection: Color
     var onSubmit: () -> Void
+    @Binding var holdUpdates: Bool
     
     @State var red: Double = 0
     @State var green: Double = 0
     @State var blue: Double = 0
     
-    public init(selection: Binding<Color>, onSubmit: @escaping () -> Void) {
+    public init(selection: Binding<Color>, holdUpdates: Binding<Bool> = .constant(false), onSubmit: @escaping () -> Void) {
         self._selection = selection
         self.onSubmit = onSubmit
+        self._holdUpdates = holdUpdates
     }
     @State var hex: String = ""
     
@@ -137,16 +139,32 @@ public struct SKRGBHexEditor: View {
                 }
             }
             .onChange(of: selection) { newValue in
-                DispatchQueue(label: "SKRGBHexEditorUpdate").async {
-                    
-                    hex = selection.hex.uppercased()
-                    let rgb = selection.getRGB()
-                    
-                    red = rgb.0
-                    green = rgb.1
-                    blue = rgb.2
+                if !holdUpdates {
+                    DispatchQueue(label: "SKRGBHexEditorUpdate").async {
+                        
+                        hex = selection.hex.uppercased()
+                        let rgb = selection.getRGB()
+                        
+                        red = rgb.0
+                        green = rgb.1
+                        blue = rgb.2
+                    }
                 }
             }
+            .onChange(of: holdUpdates) { newValue in
+                if !newValue {
+                    DispatchQueue(label: "SKRGBHexEditorUpdate").async {
+                        
+                        hex = selection.hex.uppercased()
+                        let rgb = selection.getRGB()
+                        
+                        red = rgb.0
+                        green = rgb.1
+                        blue = rgb.2
+                    }
+                }
+            }
+            .disabled(holdUpdates)
             .frame(minWidth: 220)
             .padding(.trailing, 2)
     }
