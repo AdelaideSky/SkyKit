@@ -11,9 +11,13 @@ import SkyKitC
 
 public extension Color {
     var hex: String {
-        let components = self.getRGB()
-        guard let str = rgbToHexString(Double(components.0), Double(components.1), Double(components.2)) else { return "ERROR" }
-        return String(cString: str)
+        autoreleasepool {
+            let components = self.getRGB()
+            guard let str = rgbToHexString(Double(components.0), Double(components.1), Double(components.2)) else { return "ERROR" }
+            let answer = String(cString: str)
+            freeHex(str)
+            return answer
+        }
     }
     
     init?(hex: String) {

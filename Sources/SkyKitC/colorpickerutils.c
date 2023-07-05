@@ -101,15 +101,18 @@ char* rgbToHexString(double r, double g, double b) {
     
     return hexString;
 }
+void freeHex(char *array) {
+    free(array);
+}
+
 
 xy *wave(double width, double height, double frequency, double strength, double midHeight) {
-    xy *array = malloc(width * sizeof(xy));
+    xy *array = malloc((width + 1) * sizeof(xy));
     int x;
-    
-    double waveLength = width/frequency;
+
+    double waveLength = width / frequency;
     for (x = 0; x <= width; x = x + 1) {
-        double relativeX = x/waveLength;
-        
+        double relativeX = x / waveLength;
         double sine = sin(relativeX);
         
         double y = strength * sine + midHeight;
@@ -118,4 +121,8 @@ xy *wave(double width, double height, double frequency, double strength, double 
         array[x] = answer;
     }
     return array;
+}
+
+void freeWave(xy *array) {
+    free(array);
 }

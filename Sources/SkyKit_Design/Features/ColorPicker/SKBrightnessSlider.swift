@@ -28,7 +28,6 @@ public struct SKBrightnessSlider: View {
         self._isDragging = isDragging
         self.onSubmit = onSubmit
         
-        let hsb = selection.wrappedValue.getHSB()
     }
     
     

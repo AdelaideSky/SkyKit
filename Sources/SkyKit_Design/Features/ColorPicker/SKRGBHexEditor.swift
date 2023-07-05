@@ -11,15 +11,9 @@ public struct SKRGBHexEditor: View {
     @Binding var selection: Color
     var onSubmit: () -> Void
     
-    var red: Double {
-        return Double(selection.getRGB().0)
-    }
-    var green: Double {
-        return Double(selection.getRGB().1)
-    }
-    var blue: Double {
-        return Double(selection.getRGB().2)
-    }
+    @State var red: Double = 0
+    @State var green: Double = 0
+    @State var blue: Double = 0
     
     public init(selection: Binding<Color>, onSubmit: @escaping () -> Void) {
         self._selection = selection
@@ -41,7 +35,8 @@ public struct SKRGBHexEditor: View {
                                 self.selection = .init(red: doubleValue/255, green: green, blue: blue)
                             }
                         })).focused($focusedField, equals: 1)
-                            .padding(3)
+                            .padding(.horizontal, 3)
+                            .frame(height: 22)
                             .background {
                                 RoundedRectangle(cornerRadius: 5)
                                     .fill(.secondary)
@@ -59,7 +54,8 @@ public struct SKRGBHexEditor: View {
                                 self.selection = .init(red: red, green: doubleValue/255, blue: blue)
                             }
                         })).focused($focusedField, equals: 2)
-                            .padding(3)
+                            .padding(.horizontal, 3)
+                            .frame(height: 22)
                             .background {
                                 RoundedRectangle(cornerRadius: 5)
                                     .fill(.secondary)
@@ -77,7 +73,8 @@ public struct SKRGBHexEditor: View {
                                 self.selection = .init(red: red, green: green, blue: doubleValue/255)
                             }
                         })).focused($focusedField, equals: 3)
-                            .padding(3)
+                            .padding(.horizontal, 3)
+                            .frame(height: 22)
                             .background {
                                 RoundedRectangle(cornerRadius: 5)
                                     .fill(.secondary)
@@ -105,14 +102,17 @@ public struct SKRGBHexEditor: View {
                             } else {
                                 hex = value
                             }
-                        })).focused($focusedField, equals: 4)
-                            .frame(maxWidth: 60)
-                            .frame(height: 15)
+                        })).multilineTextAlignment(.center)
+                            .focused($focusedField, equals: 4)
+//                            .frame(alignment: .leading)
+//                            .frame(maxWidth: 60)
+//                            .frame(height: 15)
                             .onSubmit {
                                 hex = selection.hex.uppercased()
                             }
-                            .padding(.leading, 1)
-                            .multilineTextAlignment(.leading)
+//                            .padding(.leading, 1)
+                            
+//                            .lineLimit(1)
                         Spacer(minLength: 0)
                     }.frame(minWidth: 75, maxWidth: .infinity)
                         .clipped()
@@ -127,15 +127,30 @@ public struct SKRGBHexEditor: View {
                 }
             }.textFieldStyle(.plain)
                 .foregroundStyle(.secondary)
-        }.frame(height: 30)
+        }.frame(height: 40)
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    focusedField = nil // Remove initial focus
+                DispatchQueue(label: "SKRGBHexEditorUpdate").async {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        focusedField = nil // Remove initial focus
+                    }
+                    hex = selection.hex.uppercased()
+                    let rgb = selection.getRGB()
+                    
+                    red = rgb.0
+                    green = rgb.1
+                    blue = rgb.2
                 }
-                hex = selection.hex.uppercased()
             }
             .onChange(of: selection) { newValue in
-                hex = selection.hex.uppercased()
+                DispatchQueue(label: "SKRGBHexEditorUpdate").async {
+                    
+                    hex = selection.hex.uppercased()
+                    let rgb = selection.getRGB()
+                    
+                    red = rgb.0
+                    green = rgb.1
+                    blue = rgb.2
+                }
             }
             .frame(minWidth: 220)
             .padding(.trailing, 2)

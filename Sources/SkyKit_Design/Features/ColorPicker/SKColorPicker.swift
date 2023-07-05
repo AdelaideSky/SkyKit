@@ -28,18 +28,23 @@ public struct SKColorPicker: View {
         self.title = title
         self.icon = systemImage
         self.onDraggingChange = onDraggingChange
+        
     }
 
     public var body: some View {
         VStack {
             GroupBox(content: {
+                VStack {
                     GeometryReader { geo in
                         SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
                     }.frame(minHeight: 150)
-                        .padding(5)
+                        .padding(10)
                     SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
-                    .padding(5)
-                    .frame(height: 30)
+                    .frame(height: 40)
+                    .padding(.horizontal, 10)
+                    .padding(.top, -5)
+                    .padding(.bottom, 5)
+                }
                 }, label: {
                     Group {
                         if title != "" {
@@ -113,7 +118,7 @@ public struct SKCompactColorPicker: View {
                             .frame(width: 230, height: 25)
                             .padding(4)
                     }
-                }.frame(width: 260, height: 330)
+                }.frame(width: 260, height: 337)
                     .onChange(of: isDraggingBrightness || isDragging) { newValue in
                         onDraggingChange(newValue)
                     }

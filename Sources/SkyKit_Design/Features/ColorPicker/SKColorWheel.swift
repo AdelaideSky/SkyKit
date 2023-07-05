@@ -8,6 +8,14 @@
 import SwiftUI
 import SkyKitC
 
+fileprivate func calcPosition(_ color: Color, geo: GeometryProxy) -> CGPoint {
+    autoreleasepool {
+        let hsb = color.getHSB()
+        let pos = calcPos(hsb.0, hsb.1, geo.size.height, geo.size.width)
+        return .init(x: pos.x, y: pos.y)
+    }
+}
+
 public struct SKColorWheel: View {
     @Environment(\.self) var environment
     
@@ -29,15 +37,12 @@ public struct SKColorWheel: View {
         self._selection = selection
         self.geo = geo
         
-        let hsb = selection.wrappedValue.getHSB()
-        
-        let pos = calcPos(hsb.0, hsb.1, geo.size.height, geo.size.width)
-        
-        self._knobPosition = .init(initialValue: .init(x: pos.x, y: pos.y))
+        self._knobPosition = .init(initialValue: calcPosition(selection.wrappedValue, geo: geo))
         self.showingKnob = showingKnob
         self.onSubmit = onSubmit
         self._isDragging = isDragging
     }
+    
     
     
     var y0: CGFloat {
@@ -48,12 +53,16 @@ public struct SKColorWheel: View {
     }
     
     func r(_ pos: CGPoint, angle: CGFloat) -> CGFloat {
-        return calcR(pos.x, pos.y, geo.size.width, geo.size.height, angle)
+        autoreleasepool {
+            return calcR(pos.x, pos.y, geo.size.width, geo.size.height, angle)
+        }
     }
 
     
     func angle(_ pos: CGPoint) -> CGFloat {
-        return calcAngle(Double(pos.x), Double(pos.y), Double(x0), Double(y0))
+        autoreleasepool {
+            return calcAngle(Double(pos.x), Double(pos.y), Double(x0), Double(y0))
+        }
     }
     
     let knobSize: CGFloat = 30
@@ -82,9 +91,11 @@ public struct SKColorWheel: View {
                         DragGesture(minimumDistance: 0)
                             .onChanged { value in
                                 isDragging = true
-                                let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
-                                let angle = angle(newPos)
-                                selection = .init(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                                autoreleasepool {
+                                    let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
+                                    let angle = angle(newPos)
+                                    selection = .init(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                                }
                             }
                             .onEnded { _ in
                                 isDragging = false
@@ -103,13 +114,6 @@ public struct SKColorWheel: View {
     }
     
     func updatePosition() {
-        autoreleasepool {
-            let hsb = selection.getHSB()
-
-            let pos = calcPos(hsb.0, hsb.1, geo.size.height, geo.size.width)
-            
-            
-            self.knobPosition = .init(x: pos.x, y: pos.y)
-        }
+        self.knobPosition = calcPosition(selection, geo: geo)
     }
 }

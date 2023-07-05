@@ -21,4 +21,6 @@ double calcR(double x, double y, double width, double height, double angle);
 char* doubleToHexString(double value);
 char* rgbToHexString(double r, double g, double b);
 xy *wave(double width, double height, double frequency, double strength, double midHeight);
+void freeWave(xy *array);
+void freeHex(char *array);
 #endif /* colorpickerutils_h */
