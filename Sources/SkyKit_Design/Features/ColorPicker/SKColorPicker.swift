@@ -104,12 +104,13 @@ public struct SKCompactColorPicker: View {
                             .padding(.bottom, 3)
                         SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
                             .frame(width: 210)
-                    }
+                    }.frame(width: 240)
                     GroupBox {
                         SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
                             .frame(width: 220, height: 25)
+                            .padding()
                     }
-                }.frame(width: 250, height: 310)
+                }.frame(width: 260, height: 310)
                     .onChange(of: isDraggingBrightness || isDragging) { newValue in
                         onDraggingChange(newValue)
                     }
