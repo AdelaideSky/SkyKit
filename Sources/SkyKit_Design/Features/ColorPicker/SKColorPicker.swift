@@ -70,7 +70,7 @@ public struct SKColorPicker: View {
             }
      }
 }
-public struct SKCompactColorPicker: View {
+public struct SKCompactColorPicker<Label: View>: View {
     
     @Binding var selection: Color
     
@@ -81,16 +81,17 @@ public struct SKCompactColorPicker: View {
     var dynamicKnobHiding: Bool = true
     var onSubmit: () -> Void
     var onDraggingChange: (Bool) -> Void
+    var label: (() -> Label)?
 
-    public init(_ selection: Binding<Color>, dynamicKnobHiding: Bool = true, onDraggingChange: @escaping (Bool) -> Void = {_ in}, onSubmit: @escaping () -> Void = {}) {
+    public init(_ selection: Binding<Color>, label: @escaping () -> Label, dynamicKnobHiding: Bool = true, onDraggingChange: @escaping (Bool) -> Void = {_ in}, onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
         self.dynamicKnobHiding = dynamicKnobHiding
         self.onSubmit = onSubmit
         self.onDraggingChange = onDraggingChange
-
+        self.label = label
     }
-
-    public var body: some View {
+    
+    var content: some View {
         Circle()
             .fill(selection)
             .frame(width: 15, height: 15)
@@ -127,5 +128,24 @@ public struct SKCompactColorPicker: View {
                     }
 //                    .padding()
             })
+    }
+
+    public var body: some View {
+        if let label = label {
+            LabeledContent(content: {
+                content
+            }, label: label)
+        } else {
+            content
+        }
      }
+}
+public extension SKCompactColorPicker where Label == EmptyView {
+     init(_ selection: Binding<Color>, dynamicKnobHiding: Bool = true, onDraggingChange: @escaping (Bool) -> Void = {_ in}, onSubmit: @escaping () -> Void = {}) {
+        self._selection = selection
+        self.dynamicKnobHiding = dynamicKnobHiding
+        self.onSubmit = onSubmit
+        self.onDraggingChange = onDraggingChange
+        self.label = nil
+    }
 }
