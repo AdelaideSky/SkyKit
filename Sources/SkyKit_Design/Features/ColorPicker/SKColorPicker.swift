@@ -57,7 +57,6 @@ public struct SKColorPicker<Label: View>: View {
                         .frame(height: 40)
                         .padding(.horizontal, 10)
                         .padding(.top, -5)
-                        .padding(.bottom, 5)
                 }
             }, label: {
                     if let label = label {
@@ -99,6 +98,7 @@ public struct SKColorPicker<Label: View>: View {
                                 .padding(.bottom, 3)
                             SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
                                 .frame(width: 210, height: 30)
+                                .padding(.bottom, 2)
                         }.padding(3)
                     }
                     GroupBox {
@@ -137,5 +137,18 @@ public extension SKColorPicker where Label == EmptyView {
         self.onSubmit = onSubmit
         self.onDraggingChange = onDraggingChange
         self.label = nil
+    }
+}
+
+public extension SKColorPicker where Label == Text {
+    init(_ label: String, selection: Binding<Color>,
+                dynamicKnobHiding: Bool = true,
+                onDraggingChange: @escaping (Bool) -> Void = {_ in},
+                onSubmit: @escaping () -> Void = {}) {
+        self._selection = selection
+        self.dynamicKnobHiding = dynamicKnobHiding
+        self.onSubmit = onSubmit
+        self.onDraggingChange = onDraggingChange
+        self.label = {Text(label)}
     }
 }
