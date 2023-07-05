@@ -35,6 +35,7 @@ public struct SKRGBHexEditor: View {
                         }, set: { newValue in
                             if let doubleValue = Double(newValue) {
                                 self.selection = .init(red: doubleValue/255, green: green, blue: blue)
+                                onSubmit()
                             }
                         })).focused($focusedField, equals: 1)
                             .padding(.horizontal, 3)
@@ -54,6 +55,7 @@ public struct SKRGBHexEditor: View {
                         }, set: { newValue in
                             if let doubleValue = Double(newValue) {
                                 self.selection = .init(red: red, green: doubleValue/255, blue: blue)
+                                onSubmit()
                             }
                         })).focused($focusedField, equals: 2)
                             .padding(.horizontal, 3)
@@ -73,6 +75,7 @@ public struct SKRGBHexEditor: View {
                         }, set: { newValue in
                             if let doubleValue = Double(newValue) {
                                 self.selection = .init(red: red, green: green, blue: doubleValue/255)
+                                onSubmit()
                             }
                         })).focused($focusedField, equals: 3)
                             .padding(.horizontal, 3)
@@ -101,6 +104,7 @@ public struct SKRGBHexEditor: View {
                             }
                             if let newColor = Color(hex: value) {
                                 selection = newColor
+                                onSubmit()
                             } else {
                                 hex = value
                             }
