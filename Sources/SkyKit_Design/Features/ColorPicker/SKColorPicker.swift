@@ -105,7 +105,7 @@ public struct SKCompactColorPicker: View {
                             }.frame(width: 230, height: 210)
                                 .padding(.bottom, 3)
                             SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
-                                .frame(width: 210, height: 35)
+                                .frame(width: 210, height: 30)
                         }.padding(3)
                     }
                     GroupBox {

@@ -122,13 +122,12 @@ public struct SKRGBHexEditor: View {
                                 .fill(.secondary)
                                 .opacity(0.1)
                         }
-                        .frame(height: 15)
                     Text("HEX").font(.footnote)
                         .opacity(0.7)
                 }
             }.textFieldStyle(.plain)
                 .foregroundStyle(.secondary)
-        }.frame(height: 35)
+        }.frame(height: 30)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     focusedField = nil // Remove initial focus
