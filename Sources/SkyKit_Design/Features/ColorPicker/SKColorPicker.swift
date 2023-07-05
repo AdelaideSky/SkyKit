@@ -47,7 +47,7 @@ public struct SKColorPicker<Label: View>: View {
     }
     public func disableRGBHexEditorOptimisation(_ disable: Bool = true) -> SKColorPicker {
         var answer = self
-        answer.style = style
+        answer.optimisation = !disable
         return answer
     }
     
