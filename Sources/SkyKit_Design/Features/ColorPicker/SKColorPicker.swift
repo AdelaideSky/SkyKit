@@ -64,7 +64,7 @@ public struct SKColorPicker: View {
                     .frame(height: 25)
                     .padding(10)
             }
-        }.frame(minWidth: 200)
+        }.frame(minWidth: 260, minHeight: 337)
             .onChange(of: isDraggingBrightness || isDragging) { newValue in
                 onDraggingChange(newValue)
             }
@@ -93,9 +93,12 @@ public struct SKCompactColorPicker: View {
     public var body: some View {
         Circle()
             .fill(selection)
+            .frame(width: 15, height: 15)
             .overlay(
-                    Circle()
-                        .stroke(Color.secondary, lineWidth: 2)
+                    Circle().stroke(AngularGradient(gradient: Gradient(colors: Array(0...255).map { Color(hue:Double($0)/255 , saturation: 0.7, brightness: 1) }),
+                                                    center: .center).opacity(0.5), lineWidth: 2)
+                        .frame(width: 20, height: 20)
+                        
                 )
             .frame(width: 20, height: 20)
             .onTapGesture {

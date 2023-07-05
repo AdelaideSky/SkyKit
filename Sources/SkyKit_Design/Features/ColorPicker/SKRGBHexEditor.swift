@@ -104,14 +104,9 @@ public struct SKRGBHexEditor: View {
                             }
                         })).multilineTextAlignment(.center)
                             .focused($focusedField, equals: 4)
-//                            .frame(alignment: .leading)
-//                            .frame(maxWidth: 60)
                             .onSubmit {
                                 hex = selection.hex.uppercased()
                             }
-//                            .padding(.leading, 1)
-                            
-//                            .lineLimit(1)
                         Spacer(minLength: 0)
                     }.frame(minWidth: 75, maxWidth: .infinity)
                         .padding(.horizontal, 3)
