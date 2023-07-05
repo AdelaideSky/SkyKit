@@ -7,70 +7,7 @@
 
 import SwiftUI
 
-public struct SKColorPicker: View {
-    
-    @Binding var selection: Color
-    
-    @State var isDraggingBrightness: Bool = false
-    @State var isDragging: Bool = false
-    
-    var dynamicKnobHiding: Bool = true
-    var onSubmit: () -> Void
-    var onDraggingChange: (Bool) -> Void
-    
-    var title: String = ""
-    var icon: String = ""
-    
-    public init(_ selection: Binding<Color>, dynamicKnobHiding: Bool = true, title: String = "", systemImage: String = "", onDraggingChange: @escaping (Bool) -> Void = {_ in}, onSubmit: @escaping () -> Void = {}) {
-        self._selection = selection
-        self.dynamicKnobHiding = dynamicKnobHiding
-        self.onSubmit = onSubmit
-        self.title = title
-        self.icon = systemImage
-        self.onDraggingChange = onDraggingChange
-        
-    }
-
-    public var body: some View {
-        VStack {
-            GroupBox(content: {
-                VStack {
-                    GeometryReader { geo in
-                        SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
-                    }.frame(minHeight: 150)
-                        .padding(10)
-                    SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
-                    .frame(height: 40)
-                    .padding(.horizontal, 10)
-                    .padding(.top, -5)
-                    .padding(.bottom, 5)
-                }
-                }, label: {
-                    Group {
-                        if title != "" {
-                            if icon == "" {
-                                Label(title, systemImage: icon)
-                                    .labelStyle(.titleOnly)
-                            } else {
-                                Label(title, systemImage: icon)
-                            }
-                        } else {
-                            EmptyView()
-                        }
-                    }.bold()
-            })
-            GroupBox {
-                SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
-                    .frame(height: 25)
-                    .padding(10)
-            }
-        }.frame(minWidth: 260, minHeight: 337)
-            .onChange(of: isDraggingBrightness || isDragging) { newValue in
-                onDraggingChange(newValue)
-            }
-     }
-}
-public struct SKCompactColorPicker<Label: View>: View {
+public struct SKColorPicker<Label: View>: View {
     
     @Binding var selection: Color
     
@@ -82,8 +19,19 @@ public struct SKCompactColorPicker<Label: View>: View {
     var onSubmit: () -> Void
     var onDraggingChange: (Bool) -> Void
     var label: (() -> Label)?
+    
+    var style: SKColorPickerStyle = .compact
+    
+    public enum SKColorPickerStyle {
+        case compact
+        case expanded
+    }
 
-    public init(_ selection: Binding<Color>, label: @escaping () -> Label, dynamicKnobHiding: Bool = true, onDraggingChange: @escaping (Bool) -> Void = {_ in}, onSubmit: @escaping () -> Void = {}) {
+    public init(_ selection: Binding<Color>,
+                label: @escaping () -> Label,
+                dynamicKnobHiding: Bool = true,
+                onDraggingChange: @escaping (Bool) -> Void = {_ in},
+                onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
         self.dynamicKnobHiding = dynamicKnobHiding
         self.onSubmit = onSubmit
@@ -91,7 +39,43 @@ public struct SKCompactColorPicker<Label: View>: View {
         self.label = label
     }
     
-    var content: some View {
+    public func skColorPickerStyle(_ style: SKColorPickerStyle) -> SKColorPicker {
+        var answer = self
+        answer.style = style
+        return answer
+    }
+    
+    var expandedView: some View {
+        VStack {
+            GroupBox(content: {
+                VStack {
+                    GeometryReader { geo in
+                        SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
+                    }.frame(minHeight: 150)
+                        .padding(10)
+                    SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
+                        .frame(height: 40)
+                        .padding(.horizontal, 10)
+                        .padding(.top, -5)
+                        .padding(.bottom, 5)
+                }
+            }, label: {
+                    if let label = label {
+                        label()
+                    }
+            })
+            GroupBox {
+                SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
+                    .frame(height: 25)
+                    .padding(10)
+            }
+        }.frame(minWidth: 260, minHeight: 337)
+            .onChange(of: isDraggingBrightness || isDragging) { newValue in
+                onDraggingChange(newValue)
+            }
+     }
+    
+    var compactView: some View {
         Circle()
             .fill(selection)
             .frame(width: 15, height: 15)
@@ -131,16 +115,22 @@ public struct SKCompactColorPicker<Label: View>: View {
     }
 
     public var body: some View {
-        if let label = label {
-            LabeledContent(content: {
-                content
-            }, label: label)
-        } else {
-            content
+        switch style {
+        case .compact:
+            if let label = label {
+                LabeledContent(content: {
+                    compactView
+                }, label: label)
+            } else {
+                compactView
+            }
+        case .expanded:
+            expandedView
         }
      }
 }
-public extension SKCompactColorPicker where Label == EmptyView {
+
+public extension SKColorPicker where Label == EmptyView {
      init(_ selection: Binding<Color>, dynamicKnobHiding: Bool = true, onDraggingChange: @escaping (Bool) -> Void = {_ in}, onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
         self.dynamicKnobHiding = dynamicKnobHiding
