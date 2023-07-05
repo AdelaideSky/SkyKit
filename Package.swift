@@ -14,6 +14,9 @@ let package = Package(
         .library(
             name: "SkyKit_Design",
             targets: ["SkyKit_Design"]),
+        .library(
+            name: "SkyKitC",
+            targets: ["SkyKitC"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
