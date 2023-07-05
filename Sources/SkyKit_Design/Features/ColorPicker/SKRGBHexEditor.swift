@@ -115,6 +115,7 @@ public struct SKRGBHexEditor: View {
                             .multilineTextAlignment(.leading)
                         Spacer(minLength: 0)
                     }.frame(minWidth: 75, maxWidth: .infinity)
+                        .clipped()
                         .padding(3)
                         .background {
                             RoundedRectangle(cornerRadius: 5)
@@ -127,7 +128,7 @@ public struct SKRGBHexEditor: View {
                 }
             }.textFieldStyle(.plain)
                 .foregroundStyle(.secondary)
-        }.frame(height: 30)
+        }.frame(height: 35)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     focusedField = nil // Remove initial focus
