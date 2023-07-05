@@ -98,19 +98,21 @@ public struct SKCompactColorPicker: View {
             .popover(isPresented: $isOpen, content: {
                 VStack {
                     GroupBox {
-                        GeometryReader { geo in
-                            SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
-                        }.frame(width: 220, height: 200)
-                            .padding(.bottom, 3)
-                        SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
-                            .frame(width: 210)
-                    }.frame(width: 240)
+                        Group {
+                            GeometryReader { geo in
+                                SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
+                            }.frame(width: 220, height: 200)
+                                .padding(.bottom, 3)
+                            SKRGBHexEditor(selection: $selection, onSubmit: onSubmit)
+                                .frame(width: 210)
+                        }.padding(3)
+                    }
                     GroupBox {
                         SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
                             .frame(width: 220, height: 25)
-                            .padding()
+                            .padding(3)
                     }
-                }.frame(width: 260, height: 310)
+                }.frame(width: 250, height: 310)
                     .onChange(of: isDraggingBrightness || isDragging) { newValue in
                         onDraggingChange(newValue)
                     }

@@ -120,6 +120,7 @@ public struct SKRGBHexEditor: View {
                                 .fill(.secondary)
                                 .opacity(0.1)
                         }
+                        .frame(height: 15)
                     Text("HEX").font(.footnote)
                         .opacity(0.7)
                 }
