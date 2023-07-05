@@ -127,7 +127,7 @@ public struct SKRGBHexEditor: View {
                 }
             }.textFieldStyle(.plain)
                 .foregroundStyle(.secondary)
-        }.frame(height: 15)
+        }.frame(height: 30)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     focusedField = nil // Remove initial focus
