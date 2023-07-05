@@ -106,7 +106,6 @@ public struct SKRGBHexEditor: View {
                             .focused($focusedField, equals: 4)
 //                            .frame(alignment: .leading)
 //                            .frame(maxWidth: 60)
-//                            .frame(height: 15)
                             .onSubmit {
                                 hex = selection.hex.uppercased()
                             }
@@ -115,8 +114,9 @@ public struct SKRGBHexEditor: View {
 //                            .lineLimit(1)
                         Spacer(minLength: 0)
                     }.frame(minWidth: 75, maxWidth: .infinity)
+                        .padding(.horizontal, 3)
+                        .frame(height: 22)
                         .clipped()
-                        .padding(3)
                         .background {
                             RoundedRectangle(cornerRadius: 5)
                                 .fill(.secondary)
