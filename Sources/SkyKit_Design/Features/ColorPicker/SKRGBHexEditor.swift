@@ -107,6 +107,7 @@ public struct SKRGBHexEditor: View {
                             }
                         })).focused($focusedField, equals: 4)
                             .frame(maxWidth: 60)
+                            .frame(height: 15)
                             .onSubmit {
                                 hex = selection.hex.uppercased()
                             }

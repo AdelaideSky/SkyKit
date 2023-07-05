@@ -110,9 +110,9 @@ public struct SKCompactColorPicker: View {
                     GroupBox {
                         SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
                             .frame(width: 220, height: 25)
-                            .padding(3)
+                            .padding(4)
                     }
-                }.frame(width: 250, height: 310)
+                }.frame(width: 250, height: 320)
                     .onChange(of: isDraggingBrightness || isDragging) { newValue in
                         onDraggingChange(newValue)
                     }
