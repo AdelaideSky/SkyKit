@@ -117,7 +117,7 @@ public struct SKColorPicker<Label: View>: View {
                     GroupBox {
                         Group {
                             GeometryReader { geo in
-                                SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
+                                SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, scrollControls: scrollControls, onSubmit: onSubmit)
                             }.frame(width: 230, height: 210)
                                 .padding(.bottom, 3)
                             SKRGBHexEditor(selection: $selection, holdUpdates: optimisation ? .init(get: {isDragging || isDraggingBrightness}, set: {_ in}) : .constant(false), onSubmit: onSubmit)
@@ -126,7 +126,7 @@ public struct SKColorPicker<Label: View>: View {
                         }.padding(3)
                     }
                     GroupBox {
-                        SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
+                        SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), scrollControls: scrollControls, onSubmit: onSubmit)
                             .frame(width: 230, height: 25)
                             .padding(4)
                     }
