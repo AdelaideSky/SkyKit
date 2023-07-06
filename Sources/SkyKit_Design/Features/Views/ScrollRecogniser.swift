@@ -168,7 +168,6 @@ public struct ScrollReader<Content: View>: View {
                                   height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
               }
               offset = answer
-              print(offset)
               onChange(answer)
           }
       }
