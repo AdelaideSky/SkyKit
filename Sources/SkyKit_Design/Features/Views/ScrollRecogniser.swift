@@ -36,8 +36,7 @@ fileprivate class ScrollView: NSView {
         // pass the event on to the delegate
         let horizontal = abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY)
         
-        if (horizontal && wantedAxis == .horizontal) || (!horizontal && wantedAxis == .vertical) {
-            print(horizontal)
+        if (horizontal && wantedAxis == .horizontal) || (!horizontal && wantedAxis == .vertical) || (wantedAxis == nil) {
             delegate.scrollWheel(with: event)
         } else {
             if let cgEvent: CGEvent = event.cgEvent?.copy() {
@@ -111,16 +110,35 @@ public struct ScrollReader<Content: View>: View {
     let content: (CGSize) -> Content
     @State var offset: CGSize
     
-    let bounds: ClosedRange<CGFloat>
+    let boundsX: ClosedRange<CGFloat>
+    let boundsY: ClosedRange<CGFloat>
     let invert: Bool
     let scrollDirection: Axis?
     
+    var onChange: (CGSize) -> Void = {_ in}
+    
     public init(_ inRange: ClosedRange<CGFloat> = 0...0, axis: Axis? = nil, initialValue: CGSize = CGSize(width: 0.0, height: 0.0), invert: Bool = false, content: @escaping (CGSize) -> Content) {
         self.content = content
-        self.bounds = inRange
+        self.boundsX = inRange
+        self.boundsY = inRange
         self._offset = .init(initialValue: initialValue)
         self.invert = invert
         self.scrollDirection = axis
+    }
+    
+    public init(xRange: ClosedRange<CGFloat> = 0...0, yRange: ClosedRange<CGFloat> = 0...0, axis: Axis? = nil, initialValue: CGSize = CGSize(width: 0.0, height: 0.0), invert: Bool = false, content: @escaping (CGSize) -> Content) {
+        self.content = content
+        self.boundsX = xRange
+        self.boundsY = yRange
+        self._offset = .init(initialValue: initialValue)
+        self.invert = invert
+        self.scrollDirection = axis
+    }
+    
+    public func onChange(_ action: @escaping (CGSize) -> Void) -> ScrollReader {
+        var answer = self
+        answer.onChange = action
+        return answer
     }
     
     var scrollView: some View {
@@ -128,12 +146,30 @@ public struct ScrollReader<Content: View>: View {
         // when the scroll wheel moves
         RepresentableScrollView(scrollDirection)
           .onScroll { event in
-              if self.bounds == 0...0 {
-                  offset = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+              var answer: CGSize = .zero
+              if self.boundsX == 0...0 {
+                  if self.boundsY == 0...0 {
+                      answer = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX),
+                                      height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+                  } else {
+                      answer = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX),
+                                      height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
+                  }
+              } else if self.boundsY == 0...0 {
+                  if self.boundsX == 0...0 {
+                      answer = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX),
+                                      height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+                  } else {
+                      answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
+                                      height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+                  }
               } else {
-                  offset = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), bounds.lowerBound), bounds.upperBound),
-                                  height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), bounds.lowerBound), bounds.upperBound))
+                  answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
+                                  height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
               }
+              offset = answer
+              print(offset)
+              onChange(answer)
           }
       }
     
@@ -154,12 +190,20 @@ public struct BindableScrollReader<Content: View>: View {
     let invert: Bool
     let scrollDirection: Axis?
     
+    var onChange: (CGSize) -> Void = {_ in}
+    
     public init(_ inRange: ClosedRange<CGFloat> = 0...0, value: Binding<CGSize>, axis: Axis? = nil, invert: Bool = false, content: @escaping () -> Content) {
         self.content = content
         self.bounds = inRange
         self._offset = value
         self.invert = invert
         self.scrollDirection = axis
+    }
+    
+    public func onChange(_ action: @escaping (CGSize) -> Void) -> BindableScrollReader {
+        var answer = self
+        answer.onChange = action
+        return answer
     }
     
     var scrollView: some View {

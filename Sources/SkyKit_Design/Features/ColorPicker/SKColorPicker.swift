@@ -23,6 +23,8 @@ public struct SKColorPicker<Label: View>: View {
     var style: SKColorPickerStyle = .compact
     var optimisation: Bool = true
     
+    var scrollControls = true
+    
     public enum SKColorPickerStyle {
         case compact
         case expanded
@@ -51,12 +53,22 @@ public struct SKColorPicker<Label: View>: View {
         return answer
     }
     
+    public func scrollDisabled(_ disable: Bool = true) -> SKColorPicker {
+        var answer = self
+        answer.scrollControls = !disable
+        return answer
+    }
+    
     var expandedView: some View {
         VStack {
             GroupBox(content: {
                 VStack {
                     GeometryReader { geo in
-                        SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, onSubmit: onSubmit)
+                        SKColorWheel($selection, geo: geo, showingKnob: !isDraggingBrightness, isDragging: _isDragging, scrollControls: scrollControls, onSubmit: onSubmit)
+                            .dropDestination(for: Color.self) { payload, _ in
+                                selection = payload.first!
+                                return true
+                            }
                     }.frame(minHeight: 150)
                         .padding(10)
                     SKRGBHexEditor(selection: $selection, holdUpdates: optimisation ? .init(get: {isDragging || isDraggingBrightness}, set: {_ in}) : .constant(false), onSubmit: onSubmit)
@@ -70,7 +82,7 @@ public struct SKColorPicker<Label: View>: View {
                     }
             })
             GroupBox {
-                SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), onSubmit: onSubmit)
+                SKBrightnessSlider($selection, isDragging: dynamicKnobHiding ? $isDraggingBrightness : .constant(false), scrollControls: scrollControls,  onSubmit: onSubmit)
                     .frame(height: 25)
                     .padding(10)
             }
@@ -84,6 +96,7 @@ public struct SKColorPicker<Label: View>: View {
         Circle()
             .fill(selection)
             .frame(width: 15, height: 15)
+            .draggable(selection)
             .overlay(
                     Circle().stroke(AngularGradient(gradient: Gradient(colors: Array(0...255).map { Color(hue:Double($0)/255 , saturation: 0.7, brightness: 1) }),
                                                     center: .center).opacity(0.5), lineWidth: 2)
@@ -93,6 +106,11 @@ public struct SKColorPicker<Label: View>: View {
             .frame(width: 20, height: 20)
             .onTapGesture {
                 isOpen.toggle()
+            }
+            .dropDestination(for: Color.self) { payload, _ in
+                selection = payload.first!
+                return true
+                
             }
             .popover(isPresented: $isOpen, content: {
                 VStack {

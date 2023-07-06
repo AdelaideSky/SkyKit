@@ -23,6 +23,7 @@ public struct SKColorWheel: View {
     var geo: GeometryProxy
     var showingKnob: Bool = true
     var onSubmit: () -> Void
+    var scrollControls: Bool
     
     @State private var knobPosition: CGPoint
     @State var isDragging: Bool = false
@@ -33,7 +34,7 @@ public struct SKColorWheel: View {
     
     let doublePi = CGFloat.pi*2
     
-    public init(_ selection: Binding<Color>, geo: GeometryProxy, showingKnob: Bool = true, isDragging: State<Bool>, onSubmit: @escaping () -> Void = {}) {
+    public init(_ selection: Binding<Color>, geo: GeometryProxy, showingKnob: Bool = true, isDragging: State<Bool>, scrollControls: Bool = true, onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
         self.geo = geo
         
@@ -41,6 +42,7 @@ public struct SKColorWheel: View {
         self.showingKnob = showingKnob
         self.onSubmit = onSubmit
         self._isDragging = isDragging
+        self.scrollControls = scrollControls
     }
     
     
@@ -67,7 +69,7 @@ public struct SKColorWheel: View {
     
     let knobSize: CGFloat = 30
     
-    public var body: some View {
+    var content: some View {
         VStack {
             GeometryReader { geometry in
                 Wheel(brightness: brightness)
@@ -87,21 +89,6 @@ public struct SKColorWheel: View {
                             }
                         }.animation(.easeInOut, value: showingKnob)
                     }
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                isDragging = true
-                                autoreleasepool {
-                                    let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
-                                    let angle = angle(newPos)
-                                    selection = .init(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
-                                }
-                            }
-                            .onEnded { _ in
-                                isDragging = false
-                                onSubmit()
-                            }
-                    )
                     .onChange(of: geometry.size) { newValue in
                         updatePosition()
                     }
@@ -110,7 +97,48 @@ public struct SKColorWheel: View {
                     }
             }
             
-        }.frame(minHeight: 100)
+        }
+    }
+    
+    public var body: some View {
+        Group {
+            if scrollControls {
+                ScrollReader(xRange: 10...(geo.size.width-10), yRange: 10...(geo.size.height-10), initialValue: .init(width: knobPosition.x, height: knobPosition.y)) { scroll in
+                    content
+                }.onChange { val in
+                    autoreleasepool {
+                        let newPos = CGPoint(x: val.width, y: val.height)
+                        let angle = angle(newPos)
+                        let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                        if newSelection != selection {
+                            isDragging = true
+                            selection = newSelection
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            isDragging = false
+                        }
+                        
+                    }
+                }
+            } else {
+                content
+            }
+        }.simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    isDragging = true
+                    autoreleasepool {
+                        let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
+                        let angle = angle(newPos)
+                        selection = .init(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                    }
+                }
+                .onEnded { _ in
+                    isDragging = false
+                    onSubmit()
+                }
+        )
+        .frame(minHeight: 100)
     }
     
     func updatePosition() {

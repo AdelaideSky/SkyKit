@@ -12,6 +12,8 @@ public struct SKBrightnessSlider: View {
     @Binding var selection: Color
     @Binding var isDragging: Bool
     var onSubmit: () -> Void
+        
+    var scrollControls: Bool
     
     var hue: Double {
         return Double(selection.getHSB().0)
@@ -23,17 +25,15 @@ public struct SKBrightnessSlider: View {
         return Double(selection.getHSB().2)
     }
     
-    public init(_ selection: Binding<Color>, isDragging: Binding<Bool> = .constant(false), onSubmit: @escaping () -> Void = {}) {
+    public init(_ selection: Binding<Color>, isDragging: Binding<Bool> = .constant(false), scrollControls: Bool = true, onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
         self._isDragging = isDragging
         self.onSubmit = onSubmit
-        
+        self.scrollControls = scrollControls
     }
     
-    
-    
-    
-    public var body: some View {
+        
+    public var content: some View {
         GeometryReader { geo in
             VStack {
                 Wave(strength: (10*brightness), frequency: geo.size.width/8)
@@ -65,6 +65,39 @@ public struct SKBrightnessSlider: View {
                     .onChanged { value in
                         isDragging = true
                         selection = .init(hue: hue, saturation: saturation, brightness: min(max(value.location.x, 0.01), geo.size.width)/geo.size.width)
+                    }
+                    .onEnded { _ in
+                        isDragging = false
+                        onSubmit()
+                    }
+            )
+        }
+    }
+    
+    public var body: some View {
+        GeometryReader { geo in
+            Group {
+                if scrollControls {
+                    ScrollReader(0.001...geo.size.width, axis: .horizontal, initialValue: .init(width: brightness*geo.size.width, height: 0)) { scroll in
+                        content
+                    }.onChange() { val in
+                        let newSelection = Color(hue: hue, saturation: saturation, brightness: val.width/geo.size.width)
+                        if newSelection != selection {
+                            isDragging = true
+                            selection = newSelection
+                        } else { isDragging = false }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            isDragging = false
+                        }
+                    }
+                } else {
+                    content
+                }
+            }.gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        isDragging = true
+                        selection = .init(hue: hue, saturation: saturation, brightness: min(max(value.location.x, 0.001), geo.size.width)/geo.size.width)
                     }
                     .onEnded { _ in
                         isDragging = false
