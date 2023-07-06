@@ -78,9 +78,9 @@ public struct SKBrightnessSlider: View {
         GeometryReader { geo in
             Group {
                 if scrollControls {
-                    ScrollReader(0.001...geo.size.width, axis: .horizontal, initialValue: .init(width: brightness*geo.size.width, height: 0)) { scroll in
-                        content
-                    }.onChange() { val in
+                    BindableScrollReader(0.001...geo.size.width, value: .init(get: {
+                        return .init(width: brightness*geo.size.width, height: 0)
+                    }, set: { val in
                         let newSelection = Color(hue: hue, saturation: saturation, brightness: val.width/geo.size.width)
                         if newSelection != selection {
                             isDragging = true
@@ -89,6 +89,8 @@ public struct SKBrightnessSlider: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             isDragging = false
                         }
+                    }), axis: .horizontal) {
+                        content
                     }
                 } else {
                     content

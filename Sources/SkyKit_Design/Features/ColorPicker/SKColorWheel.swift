@@ -103,9 +103,9 @@ public struct SKColorWheel: View {
     public var body: some View {
         Group {
             if scrollControls {
-                ScrollReader(xRange: 10...(geo.size.width-10), yRange: 10...(geo.size.height-10), initialValue: .init(width: knobPosition.x, height: knobPosition.y)) { scroll in
-                    content
-                }.onChange { val in
+                BindableScrollReader(xRange: 10...(geo.size.width-10), yRange: 10...(geo.size.height-10), value: .init(get: {
+                    return .init(width: knobPosition.x, height: knobPosition.y)
+                }, set: { val in
                     autoreleasepool {
                         let newPos = CGPoint(x: val.width, y: val.height)
                         let angle = angle(newPos)
@@ -119,6 +119,8 @@ public struct SKColorWheel: View {
                         }
                         
                     }
+                })) {
+                    content
                 }
             } else {
                 content

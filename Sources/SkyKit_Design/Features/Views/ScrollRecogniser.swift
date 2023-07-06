@@ -185,7 +185,9 @@ public struct BindableScrollReader<Content: View>: View {
     let content: () -> Content
     @Binding var offset: CGSize
     
-    let bounds: ClosedRange<CGFloat>
+    let boundsX: ClosedRange<CGFloat>
+    let boundsY: ClosedRange<CGFloat>
+    
     let invert: Bool
     let scrollDirection: Axis?
     
@@ -193,7 +195,16 @@ public struct BindableScrollReader<Content: View>: View {
     
     public init(_ inRange: ClosedRange<CGFloat> = 0...0, value: Binding<CGSize>, axis: Axis? = nil, invert: Bool = false, content: @escaping () -> Content) {
         self.content = content
-        self.bounds = inRange
+        self.boundsX = inRange
+        self.boundsY = inRange
+        self._offset = value
+        self.invert = invert
+        self.scrollDirection = axis
+    }
+    public init(xRange: ClosedRange<CGFloat> = 0...0, yRange: ClosedRange<CGFloat> = 0...0, value: Binding<CGSize>, axis: Axis? = nil, invert: Bool = false, content: @escaping () -> Content) {
+        self.content = content
+        self.boundsX = xRange
+        self.boundsY = yRange
         self._offset = value
         self.invert = invert
         self.scrollDirection = axis
@@ -210,12 +221,29 @@ public struct BindableScrollReader<Content: View>: View {
         // when the scroll wheel moves
         RepresentableScrollView(scrollDirection)
           .onScroll { event in
-              if self.bounds == 0...0 {
-                  offset = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+              var answer: CGSize = .zero
+              if self.boundsX == 0...0 {
+                  if self.boundsY == 0...0 {
+                      answer = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX),
+                                      height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+                  } else {
+                      answer = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX),
+                                      height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
+                  }
+              } else if self.boundsY == 0...0 {
+                  if self.boundsX == 0...0 {
+                      answer = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX),
+                                      height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+                  } else {
+                      answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
+                                      height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
+                  }
               } else {
-                  offset = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), bounds.lowerBound), bounds.upperBound),
-                                  height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), bounds.lowerBound), bounds.upperBound))
+                  answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
+                                  height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
               }
+              offset = answer
+              onChange(answer)
           }
       }
     
