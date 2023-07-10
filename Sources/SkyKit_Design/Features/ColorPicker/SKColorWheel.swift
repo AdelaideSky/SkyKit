@@ -32,7 +32,6 @@ public struct SKColorWheel: View {
         return Double(selection.getHSB().2)
     }
     
-    let doublePi = CGFloat.pi*2
     
     public init(_ selection: Binding<Color>, geo: GeometryProxy, showingKnob: Bool = true, isDragging: State<Bool>, scrollControls: Bool = true, onSubmit: @escaping () -> Void = {}) {
         self._selection = selection
@@ -90,10 +89,14 @@ public struct SKColorWheel: View {
                         }.animation(.easeInOut, value: showingKnob)
                     }
                     .onChange(of: geometry.size) { newValue in
-                        updatePosition()
+                        DispatchQueue(label: "SKColorWheelUpdate").async {
+                            updatePosition()
+                        }
                     }
                     .onChange(of: selection.description) { newValue in
-                        updatePosition()
+                        DispatchQueue(label: "SKColorWheelUpdate").async {
+                            updatePosition()
+                        }
                     }
             }
             
@@ -106,18 +109,22 @@ public struct SKColorWheel: View {
                 BindableScrollReader(xRange: 10...(geo.size.width-10), yRange: 10...(geo.size.height-10), value: .init(get: {
                     return .init(width: knobPosition.x, height: knobPosition.y)
                 }, set: { val in
-                    autoreleasepool {
-                        let newPos = CGPoint(x: val.width, y: val.height)
-                        let angle = angle(newPos)
-                        let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
-                        if newSelection != selection {
-                            isDragging = true
-                            selection = newSelection
+                    DispatchQueue(label: "SKColorWheelUpdate").async {
+                        autoreleasepool {
+                            let newPos = CGPoint(x: val.width, y: val.height)
+                            let angle = angle(newPos)
+                            let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                            if newSelection != selection {
+                                DispatchQueue.main.async {
+                                    isDragging = true
+                                    selection = newSelection
+                                }
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                isDragging = false
+                            }
+                            
                         }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            isDragging = false
-                        }
-                        
                     }
                 })) {
                     content
@@ -129,10 +136,15 @@ public struct SKColorWheel: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     isDragging = true
-                    autoreleasepool {
-                        let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
-                        let angle = angle(newPos)
-                        selection = .init(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                    DispatchQueue(label: "SKColorWheelUpdate").async {
+                        autoreleasepool {
+                            let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
+                            let angle = angle(newPos)
+                            let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                            DispatchQueue.main.async {
+                                selection = newSelection
+                            }
+                        }
                     }
                 }
                 .onEnded { _ in
@@ -144,6 +156,12 @@ public struct SKColorWheel: View {
     }
     
     func updatePosition() {
-        self.knobPosition = calcPosition(selection, geo: geo)
+        DispatchQueue(label: "SKColorWheelUpdate").async {
+            let newValue = calcPosition(selection, geo: geo)
+            
+            DispatchQueue.main.async {
+                self.knobPosition = calcPosition(selection, geo: geo)
+            }
+        }
     }
 }

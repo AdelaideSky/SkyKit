@@ -15,12 +15,6 @@ public struct SKBrightnessSlider: View {
         
     var scrollControls: Bool
     
-    var hue: Double {
-        return Double(selection.getHSB().0)
-    }
-    var saturation: Double {
-        return Double(selection.getHSB().1)
-    }
     var brightness: Double {
         return Double(selection.getHSB().2)
     }
@@ -64,7 +58,11 @@ public struct SKBrightnessSlider: View {
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
                         isDragging = true
-                        selection = .init(hue: hue, saturation: saturation, brightness: min(max(value.location.x, 0.01), geo.size.width)/geo.size.width)
+                        DispatchQueue(label: "SKBrightnessSliderUpdate").async {
+                            let hsb = selection.getHSB()
+                            let newValue = Color(hue: hsb.0, saturation: hsb.1, brightness: min(max(value.location.x, 0.01), geo.size.width)/geo.size.width)
+                            DispatchQueue.main.async { selection = newValue }
+                        }
                     }
                     .onEnded { _ in
                         isDragging = false
@@ -81,13 +79,18 @@ public struct SKBrightnessSlider: View {
                     BindableScrollReader(0.001...geo.size.width, value: .init(get: {
                         return .init(width: brightness*geo.size.width, height: 0)
                     }, set: { val in
-                        let newSelection = Color(hue: hue, saturation: saturation, brightness: val.width/geo.size.width)
-                        if newSelection != selection {
-                            isDragging = true
-                            selection = newSelection
-                        } else { isDragging = false }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            isDragging = false
+                        DispatchQueue(label: "SKBrightnessSliderUpdate").async {
+                            let hsb = selection.getHSB()
+                            let newSelection = Color(hue: hsb.0, saturation: hsb.1, brightness: val.width/geo.size.width)
+                            if newSelection != selection {
+                                DispatchQueue.main.async {
+                                    isDragging = true
+                                    selection = newSelection
+                                }
+                            } else { DispatchQueue.main.async { isDragging = false } }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                isDragging = false
+                            }
                         }
                     }), axis: .horizontal) {
                         content
@@ -99,7 +102,11 @@ public struct SKBrightnessSlider: View {
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
                         isDragging = true
-                        selection = .init(hue: hue, saturation: saturation, brightness: min(max(value.location.x, 0.001), geo.size.width)/geo.size.width)
+                        DispatchQueue(label: "SKBrightnessSliderUpdate").async {
+                            let hsb = selection.getHSB()
+                            let newValue = Color(hue: hsb.0, saturation: hsb.1, brightness: min(max(value.location.x, 0.01), geo.size.width)/geo.size.width)
+                            DispatchQueue.main.async { selection = newValue }
+                        }
                     }
                     .onEnded { _ in
                         isDragging = false

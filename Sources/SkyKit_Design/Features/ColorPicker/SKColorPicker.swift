@@ -94,7 +94,7 @@ public struct SKColorPicker<Label: View>: View {
     
     var compactView: some View {
         Circle()
-            .fill(selection)
+            .fill(isOpen ? .secondary : selection)
             .frame(width: 15, height: 15)
             .draggable(selection)
             .overlay(
@@ -134,7 +134,6 @@ public struct SKColorPicker<Label: View>: View {
                     .onChange(of: isDraggingBrightness || isDragging) { newValue in
                         onDraggingChange(newValue)
                     }
-//                    .padding()
             })
     }
 
