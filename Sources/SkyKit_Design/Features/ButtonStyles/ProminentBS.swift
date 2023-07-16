@@ -10,6 +10,7 @@ import SwiftUI
 
 public struct ProminentButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.isEnabled) private var isEnabled
     public func makeBody(configuration: Self.Configuration) -> some View {
         HStack {
             Spacer()
@@ -20,7 +21,7 @@ public struct ProminentButtonStyle: ButtonStyle {
         }
             .background {
                 ZStack {
-                    Color.accentColor
+                    isEnabled ? Color.accentColor : Color.clear
                     SKNoiseTexture()
                         .opacity(0.1)
                 }
