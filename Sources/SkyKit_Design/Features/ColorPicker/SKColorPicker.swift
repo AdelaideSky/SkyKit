@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+#if os(macOS)
 public struct SKColorPicker<Label: View>: View {
     
     @Binding var selection: Color
@@ -175,3 +175,4 @@ public extension SKColorPicker where Label == Text {
         self.label = {Text(label)}
     }
 }
+#endif

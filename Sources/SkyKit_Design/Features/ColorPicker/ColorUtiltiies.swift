@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#if os(macOS)
 @available(macOS, introduced: 12)
 extension Color {
     func getHSB() -> (CGFloat, CGFloat, CGFloat) {
@@ -42,3 +43,4 @@ extension Color {
         }
     }
 }
+#endif

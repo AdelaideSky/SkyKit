@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+#if os(macOS)
 @available(macOS, introduced: 12.0)
 protocol ScrollViewDelegateProtocol {
   /// Informs the receiver that the mouse’s scroll wheel has moved.
@@ -254,3 +254,4 @@ public struct BindableScrollReader<Content: View>: View {
             }
     }
 }
+#endif

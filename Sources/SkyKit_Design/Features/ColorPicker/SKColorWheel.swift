@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SkyKitC
-
+#if os(macOS)
 fileprivate func calcPosition(_ color: Color, geo: GeometryProxy) -> CGPoint {
     autoreleasepool {
         let hsb = color.getHSB()
@@ -165,3 +165,4 @@ public struct SKColorWheel: View {
         }
     }
 }
+#endif

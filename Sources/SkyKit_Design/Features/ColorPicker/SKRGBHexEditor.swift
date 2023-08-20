@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+#if os(macOS)
 public struct SKRGBHexEditor: View {
     @Binding var selection: Color
     var onSubmit: () -> Void
@@ -173,3 +173,4 @@ public struct SKRGBHexEditor: View {
             .padding(.trailing, 2)
     }
 }
+#endif

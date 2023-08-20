@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+#if os(macOS)
 @available(macOS, introduced: 12)
 public struct SKBrightnessSlider: View {
     @Binding var selection: Color
@@ -116,3 +116,4 @@ public struct SKBrightnessSlider: View {
         }
     }
 }
+#endif
