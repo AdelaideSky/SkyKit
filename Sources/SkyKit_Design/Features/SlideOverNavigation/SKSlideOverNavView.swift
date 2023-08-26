@@ -55,8 +55,13 @@ public struct SKSlideOverNavigaionView<Content: View, SidebarContent: View>: Vie
                     
             }
             .onAppear {
-                xOffset = 0
-                currentXOffset = xOffset
+                if isShown {
+                    xOffset = screenWidth * 0.75
+                    currentXOffset = xOffset
+                } else {
+                    xOffset = 0
+                    currentXOffset = xOffset
+                }
             }
             .onChange(of: isShown) { newValue in
                 if newValue {
