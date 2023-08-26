@@ -37,13 +37,14 @@ public struct SKSlideOverNavigaionView<Content: View, SidebarContent: View>: Vie
                 ZStack {
                     Color.white
                         .contentShape(Rectangle())
+                        .ignoresSafeArea()
                         .shadow(radius: 5)
                         .offset(x: xOffset)
-                        .animation(.default, value: xOffset)
+                        .animation(.default, value: min(max(xOffset, 0), screenWidth * 0.75))
                     content()
                         .offset(x: xOffset)
                         .animation(.default, value: xOffset)
-                        .frame(width: screenWidth)
+                        .frame(width: min(max(xOffset, 0), screenWidth * 0.75))
                     
 //                    (Color.gray)
 //                        .opacity(xOffset == screenWidth * 0.75 ? 0.2 : 0)
