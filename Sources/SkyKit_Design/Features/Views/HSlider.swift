@@ -50,12 +50,12 @@ public struct SKHSlider: View {
                 Circle()
                     .foregroundColor(.white)
                     .frame(width: CGFloat(self.sliderHeight), height: CGFloat(self.sliderHeight*0.85), alignment: .trailing)
-                    .offset(x: (CGFloat(self.value)/range.upperBound)*(geometry.size.width-CGFloat(self.sliderHeight))-1)
+                    .offset(x: CGFloat((CGFloat(self.value) - range.lowerBound) / (range.upperBound - range.lowerBound)) * (geometry.size.width - CGFloat(self.sliderHeight))-2)
             }.frame(height: CGFloat(self.sliderHeight))
                 .gesture(DragGesture(minimumDistance: 0)
                     .onChanged({ value in
-                        let newValue = min(max(range.lowerBound, CGFloat(value.location.x / geometry.size.width * range.upperBound)), range.upperBound)
-                        
+                        let newValue = min(max(range.lowerBound, CGFloat(Float(value.location.x / geometry.size.width * (range.upperBound - range.lowerBound))) + range.lowerBound), range.upperBound)
+                                            
                         if Int(newValue) != Int(self.value) {
                             if newValue == range.upperBound {performHaptic()}
                             else if newValue == range.lowerBound {performHaptic()}
