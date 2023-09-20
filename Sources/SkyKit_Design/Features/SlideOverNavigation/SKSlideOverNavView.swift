@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+#if os(iOS)
 @available(iOS, introduced: 16)
 public struct SKSlideOverNavigaionView<Content: View, SidebarContent: View>: View {
     @Binding var isShown: Bool
@@ -106,3 +106,4 @@ public struct SKSlideOverNavigaionView<Content: View, SidebarContent: View>: Vie
             
     }
 }
+#endif
