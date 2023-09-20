@@ -8,7 +8,13 @@
 import SwiftUI
 
 #if os(iOS)
-fileprivate let performHaptic = UISelectionFeedbackGenerator().prepare().selectionChanged
+fileprivate let performHaptic = {
+    autoreleasepool {
+        var feedbackgen = UISelectionFeedbackGenerator()
+        feedbackgen.prepare()
+        feedbackgen.selectionChanged()
+    }
+}
 #else
 fileprivate let performHaptic = { NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .drawCompleted) }
 #endif
