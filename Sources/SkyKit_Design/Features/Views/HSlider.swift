@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+#if os(iOS)
+fileprivate let performHaptic = UISelectionFeedbackGenerator().prepare().selectionChanged
+#else
+fileprivate let performHaptic = { NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .drawCompleted) }
+#endif
+
 public struct SKHSlider: View {
     
     @Binding var value: Float // a number from 1 to 100
@@ -44,8 +50,8 @@ public struct SKHSlider: View {
                         let newValue = min(max(range.lowerBound, CGFloat(value.location.x / geometry.size.width * range.upperBound)), range.upperBound)
                         
                         if Int(newValue) != Int(self.value) {
-                            if newValue == range.upperBound {NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .drawCompleted)}
-                            else if newValue == range.lowerBound {NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .drawCompleted)}
+                            if newValue == range.upperBound {performHaptic()}
+                            else if newValue == range.lowerBound {performHaptic()}
                         }
                         self.value = Float(newValue)
                         
