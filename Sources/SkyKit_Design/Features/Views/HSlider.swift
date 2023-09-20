@@ -50,9 +50,9 @@ public struct SKHSlider: View {
                 Circle()
                     .foregroundColor(.white)
                     .frame(width: CGFloat(self.sliderHeight), height: CGFloat(self.sliderHeight*0.85), alignment: .trailing)
-                    .offset(x: (CGFloat(self.value)/range.upperBound)*(geometry.size.width-CGFloat(self.sliderHeight))-2)
+                    .offset(x: (CGFloat(self.value)/range.upperBound)*(geometry.size.width-CGFloat(self.sliderHeight))-1)
             }.frame(height: CGFloat(self.sliderHeight))
-                .gesture(DragGesture(minimumDistance: 0.1)
+                .gesture(DragGesture(minimumDistance: 0)
                     .onChanged({ value in
                         let newValue = min(max(range.lowerBound, CGFloat(value.location.x / geometry.size.width * range.upperBound)), range.upperBound)
                         
