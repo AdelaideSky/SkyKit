@@ -54,7 +54,7 @@ public struct SKHSlider: View {
             }.frame(height: CGFloat(self.sliderHeight))
                 .gesture(DragGesture(minimumDistance: 0)
                     .onChanged({ value in
-                        let newValue = min(max(range.lowerBound, CGFloat(Float(value.location.x / geometry.size.width * (range.upperBound - range.lowerBound))) + range.lowerBound), range.upperBound)
+                        let newValue = min(max(range.lowerBound, CGFloat(Float(value.location.x / (geometry.size.width-CGFloat(sliderHeight)) * (range.upperBound - range.lowerBound))) + range.lowerBound), range.upperBound)
                                             
                         if Int(newValue) != Int(self.value) {
                             if newValue == range.upperBound {performHaptic()}
