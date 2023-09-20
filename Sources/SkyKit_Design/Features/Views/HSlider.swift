@@ -54,14 +54,20 @@ public struct SKHSlider: View {
             }.frame(height: CGFloat(self.sliderHeight))
                 .gesture(DragGesture(minimumDistance: 0)
                     .onChanged({ value in
-                        let newValue = min(max(range.lowerBound, CGFloat(Float(value.location.x / (geometry.size.width-CGFloat(sliderHeight)) * (range.upperBound - range.lowerBound))) + range.lowerBound), range.upperBound)
-                                            
+                        let knobHalfWidth = CGFloat(self.sliderHeight / 2)
+                        let touchZoneWidth = geometry.size.width - CGFloat(self.sliderHeight)
+                        
+                        // Calculate newValue within the adjusted touch zone
+                        let newValue = min(max(range.lowerBound, (value.location.x - knobHalfWidth) / touchZoneWidth * (range.upperBound - range.lowerBound) + range.lowerBound), range.upperBound)
+                        
+                        
+                        
+                        
                         if Int(newValue) != Int(self.value) {
                             if newValue == range.upperBound {performHaptic()}
                             else if newValue == range.lowerBound {performHaptic()}
                         }
                         self.value = Float(newValue)
-                        
                     })
                         .onEnded() {_ in
                             onSubmit()
