@@ -27,16 +27,17 @@ public struct SKHSlider: View {
     
     let image: String
     //    let channel: ChannelName
-    var sliderHeight: Float = 30
+    var sliderHeight: Float = 40
     var onSubmit: () -> Void = {}
     
     @Environment(\.colorScheme) var colorScheme
     
-    public init(_ value: Binding<Float>, in range: ClosedRange<CGFloat> = 0...100, image: String = "", onSubmit: @escaping () -> Void = {}) {
+    public init(_ value: Binding<Float>, in range: ClosedRange<CGFloat> = 0...100, image: String = "", height: Float = 40, onSubmit: @escaping () -> Void = {}) {
         self._value = value
         self.range = range
         self.image = image
         self.onSubmit = onSubmit
+        self.sliderHeight = height
     }
     
     public var body: some View {
