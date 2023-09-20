@@ -21,7 +21,9 @@ public struct ProminentButtonStyle: ButtonStyle {
         }
             .background {
                 ZStack {
-                    isEnabled ? Color.accentColor : Color.clear
+                    Rectangle()
+                        .fill(.tint)
+                        .opacity(isEnabled ? 1 : 0)
                     SKNoiseTexture()
                         .opacity(0.1)
                 }
