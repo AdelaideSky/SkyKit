@@ -42,8 +42,8 @@ public extension ButtonStyle where Self == ProminentButtonStyle {
 public struct ProminentShadowedButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.isEnabled) private var isEnabled
-    let darkStart = Color(red: 50 / 255, green: 60 / 255, blue: 65 / 255)
-    let darkEnd = Color(red: 25 / 255, green: 25 / 255, blue: 30 / 255)
+    
+    
     public func makeBody(configuration: Self.Configuration) -> some View {
         HStack {
             Spacer()
@@ -54,10 +54,17 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
         }
             .background {
                 ZStack {
-                    Rectangle()
-                        .fill()
-                        .foregroundStyle(.tint.shadow(.inner(color: .gray.opacity(0.3), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.3), radius: 5, x: -5, y: -5)))
-                        .opacity(isEnabled ? 1 : 0)
+                    if colorScheme == .dark {
+                        Rectangle()
+                            .fill()
+                            .foregroundStyle(.tint.shadow(.inner(color: .white.opacity(0.2), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.3), radius: 5, x: -5, y: -5)))
+                            .opacity(isEnabled ? 1 : 0)
+                    } else {
+                        Rectangle()
+                            .fill()
+                            .foregroundStyle(.tint.shadow(.inner(color: .white.opacity(0.3), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.2), radius: 5, x: -5, y: -5)))
+                            .opacity(isEnabled ? 1 : 0)
+                    }
                     SKNoiseTexture()
                         .opacity(0.1)
                 }
