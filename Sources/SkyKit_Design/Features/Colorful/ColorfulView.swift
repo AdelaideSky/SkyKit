@@ -93,7 +93,6 @@ public struct SKColorfulView: View {
                 ForEach(obtainRangeAndUpdate(size: reader.size)) { configure in
                     Circle()
                         .foregroundColor(colorElements.randomElement()!)
-                        .animation(.easeInOut(duration: 0.5), value: colorElements)
                         .opacity(0.5)
                         .frame(
                             width: configure.diameter,
@@ -112,6 +111,13 @@ public struct SKColorfulView: View {
         .blur(radius: blurRadius)
         .onReceive(timer) { _ in
             dispatchUpdate()
+        }
+        .onChange(of: colorElements) { _ in
+            withAnimation(Animation
+                .interpolatingSpring(stiffness: 50, damping: 1)
+                .speed(0.2)) {
+                randomizationStart()
+            }
         }
         .onAppear {
             randomizationStart()
