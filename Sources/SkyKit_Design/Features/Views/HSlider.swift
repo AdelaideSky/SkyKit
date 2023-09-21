@@ -45,12 +45,14 @@ public struct SKHSlider: View {
             ZStack(alignment: .leading) {
                 
                 Capsule()
-                    .foregroundColor(.gray.opacity(0.5))
+//                    .foregroundColor(.gray.opacity(0.5))
                     .frame(width: geometry.size.width, height: geometry.size.height)
+                    .foregroundStyle(.gray.opacity(0.5).shadow(.inner(radius: 5)))
                 Circle()
                     .foregroundColor(.white)
                     .frame(width: CGFloat(self.sliderHeight), height: CGFloat(self.sliderHeight*0.85), alignment: .trailing)
-                    .offset(x: CGFloat((CGFloat(self.value) - range.lowerBound) / (range.upperBound - range.lowerBound)) * (geometry.size.width - CGFloat(self.sliderHeight))-2)
+                    .offset(x: offset(geometry))
+                    .foregroundStyle(.primary.shadow(.drop(radius: 3)))
             }.frame(height: CGFloat(self.sliderHeight))
                 .gesture(DragGesture(minimumDistance: 0)
                     .onChanged({ value in
@@ -76,5 +78,11 @@ public struct SKHSlider: View {
             
             
         }.frame(height: CGFloat(sliderHeight))
+    }
+    public func offset(_ geo: GeometryProxy) -> CGFloat {
+        var answer = CGFloat((CGFloat(self.value) - range.lowerBound) / (range.upperBound - range.lowerBound)) * (geo.size.width - CGFloat(self.sliderHeight))
+        
+        answer = max(min(answer-CGFloat(self.sliderHeight)*0.05, geo.size.width-(CGFloat(self.sliderHeight)*1.1)), -CGFloat(self.sliderHeight)*0.05)
+        return answer
     }
 }
