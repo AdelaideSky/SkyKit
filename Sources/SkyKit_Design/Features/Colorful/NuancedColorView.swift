@@ -69,6 +69,19 @@ public struct SKNuancedColorfulView: View {
             }
             .frame(width: reader.size.width,
                    height: reader.size.height)
+            .onAppear {
+                var randomizationBuilder = [PointRandomization]()
+                for i in 0 ..< randomization.count {
+                    let randomizationElement: PointRandomization = {
+                        var builder = PointRandomization()
+                        builder.randomizeIn(size: reader.size)
+                        builder.id = randomization[i].id
+                        return builder
+                    }()
+                    randomizationBuilder.append(randomizationElement)
+                }
+                randomization = randomizationBuilder
+            }
         }
         .clipped()
         .blur(radius: blurRadius)
@@ -82,24 +95,13 @@ public struct SKNuancedColorfulView: View {
                 randomizationStart()
             }
         }
-        .onAppear {
-            var randomizationBuilder = [PointRandomization]()
-            for i in 0 ..< randomization.count {
-                let randomizationElement: PointRandomization = {
-                    var builder = PointRandomization()
-                    builder.randomizeIn(size: size)
-                    builder.id = randomization[i].id
-                    return builder
-                }()
-                randomizationBuilder.append(randomizationElement)
-            }
-            randomization = randomizationBuilder
-        }
+        
     }
 
     // MARK: - FUNCTION
 
     private func dispatchUpdate() {
+        guard animated else { return }
         withAnimation(animation) {
             randomizationStart()
         }
