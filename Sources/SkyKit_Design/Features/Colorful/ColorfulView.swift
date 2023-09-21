@@ -95,7 +95,7 @@ public struct SKColorfulView: View {
                 ForEach(obtainRangeAndUpdate(size: reader.size)) { configure in
                     Circle()
                         .foregroundColor(colorElements.randomElement()!)
-                        .animation(.easeInOut(duration: 0.5), value: colorElements)
+                        .animation(.easeInOut(duration: 2), value: colorElements)
                         .opacity(0.5)
                         .frame(
                             width: configure.diameter,
