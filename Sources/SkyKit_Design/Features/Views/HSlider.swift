@@ -45,7 +45,6 @@ public struct SKHSlider: View {
             ZStack(alignment: .leading) {
                 
                 Capsule()
-//                    .foregroundColor(.gray.opacity(0.5))
                     .frame(width: geometry.size.width, height: geometry.size.height)
                     .foregroundStyle(.gray.opacity(0.5).shadow(.inner(radius: 5)))
                 Circle()

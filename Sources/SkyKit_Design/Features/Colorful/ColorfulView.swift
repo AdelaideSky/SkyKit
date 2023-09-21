@@ -92,20 +92,6 @@ public struct SKColorfulView: View {
     public var body: some View {
         GeometryReader { reader in
             ZStack {
-                ForEach(0...obtainRangeAndUpdate(size: reader.size).count-1, id:\.self) { i in
-                    Circle()
-                        .foregroundColor(colorElements[mapValueToIndex(value: i, maxValue: randomization.count-1, maxIndex: colorElements.count-1)])
-                        .animation(.easeInOut(duration: 2), value: colorElements)
-                        .opacity(0.5)
-                        .frame(
-                            width: randomization[i].diameter,
-                            height: randomization[i].diameter
-                        )
-                        .offset(
-                            x: randomization[i].offsetX,
-                            y: randomization[i].offsetY
-                        )
-                }
                 ForEach(obtainRangeAndUpdate(size: reader.size)) { configure in
                     Circle()
                         .foregroundColor(colorElements.randomElement()!)
