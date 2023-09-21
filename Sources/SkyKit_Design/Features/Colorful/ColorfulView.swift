@@ -132,7 +132,7 @@ public struct SKColorfulView: View {
         .onChange(of: colorElements) { _ in
             withAnimation(Animation
                 .interpolatingSpring(stiffness: 20, damping: 1)
-                .speed(1)) {
+                .speed(0.2)) {
                 randomizationStart()
             }
         }
