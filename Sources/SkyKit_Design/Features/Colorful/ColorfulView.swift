@@ -122,7 +122,7 @@ public struct SKColorfulView: View {
         .onChange(of: colorElements) { val in
             withAnimation(Animation
                 .interpolatingSpring(stiffness: 50, damping: 1)
-                .speed(0.15)) {
+                .speed(0.25)) {
                 randomizationStart()
             }
         }
@@ -141,18 +141,22 @@ public struct SKColorfulView: View {
     }
 
     private func randomizationStart() {
-        var randomizationBuilder = [PointRandomization]()
-        for i in 0 ..< randomization.count {
-            let randomizationElement: PointRandomization = {
-                var builder = PointRandomization()
-                builder.randomizeIn(size: size)
-                builder.id = randomization[i].id
-                builder.color = colorElements[i]
-                return builder
-            }()
-            randomizationBuilder.append(randomizationElement)
+        DispatchQueue(label: "SKColorful").async {
+            var randomizationBuilder = [PointRandomization]()
+            for i in 0 ..< randomization.count {
+                let randomizationElement: PointRandomization = {
+                    var builder = PointRandomization()
+                    builder.randomizeIn(size: size)
+                    builder.id = randomization[i].id
+                    builder.color = colorElements[i]
+                    return builder
+                }()
+                randomizationBuilder.append(randomizationElement)
+            }
+            DispatchQueue.main.sync {
+                randomization = randomizationBuilder
+            }
         }
-        randomization = randomizationBuilder
     }
     private func updateColors(_ value: [Color]) {
         var randomizationBuilder = [PointRandomization]()
