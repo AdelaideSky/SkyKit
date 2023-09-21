@@ -120,7 +120,9 @@ public struct SKColorfulView: View {
             dispatchUpdate()
         }
         .onChange(of: colorElements) { val in
-            withAnimation(.easeInOut(duration: 1)) {
+            withAnimation(Animation
+                .interpolatingSpring(stiffness: 50, damping: 1)
+                .speed(0.15)) {
                 randomizationStart()
             }
         }
