@@ -14,6 +14,7 @@ public struct SKNuancedColorfulView: View {
 
     var color: Color
     private let animation: Animation
+    private let animated: Bool
     private let blurRadius: CGFloat
     
     @State private var updating = true
@@ -28,14 +29,15 @@ public struct SKNuancedColorfulView: View {
         _ basecolor: Color = .red,
         animation: Animation = .bouncy,
         blurRadius: CGFloat = 1,
-        amount: Int = 32
+        amount: Int = 32,
+        animated: Bool = true
     ) {
         assert(blurRadius > 0)
         assert(amount > 0)
 
         self.animation = animation
         self.blurRadius = blurRadius
-
+        self.animated = animated
         
         self.color = basecolor
 
