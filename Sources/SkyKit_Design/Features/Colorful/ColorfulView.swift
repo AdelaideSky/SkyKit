@@ -138,7 +138,7 @@ public struct SKColorfulView: View {
     private func randomizationStart() {
         if updating {
             updating = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.updating = true
             }
             var randomizationBuilder = [PointRandomization]()
