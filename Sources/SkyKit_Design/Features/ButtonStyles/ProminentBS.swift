@@ -57,12 +57,12 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
                     if colorScheme == .dark {
                         Rectangle()
                             .fill()
-                            .foregroundStyle(.tint.shadow(.inner(color: .white.opacity(0.2), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.3), radius: 5, x: -5, y: -5)))
+                            .foregroundStyle(.tint.shadow(.inner(color: configuration.isPressed ? .black.opacity(0.2) : .white.opacity(0.2), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.3), radius: 5, x: -5, y: -5)))
                             .opacity(isEnabled ? 1 : 0)
                     } else {
                         Rectangle()
                             .fill()
-                            .foregroundStyle(.tint.shadow(.inner(color: .white.opacity(0.3), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.2), radius: 5, x: -5, y: -5)))
+                            .foregroundStyle(.tint.shadow(.inner(color: configuration.isPressed ? .black.opacity(0.2) : .white.opacity(0.3), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.2), radius: 5, x: -5, y: -5)))
                             .opacity(isEnabled ? 1 : 0)
                     }
                     SKNoiseTexture()
