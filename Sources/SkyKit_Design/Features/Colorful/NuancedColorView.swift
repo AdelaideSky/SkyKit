@@ -53,7 +53,7 @@ public struct SKNuancedColorfulView: View {
                 ForEach(obtainRangeAndUpdate(size: reader.size)) { configure in
                     Circle()
                         .foregroundColor(configure.nuance(color))
-                        .animation(.easeInOut(duration: 1), value: color)
+//                        .animation(.easeInOut(duration: 1), value: color)
                         .opacity(0.5)
                         .frame(
                             width: configure.diameter,
