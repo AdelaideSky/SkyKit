@@ -122,7 +122,17 @@ public struct SKColorfulView: View {
             }
         }
         .onAppear {
-            randomizationStart()
+            var randomizationBuilder = [PointRandomization]()
+            for i in 0 ..< randomization.count {
+                let randomizationElement: PointRandomization = {
+                    var builder = PointRandomization()
+                    builder.randomizeIn(size: size)
+                    builder.id = randomization[i].id
+                    return builder
+                }()
+                randomizationBuilder.append(randomizationElement)
+            }
+            randomization = randomizationBuilder
         }
     }
 
