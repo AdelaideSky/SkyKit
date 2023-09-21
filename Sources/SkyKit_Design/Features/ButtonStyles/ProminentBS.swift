@@ -56,7 +56,7 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
                 ZStack {
                     Rectangle()
                         .fill()
-                        .foregroundStyle(.tint.shadow(.inner(color: .gray.opacity(0.2), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.2), radius: 5, x: -5, y: -5)))
+                        .foregroundStyle(.tint.shadow(.inner(color: .gray.opacity(0.3), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.3), radius: 5, x: -5, y: -5)))
                         .opacity(isEnabled ? 1 : 0)
                     SKNoiseTexture()
                         .opacity(0.1)
