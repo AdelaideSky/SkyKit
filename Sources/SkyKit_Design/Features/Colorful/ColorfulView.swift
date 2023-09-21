@@ -120,7 +120,7 @@ public struct SKColorfulView: View {
             dispatchUpdate()
         }
         .onChange(of: colorElements) { val in
-            withAnimation(.snappy(duration: 1)) {
+            withAnimation(.smooth(duration: 1)) {
                 randomizationStart()
             }
         }
