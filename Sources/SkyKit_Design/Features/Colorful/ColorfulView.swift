@@ -17,6 +17,8 @@ public struct SKColorfulView: View {
     private let animated: Bool
     private let animation: Animation
     private let blurRadius: CGFloat
+    
+    @State private var updating = true
 
     private let timer = Timer
         .publish(every: 5, on: .main, in: .common)
@@ -134,17 +136,23 @@ public struct SKColorfulView: View {
     }
 
     private func randomizationStart() {
-        var randomizationBuilder = [PointRandomization]()
-        for i in 0 ..< randomization.count {
-            let randomizationElement: PointRandomization = {
-                var builder = PointRandomization()
-                builder.randomizeIn(size: size)
-                builder.id = randomization[i].id
-                return builder
-            }()
-            randomizationBuilder.append(randomizationElement)
+        if updating {
+            updating = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.updating = true
+            }
+            var randomizationBuilder = [PointRandomization]()
+            for i in 0 ..< randomization.count {
+                let randomizationElement: PointRandomization = {
+                    var builder = PointRandomization()
+                    builder.randomizeIn(size: size)
+                    builder.id = randomization[i].id
+                    return builder
+                }()
+                randomizationBuilder.append(randomizationElement)
+            }
+            randomization = randomizationBuilder
         }
-        randomization = randomizationBuilder
     }
 
     private func obtainRangeAndUpdate(size: CGSize) -> [PointRandomization] {
