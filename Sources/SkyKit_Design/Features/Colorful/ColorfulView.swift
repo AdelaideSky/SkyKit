@@ -39,15 +39,8 @@ public struct SKColorfulView: View {
         self.animation = animation
         self.blurRadius = blurRadius
 
-        var colorCompiler = [Color]()
-        while colorCompiler.count < colorCount {
-            colorCompiler.append(contentsOf: colors.shuffled())
-        }
-        if colorCompiler.count > colorCount {
-            colorCompiler.removeLast(colorCompiler.count - colorCount)
-        }
-        assert(colorCompiler.count == colorCount)
-        colorElements = colorCompiler
+        
+        colorElements = colors
 
         var builder = [PointRandomization]()
         for _ in 0 ..< colorCount {
@@ -99,7 +92,8 @@ public struct SKColorfulView: View {
             ZStack {
                 ForEach(obtainRangeAndUpdate(size: reader.size)) { configure in
                     Circle()
-                        .foregroundColor(configure.color)
+                        .foregroundColor(colorElements.randomElement()!)
+                        .animation(.easeInOut(duration: 0.5), value: colorElements)
                         .opacity(0.5)
                         .frame(
                             width: configure.diameter,
@@ -118,13 +112,6 @@ public struct SKColorfulView: View {
         .blur(radius: blurRadius)
         .onReceive(timer) { _ in
             dispatchUpdate()
-        }
-        .onChange(of: colorElements) { val in
-            withAnimation(Animation
-                .interpolatingSpring(stiffness: 50, damping: 1)
-                .speed(0.25)) {
-                randomizationStart()
-            }
         }
         .onAppear {
             randomizationStart()
@@ -147,22 +134,6 @@ public struct SKColorfulView: View {
                 var builder = PointRandomization()
                 builder.randomizeIn(size: size)
                 builder.id = randomization[i].id
-                builder.color = colorElements[i]
-                return builder
-            }()
-            randomizationBuilder.append(randomizationElement)
-        }
-        randomization = randomizationBuilder
-    }
-    
-    private func updateColors(_ value: [Color]) {
-        var randomizationBuilder = [PointRandomization]()
-        for i in 0 ..< randomization.count {
-            let randomizationElement: PointRandomization = {
-                var builder = PointRandomization()
-                builder.set(from: randomization[i])
-                builder.id = randomization[i].id
-                builder.color = colorElements[i]
                 return builder
             }()
             randomizationBuilder.append(randomizationElement)
