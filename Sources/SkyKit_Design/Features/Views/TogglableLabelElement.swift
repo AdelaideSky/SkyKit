@@ -47,6 +47,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                 } else {
                     list.append(element)
                 }
+                performHaptic()
             }
             .opacity(0.9)
     }

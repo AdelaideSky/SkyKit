@@ -8,7 +8,7 @@
 import SwiftUI
 
 #if os(iOS)
-fileprivate let performHaptic = {
+let performHaptic = {
     autoreleasepool {
         var feedbackgen = UISelectionFeedbackGenerator()
         feedbackgen.prepare()
@@ -16,7 +16,7 @@ fileprivate let performHaptic = {
     }
 }
 #else
-fileprivate let performHaptic = { NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .drawCompleted) }
+let performHaptic = { NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .drawCompleted) }
 #endif
 
 public struct SKHSlider: View {
