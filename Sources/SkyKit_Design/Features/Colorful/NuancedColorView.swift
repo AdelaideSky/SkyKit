@@ -67,7 +67,6 @@ public struct SKNuancedColorfulView: View {
                 }
             }
             .onChange(of: reader.size) { _ in
-                print("changed")
                 var randomizationBuilder = [PointRandomization]()
                 for i in 0 ..< randomization.count {
                     let randomizationElement: PointRandomization = {
