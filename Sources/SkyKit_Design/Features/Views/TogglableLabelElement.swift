@@ -42,12 +42,12 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                 }
             }
             .onTapGesture {
+                performHaptic()
                 if list.contains(where: {$0 == element}) {
                     list.removeAll(where: {$0 == element})
                 } else {
                     list.append(element)
                 }
-                performHaptic()
             }
             .opacity(0.9)
     }
