@@ -66,6 +66,9 @@ public struct SKNuancedColorfulView: View {
                         )
                 }
             }
+            .onChange(of: reader.size) { _ in
+                dispatchUpdate()
+            }
             .frame(width: reader.size.width,
                    height: reader.size.height)
             .onAppear {
