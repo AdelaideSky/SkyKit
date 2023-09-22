@@ -7,19 +7,19 @@
 
 import SwiftUI
 
-struct SKTogglableLabelElement<Element: Equatable>: View {
+public struct SKTogglableLabelElement<Element: Equatable>: View {
     @Environment(\.colorScheme) private var colorScheme
     
     var element: Element
     @Binding var list: [Element]
     var label: String
     
-    init(_ element: Element, label: String, list: Binding<[Element]>) {
+    public init(_ element: Element, label: String, list: Binding<[Element]>) {
         self.element = element
         self._list = list
         self.label = label
     }
-    var body: some View {
+    public var body: some View {
         Group {
             if colorScheme == .dark {
                 Text(label)
