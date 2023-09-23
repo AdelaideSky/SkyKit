@@ -38,7 +38,7 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
         }.frame(maxWidth: .infinity)
             .overlay {
                 GeometryReader { geo in
-                    EmptyView()
+                    Spacer()
                         .frame(maxWidth: .infinity)
                         .onChange(of: geo.size) { value in
                             availableWidth = value.width
