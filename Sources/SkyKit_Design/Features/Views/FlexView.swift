@@ -23,24 +23,27 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
     }
     
     public var body : some View {
-        GeometryReader { geo in
-            VStack(alignment: alignment, spacing: spacing) {
-                ForEach(computeRows(), id: \.self) { rowElements in
-                    HStack(spacing: spacing) {
-                        ForEach(rowElements, id: \.self) { element in
-                            content(element)
-                                .fixedSize(horizontal: true, vertical: false)
-                                .readSize { size in
-                                    elementsSize[element] = size
-                                }
-                        }
+        VStack(alignment: alignment, spacing: spacing) {
+            ForEach(computeRows(), id: \.self) { rowElements in
+                HStack(spacing: spacing) {
+                    ForEach(rowElements, id: \.self) { element in
+                        content(element)
+                            .fixedSize(horizontal: true, vertical: false)
+                            .readSize { size in
+                                elementsSize[element] = size
+                            }
                     }
                 }
-            }.onChange(of: geo.size) { value in
-                availableWidth = value.width
             }
-            .onAppear() {
-                availableWidth = geo.size.width
+        }.overlay {
+            GeometryReader { geo in
+                EmptyView()
+                    .onChange(of: geo.size) { value in
+                        availableWidth = value.width
+                    }
+                    .onAppear() {
+                        availableWidth = geo.size.width
+                    }
             }
         }
     }
