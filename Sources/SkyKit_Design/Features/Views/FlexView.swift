@@ -33,6 +33,7 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
                                 elementsSize[element] = size
                             }
                     }
+                    Spacer()
                 }
             }
         }.frame(maxWidth: .infinity)
