@@ -33,19 +33,20 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
                                 elementsSize[element] = size
                             }
                     }
-                }.frame(width: availableWidth)
+                }
             }
-        }.overlay {
-            GeometryReader { geo in
-                EmptyView()
-                    .onChange(of: geo.size) { value in
-                        availableWidth = value.width
-                    }
-                    .onAppear() {
-                        availableWidth = geo.size.width
-                    }
+        }.frame(maxWidth: .infinity)
+            .overlay {
+                GeometryReader { geo in
+                    EmptyView()
+                        .onChange(of: geo.size) { value in
+                            availableWidth = value.width
+                        }
+                        .onAppear() {
+                            availableWidth = geo.size.width
+                        }
+                }
             }
-        }
     }
     
     func computeRows() -> [[Data.Element]] {
