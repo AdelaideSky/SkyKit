@@ -8,15 +8,14 @@
 import SwiftUI
 
 public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.Element: Hashable {
-    let availableWidth: CGFloat
+    @State var availableWidth: CGFloat = 0
     let data: Data
     let spacing: CGFloat
     let alignment: HorizontalAlignment
     let content: (Data.Element) -> Content
     @State var elementsSize: [Data.Element: CGSize] = [:]
     
-    public init(_ data: Data, availableWidth: CGFloat, spacing: CGFloat = 10, alignment: HorizontalAlignment = .leading, content: @escaping (Data.Element) -> Content) {
-        self.availableWidth = availableWidth
+    public init(_ data: Data, spacing: CGFloat = 10, alignment: HorizontalAlignment = .leading, content: @escaping (Data.Element) -> Content) {
         self.data = data
         self.spacing = spacing
         self.alignment = alignment
@@ -24,17 +23,24 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
     }
     
     public var body : some View {
-        VStack(alignment: alignment, spacing: spacing) {
-            ForEach(computeRows(), id: \.self) { rowElements in
-                HStack(spacing: spacing) {
-                    ForEach(rowElements, id: \.self) { element in
-                        content(element)
-                            .fixedSize()
-                            .readSize { size in
-                                elementsSize[element] = size
-                            }
+        GeometryReader { geo in
+            VStack(alignment: alignment, spacing: spacing) {
+                ForEach(computeRows(), id: \.self) { rowElements in
+                    HStack(spacing: spacing) {
+                        ForEach(rowElements, id: \.self) { element in
+                            content(element)
+                                .fixedSize()
+                                .readSize { size in
+                                    elementsSize[element] = size
+                                }
+                        }
                     }
                 }
+            }.onChange(of: geo.size) { value in
+                availableWidth = value.width
+            }
+            .onAppear() {
+                availableWidth = geo.size.width
             }
         }
     }
