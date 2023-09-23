@@ -29,7 +29,7 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
                     HStack(spacing: spacing) {
                         ForEach(rowElements, id: \.self) { element in
                             content(element)
-                                .fixedSize()
+                                .fixedSize(horizontal: true, vertical: false)
                                 .readSize { size in
                                     elementsSize[element] = size
                                 }
