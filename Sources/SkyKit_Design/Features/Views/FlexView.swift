@@ -39,13 +39,15 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
             .overlay {
                 GeometryReader { geo in
                     EmptyView()
+                        .frame(maxWidth: .infinity)
                         .onChange(of: geo.size) { value in
                             availableWidth = value.width
                         }
                         .onAppear() {
                             availableWidth = geo.size.width
                         }
-                }
+                }.frame(maxWidth: .infinity)
+
             }
     }
     
