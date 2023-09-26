@@ -9,9 +9,10 @@ import Foundation
 import SwiftUI
 #if canImport(UIKit)
 import UIKit
+import AudioToolbox
 #endif
 
-enum SKVibration {
+public enum SKVibration {
     
     case error
     case success
@@ -22,13 +23,14 @@ enum SKVibration {
     case soft
     case rigid
     case selection
+    case oldSchool
     
     #if os(macOS)
-    static func vibrate(with type: SKVibration) {
+    public static func vibrate(with type: SKVibration) {
         print("Vibrations are not yet supported on macOS !")
     }
     #elseif canImport(UIKit)
-    static func vibrate(with type: SKVibration) {
+    public static func vibrate(with type: SKVibration) {
         switch type {
         case .error:
             UINotificationFeedbackGenerator().notificationOccurred(.error)
@@ -48,6 +50,8 @@ enum SKVibration {
             UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
         case .selection:
             UISelectionFeedbackGenerator().selectionChanged()
+        case .oldSchool:
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
         }
     }
     #endif
