@@ -20,7 +20,7 @@ public struct SKNuancedColorfulView: View {
     @State private var updating = true
     @State private var alreadyInitialised = false
 
-    private let timer = Timer
+    private var timer = Timer
         .publish(every: 5, on: .main, in: .common)
         .autoconnect()
 
@@ -31,7 +31,8 @@ public struct SKNuancedColorfulView: View {
         animation: Animation = .bouncy,
         blurRadius: CGFloat = 1,
         amount: Int = 32,
-        animated: Bool = true
+        animated: Bool = true,
+        speed: TimeInterval = 5
     ) {
         assert(blurRadius > 0)
         assert(amount > 0)
@@ -47,6 +48,9 @@ public struct SKNuancedColorfulView: View {
             builder.append(.init())
         }
         _randomization = State(initialValue: builder)
+        self.timer = Timer
+            .publish(every: speed, on: .main, in: .common)
+            .autoconnect()
     }
     // MARK: - VIEW
 
