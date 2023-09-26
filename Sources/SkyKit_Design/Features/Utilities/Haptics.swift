@@ -22,7 +22,6 @@ enum SKVibration {
     case soft
     case rigid
     case selection
-    case oldSchool
     
     #if os(macOS)
     static func vibrate(with type: SKVibration) {
@@ -49,8 +48,6 @@ enum SKVibration {
             UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
         case .selection:
             UISelectionFeedbackGenerator().selectionChanged()
-        case .oldSchool:
-            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
         }
     }
     #endif
