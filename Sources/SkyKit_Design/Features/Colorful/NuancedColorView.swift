@@ -18,6 +18,7 @@ public struct SKNuancedColorfulView: View {
     private let blurRadius: CGFloat
     
     @State private var updating = true
+    @State private var alreadyInitialised = false
 
     private let timer = Timer
         .publish(every: 5, on: .main, in: .common)
@@ -82,17 +83,20 @@ public struct SKNuancedColorfulView: View {
             .frame(width: reader.size.width,
                    height: reader.size.height)
             .onAppear {
-                var randomizationBuilder = [PointRandomization]()
-                for i in 0 ..< randomization.count {
-                    let randomizationElement: PointRandomization = {
-                        var builder = PointRandomization()
-                        builder.randomizeIn(size: reader.size)
-                        builder.id = randomization[i].id
-                        return builder
-                    }()
-                    randomizationBuilder.append(randomizationElement)
+                if !(animated && alreadyInitialised) {
+                    var randomizationBuilder = [PointRandomization]()
+                    for i in 0 ..< randomization.count {
+                        let randomizationElement: PointRandomization = {
+                            var builder = PointRandomization()
+                            builder.randomizeIn(size: reader.size)
+                            builder.id = randomization[i].id
+                            return builder
+                        }()
+                        randomizationBuilder.append(randomizationElement)
+                    }
+                    randomization = randomizationBuilder
+                    alreadyInitialised = true
                 }
-                randomization = randomizationBuilder
             }
         }
         .clipped()
