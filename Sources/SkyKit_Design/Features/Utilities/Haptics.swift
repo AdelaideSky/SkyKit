@@ -7,6 +7,9 @@
 
 import Foundation
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 enum SKVibration {
     
@@ -25,7 +28,7 @@ enum SKVibration {
     static func vibrate(with type: SKVibration) {
         print("Vibrations are not yet supported on macOS !")
     }
-    #else
+    #elseif canImport(UIKit)
     static func vibrate(with type: SKVibration) {
         switch type {
         case .error:
