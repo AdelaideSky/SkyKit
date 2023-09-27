@@ -144,15 +144,14 @@ public struct SKNuancedColorfulView: View {
     }
 
     private func obtainRangeAndUpdate(size: CGSize) -> [PointRandomization] {
+        print("updated size")
         issueSizeUpdate(withValue: size)
-        if !alreadyInitialised {
-            alreadyInitialised = true
-        }
         return randomization
     }
 
     private func issueSizeUpdate(withValue size: CGSize) {
         if self.size == size { return }
+        print("updating sgfdgdfgdggdgdf")
         DispatchQueue.main.async {
             self.size = size
             self.dispatchUpdate()
