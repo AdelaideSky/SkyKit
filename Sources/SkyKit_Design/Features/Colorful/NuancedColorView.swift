@@ -114,8 +114,17 @@ public struct SKNuancedColorfulView: View {
             randomizationStart()
             return
         }
-        withAnimation(animation) {
+        if alreadyInitialised {
+            withAnimation(animation) {
+                randomizationStart()
+            }
+        } else {
             randomizationStart()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(animation) {
+                    randomizationStart()
+                }
+            }
         }
     }
 
