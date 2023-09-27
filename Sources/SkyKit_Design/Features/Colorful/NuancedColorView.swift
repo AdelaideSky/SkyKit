@@ -57,7 +57,7 @@ public struct SKNuancedColorfulView: View {
     public var body: some View {
         GeometryReader { reader in
             ZStack {
-                ForEach(obtainRangeAndUpdate(size: reader.size)) { configure in
+                ForEach(randomization) { configure in
                     Circle()
                         .foregroundColor(configure.nuance(color))
                         .opacity(0.5)
