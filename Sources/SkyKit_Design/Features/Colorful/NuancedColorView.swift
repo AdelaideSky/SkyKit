@@ -72,13 +72,14 @@ public struct SKNuancedColorfulView: View {
                 }
             }
             .onChange(of: reader.size) { _ in
-                if self.size == size { return }
-                self.size = size
+                if self.size == reader.size { return }
+                self.size = reader.size
+                
                 var randomizationBuilder = [PointRandomization]()
                 for i in 0 ..< randomization.count {
                     let randomizationElement: PointRandomization = {
                         var builder = PointRandomization()
-                        builder.randomizeIn(size: size)
+                        builder.randomizeIn(size: reader.size)
                         builder.id = randomization[i].id
                         return builder
                     }()
@@ -88,14 +89,14 @@ public struct SKNuancedColorfulView: View {
             }
             .onAppear {
                 if !(!animated && alreadyInitialised) {
-                    if self.size == size { return }
-                    self.size = size
+                    if self.size == reader.size { return }
+                    self.size = reader.size
                     
                     var randomizationBuilder = [PointRandomization]()
                     for i in 0 ..< randomization.count {
                         let randomizationElement: PointRandomization = {
                             var builder = PointRandomization()
-                            builder.randomizeIn(size: size)
+                            builder.randomizeIn(size: reader.size)
                             builder.id = randomization[i].id
                             return builder
                         }()
