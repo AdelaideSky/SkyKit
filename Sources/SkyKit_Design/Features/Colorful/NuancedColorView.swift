@@ -110,7 +110,7 @@ public struct SKNuancedColorfulView: View {
     // MARK: - FUNCTION
 
     private func dispatchUpdate() {
-        if animated {
+        if !animated {
             randomizationStart()
             return
         }
