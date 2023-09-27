@@ -100,6 +100,8 @@ public struct SKNuancedColorfulView: View {
                     alreadyInitialised = true
                 }
             }
+            .frame(width: reader.size.width,
+                   height: reader.size.height)
         }
         .clipped()
         .blur(radius: blurRadius)
