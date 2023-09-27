@@ -72,7 +72,7 @@ public struct SKNuancedColorfulView: View {
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 .onAppear {
                     if animated {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             animatedReroll(geo.size)
                         }
                     }
