@@ -11,6 +11,7 @@ public struct SKNuancedColorfulView: View {
     @State var randomization: [PointRandomization]
     
     @State private var updating = true
+    @State private var initialised = false
     
     var color: Color
     private let animation: Animation
@@ -105,7 +106,7 @@ public struct SKNuancedColorfulView: View {
         guard self.size != size else { return randomization }
         DispatchQueue.main.async {
             self.size = size
-            reroll(size)
+            safeReroll(size, bypassCooldown: true)
         }
         return randomization
     }
@@ -125,155 +126,21 @@ public struct SKNuancedColorfulView: View {
         randomization = randomizationBuilder
     }
     
-    func safeReroll(_ size: CGSize) {
+    func safeReroll(_ size: CGSize, bypassCooldown: Bool = false) {
+        if bypassCooldown {
+            if !(!animated && initialised) {
+                reroll(size)
+                initialised = true
+            } else {
+                reroll(size)
+            }
+        }
         if updating {
             updating = false
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.updating = true
             }
             reroll(size)
-        }
-    }
-}
-
-public struct SKNuancedColorfulVieww: View {
-    // MARK: - PROPERTY
-
-    @State var randomization: [PointRandomization]
-    @State var size: CGSize = .init()
-
-    var color: Color
-    private let animation: Animation
-    private let animated: Bool
-    private let blurRadius: CGFloat
-    
-    @State private var updating = true
-    @State private var alreadyInitialised = false
-
-    private var timer = Timer
-        .publish(every: 5, on: .main, in: .common)
-        .autoconnect()
-
-    // MARK: - INIT
-
-    public init(
-        _ basecolor: Color = .red,
-        animation: Animation = .bouncy,
-        blurRadius: CGFloat = 1,
-        amount: Int = 32,
-        animated: Bool = true,
-        speed: TimeInterval = 5
-    ) {
-        assert(blurRadius > 0)
-        assert(amount > 0)
-
-        self.animation = animation
-        self.blurRadius = blurRadius
-        self.animated = animated
-        
-        self.color = basecolor
-
-        var builder = [PointRandomization]()
-        for _ in 0 ..< amount {
-            builder.append(.init())
-        }
-        _randomization = State(initialValue: builder)
-        self.timer = Timer
-            .publish(every: speed, on: .main, in: .common)
-            .autoconnect()
-    }
-    // MARK: - VIEW
-
-    public var body: some View {
-        GeometryReader { reader in
-            ZStack {
-                ForEach(obtainRangeAndUpdate(size: reader.size)) { configure in
-                    Circle()
-                        .foregroundColor(configure.nuance(color))
-                        .opacity(0.5)
-                        .frame(
-                            width: configure.diameter,
-                            height: configure.diameter
-                        )
-                        .offset(
-                            x: configure.offsetX,
-                            y: configure.offsetY
-                        )
-                }
-            }
-            .onChange(of: reader.size) { _ in
-                if self.size == reader.size { return }
-                self.size = reader.size
-                
-                var randomizationBuilder = [PointRandomization]()
-                for i in 0 ..< randomization.count {
-                    let randomizationElement: PointRandomization = {
-                        var builder = PointRandomization()
-                        builder.randomizeIn(size: reader.size)
-                        builder.id = randomization[i].id
-                        return builder
-                    }()
-                    randomizationBuilder.append(randomizationElement)
-                }
-                randomization = randomizationBuilder
-            }
-            .frame(width: reader.size.width,
-                   height: reader.size.height)
-        }
-        .clipped()
-        .blur(radius: blurRadius)
-        .onReceive(timer) { _ in
-            dispatchUpdate()
-        }
-        .onChange(of: color) { _ in
-            withAnimation(Animation
-                .interpolatingSpring(stiffness: 20, damping: 1)
-                .speed(0.2)) {
-                randomizationStart()
-            }
-        }
-        
-    }
-
-    // MARK: - FUNCTION
-
-    private func dispatchUpdate() {
-        guard animated else { return }
-        withAnimation(animation) {
-            randomizationStart()
-        }
-    }
-
-    private func randomizationStart() {
-        if updating {
-            updating = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.updating = true
-            }
-            var randomizationBuilder = [PointRandomization]()
-            for i in 0 ..< randomization.count {
-                let randomizationElement: PointRandomization = {
-                    var builder = PointRandomization()
-                    builder.randomizeIn(size: size)
-                    builder.id = randomization[i].id
-                    return builder
-                }()
-                randomizationBuilder.append(randomizationElement)
-            }
-            randomization = randomizationBuilder
-        }
-    }
-
-    private func obtainRangeAndUpdate(size: CGSize) -> [PointRandomization] {
-        issueSizeUpdate(withValue: size)
-        return randomization
-    }
-
-    private func issueSizeUpdate(withValue size: CGSize) {
-        if self.size == size { return }
-        DispatchQueue.main.async {
-            self.size = size
-            self.dispatchUpdate()
         }
     }
 }
