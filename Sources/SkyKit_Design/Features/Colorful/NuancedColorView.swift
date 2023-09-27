@@ -112,7 +112,6 @@ public struct SKNuancedColorfulView: View {
     }
     
     func reroll(_ size: CGSize) {
-        guard animated else { return }
         var randomizationBuilder = [PointRandomization]()
         for i in 0 ..< randomization.count {
             let randomizationElement: PointRandomization = {
@@ -136,6 +135,7 @@ public struct SKNuancedColorfulView: View {
             }
         }
         if updating {
+            guard animated else { return }
             updating = false
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.updating = true
