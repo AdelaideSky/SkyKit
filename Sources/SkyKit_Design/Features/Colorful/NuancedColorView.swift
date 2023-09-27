@@ -83,7 +83,6 @@ public struct SKNuancedColorfulView: View {
             .clipped()
             .blur(radius: blurRadius)
             .onReceive(timer) { _ in
-                guard animated else {return}
                 animatedReroll(geo.size)
             }
             .onChange(of: color) { _ in
@@ -104,7 +103,6 @@ public struct SKNuancedColorfulView: View {
     
     func getItems(_ size: CGSize) -> [PointRandomization] {
         guard self.size != size else { return randomization }
-        print("changed")
         DispatchQueue.main.async {
             self.size = size
             reroll(size)
@@ -113,6 +111,7 @@ public struct SKNuancedColorfulView: View {
     }
     
     func reroll(_ size: CGSize) {
+        guard animated else { return }
         var randomizationBuilder = [PointRandomization]()
         for i in 0 ..< randomization.count {
             let randomizationElement: PointRandomization = {
