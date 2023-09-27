@@ -49,7 +49,7 @@ public struct SKNuancedColorfulView: View {
                 .publish(every: speed, on: .main, in: .common)
                 .autoconnect()
         } else {
-            self.timer = Timer.publish(every: .nan, on: .init(), in: .common).autoconnect()
+            self.timer = Timer.publish(every: .greatestFiniteMagnitude, on: .init(), in: .common).autoconnect()
         }
     }
     
@@ -70,9 +70,15 @@ public struct SKNuancedColorfulView: View {
                         )
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        animatedReroll(geo.size)
+                    }
+                }
             .clipped()
             .blur(radius: blurRadius)
             .onReceive(timer) { _ in
+                guard animated else {return}
                 animatedReroll(geo.size)
             }
             .onChange(of: color) { _ in
