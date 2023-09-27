@@ -6,11 +6,6 @@
 //
 import SwiftUI
 
-//needed to don't refresh view... ksksksks
-class SKNuancedColorfulModel: ObservableObject {
-    private var updating = true
-}
-
 public struct SKNuancedColorfulView: View {
     // MARK: - PROPERTY
 
@@ -22,10 +17,7 @@ public struct SKNuancedColorfulView: View {
     private let animated: Bool
     private let blurRadius: CGFloat
     
-    @ObservedObject var model = SKNuancedColorfulModel()
-    
-    @State var updating = true
-    
+    @State private var updating = true
     @State private var alreadyInitialised = false
 
     private var timer = Timer
@@ -82,7 +74,7 @@ public struct SKNuancedColorfulView: View {
             .onChange(of: reader.size) { _ in
                 if self.size == reader.size { return }
                 self.size = reader.size
-                print("updating in \(size.height)")
+                
                 var randomizationBuilder = [PointRandomization]()
                 for i in 0 ..< randomization.count {
                     let randomizationElement: PointRandomization = {
@@ -123,11 +115,10 @@ public struct SKNuancedColorfulView: View {
     }
 
     private func randomizationStart() {
-        print("updating in \(size.height)")
         if updating {
             updating = false
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                updating = true
+                self.updating = true
             }
             var randomizationBuilder = [PointRandomization]()
             for i in 0 ..< randomization.count {
@@ -144,14 +135,12 @@ public struct SKNuancedColorfulView: View {
     }
 
     private func obtainRangeAndUpdate(size: CGSize) -> [PointRandomization] {
-        print("updated size")
         issueSizeUpdate(withValue: size)
         return randomization
     }
 
     private func issueSizeUpdate(withValue size: CGSize) {
         if self.size == size { return }
-        print("updating sgfdgdfgdggdgdf")
         DispatchQueue.main.async {
             self.size = size
             self.dispatchUpdate()
