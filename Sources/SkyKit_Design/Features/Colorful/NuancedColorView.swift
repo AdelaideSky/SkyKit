@@ -6,6 +6,11 @@
 //
 import SwiftUI
 
+//needed to don't refresh view... ksksksks
+class SKNuancedColorfulModel: ObservableObject {
+    private var updating = true
+}
+
 public struct SKNuancedColorfulView: View {
     // MARK: - PROPERTY
 
@@ -17,7 +22,10 @@ public struct SKNuancedColorfulView: View {
     private let animated: Bool
     private let blurRadius: CGFloat
     
-    @State private var updating = true
+    @ObservedObject var model = SKNuancedColorfulModel()
+    
+    @State var updating = true
+    
     @State private var alreadyInitialised = false
 
     private var timer = Timer
@@ -115,17 +123,24 @@ public struct SKNuancedColorfulView: View {
     }
 
     private func randomizationStart() {
-        var randomizationBuilder = [PointRandomization]()
-        for i in 0 ..< randomization.count {
-            let randomizationElement: PointRandomization = {
-                var builder = PointRandomization()
-                builder.randomizeIn(size: size)
-                builder.id = randomization[i].id
-                return builder
-            }()
-            randomizationBuilder.append(randomizationElement)
+        print("updating in \(size.height)")
+        if updating {
+            updating = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                updating = true
+            }
+            var randomizationBuilder = [PointRandomization]()
+            for i in 0 ..< randomization.count {
+                let randomizationElement: PointRandomization = {
+                    var builder = PointRandomization()
+                    builder.randomizeIn(size: size)
+                    builder.id = randomization[i].id
+                    return builder
+                }()
+                randomizationBuilder.append(randomizationElement)
+            }
+            randomization = randomizationBuilder
         }
-        randomization = randomizationBuilder
     }
 
     private func obtainRangeAndUpdate(size: CGSize) -> [PointRandomization] {
