@@ -90,7 +90,7 @@ public struct SKNuancedColorfulView: View {
                 withAnimation(Animation
                     .interpolatingSpring(stiffness: 20, damping: 1)
                     .speed(0.2)) {
-                        reroll(geo.size)
+                        safeReroll(geo.size)
                 }
             }
         }
@@ -98,12 +98,13 @@ public struct SKNuancedColorfulView: View {
     
     func animatedReroll(_ size: CGSize) {
         withAnimation(animation) {
-            reroll(size)
+            safeReroll(size)
         }
     }
     
     func getItems(_ size: CGSize) -> [PointRandomization] {
         guard self.size != size else { return randomization }
+        print("changed")
         DispatchQueue.main.async {
             self.size = size
             reroll(size)
@@ -112,22 +113,26 @@ public struct SKNuancedColorfulView: View {
     }
     
     func reroll(_ size: CGSize) {
+        var randomizationBuilder = [PointRandomization]()
+        for i in 0 ..< randomization.count {
+            let randomizationElement: PointRandomization = {
+                var builder = PointRandomization()
+                builder.randomizeIn(size: size)
+                builder.id = randomization[i].id
+                return builder
+            }()
+            randomizationBuilder.append(randomizationElement)
+        }
+        randomization = randomizationBuilder
+    }
+    
+    func safeReroll(_ size: CGSize) {
         if updating {
             updating = false
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.updating = true
             }
-            var randomizationBuilder = [PointRandomization]()
-            for i in 0 ..< randomization.count {
-                let randomizationElement: PointRandomization = {
-                    var builder = PointRandomization()
-                    builder.randomizeIn(size: size)
-                    builder.id = randomization[i].id
-                    return builder
-                }()
-                randomizationBuilder.append(randomizationElement)
-            }
-            randomization = randomizationBuilder
+            reroll(size)
         }
     }
 }
