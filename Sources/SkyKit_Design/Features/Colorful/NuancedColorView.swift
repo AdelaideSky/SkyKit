@@ -72,6 +72,8 @@ public struct SKNuancedColorfulView: View {
                 }
             }
             .onChange(of: reader.size) { _ in
+                if self.size == size { return }
+                self.size = size
                 var randomizationBuilder = [PointRandomization]()
                 for i in 0 ..< randomization.count {
                     let randomizationElement: PointRandomization = {
@@ -85,17 +87,23 @@ public struct SKNuancedColorfulView: View {
                 randomization = randomizationBuilder
             }
             .onAppear {
-                var randomizationBuilder = [PointRandomization]()
-                for i in 0 ..< randomization.count {
-                    let randomizationElement: PointRandomization = {
-                        var builder = PointRandomization()
-                        builder.randomizeIn(size: reader.size)
-                        builder.id = randomization[i].id
-                        return builder
-                    }()
-                    randomizationBuilder.append(randomizationElement)
+                if !(!animated && alreadyInitialised) {
+                    if self.size == size { return }
+                    self.size = size
+                    
+                    var randomizationBuilder = [PointRandomization]()
+                    for i in 0 ..< randomization.count {
+                        let randomizationElement: PointRandomization = {
+                            var builder = PointRandomization()
+                            builder.randomizeIn(size: size)
+                            builder.id = randomization[i].id
+                            return builder
+                        }()
+                        randomizationBuilder.append(randomizationElement)
+                    }
+                    randomization = randomizationBuilder
+                    alreadyInitialised = true
                 }
-                randomization = randomizationBuilder
             }
             .frame(width: reader.size.width,
                    height: reader.size.height)
