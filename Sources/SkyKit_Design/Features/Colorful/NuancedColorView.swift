@@ -7,6 +7,121 @@
 import SwiftUI
 
 public struct SKNuancedColorfulView: View {
+    @State var size: CGSize = .init()
+    @State var randomization: [PointRandomization]
+    
+    @State private var updating = true
+    
+    var color: Color
+    private let animation: Animation
+    private let animated: Bool
+    private let blurRadius: CGFloat
+    
+    private var timer = Timer
+        .publish(every: 5, on: .main, in: .common)
+        .autoconnect()
+    
+    public init(
+        _ basecolor: Color = .red,
+        animation: Animation = Animation.interpolatingSpring(stiffness: 50, damping: 1).speed(0.05),
+        blurRadius: CGFloat = 1,
+        amount: Int = 32,
+        animated: Bool = true,
+        speed: TimeInterval = 5
+    ) {
+        assert(blurRadius > 0)
+        assert(amount > 0)
+
+        self.animation = animation
+        self.blurRadius = blurRadius
+        self.animated = animated
+        
+        self.color = basecolor
+
+        var builder = [PointRandomization]()
+        for _ in 0 ..< amount {
+            builder.append(.init())
+        }
+        _randomization = State(initialValue: builder)
+        
+        if animated {
+            self.timer = Timer
+                .publish(every: speed, on: .main, in: .common)
+                .autoconnect()
+        } else {
+            self.timer = Timer.publish(every: .nan, on: .init(), in: .common).autoconnect()
+        }
+    }
+    
+    public var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                ForEach(getItems(geo.size)) { configure in
+                    Circle()
+                        .foregroundColor(configure.nuance(color))
+                        .opacity(0.5)
+                        .frame(
+                            width: configure.diameter,
+                            height: configure.diameter
+                        )
+                        .offset(
+                            x: configure.offsetX,
+                            y: configure.offsetY
+                        )
+                }
+            }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            .clipped()
+            .blur(radius: blurRadius)
+            .onReceive(timer) { _ in
+                animatedReroll(geo.size)
+            }
+            .onChange(of: color) { _ in
+                withAnimation(Animation
+                    .interpolatingSpring(stiffness: 20, damping: 1)
+                    .speed(0.2)) {
+                        reroll(geo.size)
+                }
+            }
+        }
+    }
+    
+    func animatedReroll(_ size: CGSize) {
+        withAnimation(animation) {
+            reroll(size)
+        }
+    }
+    
+    func getItems(_ size: CGSize) -> [PointRandomization] {
+        guard self.size != size else { return randomization }
+        DispatchQueue.main.async {
+            self.size = size
+            reroll(size)
+        }
+        return randomization
+    }
+    
+    func reroll(_ size: CGSize) {
+        if updating {
+            updating = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.updating = true
+            }
+            var randomizationBuilder = [PointRandomization]()
+            for i in 0 ..< randomization.count {
+                let randomizationElement: PointRandomization = {
+                    var builder = PointRandomization()
+                    builder.randomizeIn(size: size)
+                    builder.id = randomization[i].id
+                    return builder
+                }()
+                randomizationBuilder.append(randomizationElement)
+            }
+            randomization = randomizationBuilder
+        }
+    }
+}
+
+public struct SKNuancedColorfulVieww: View {
     // MARK: - PROPERTY
 
     @State var randomization: [PointRandomization]
