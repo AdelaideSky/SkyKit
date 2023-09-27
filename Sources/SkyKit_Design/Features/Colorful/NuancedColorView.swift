@@ -85,20 +85,17 @@ public struct SKNuancedColorfulView: View {
                 randomization = randomizationBuilder
             }
             .onAppear {
-                if !(!animated && alreadyInitialised) {
-                    var randomizationBuilder = [PointRandomization]()
-                    for i in 0 ..< randomization.count {
-                        let randomizationElement: PointRandomization = {
-                            var builder = PointRandomization()
-                            builder.randomizeIn(size: reader.size)
-                            builder.id = randomization[i].id
-                            return builder
-                        }()
-                        randomizationBuilder.append(randomizationElement)
-                    }
-                    randomization = randomizationBuilder
-                    alreadyInitialised = true
+                var randomizationBuilder = [PointRandomization]()
+                for i in 0 ..< randomization.count {
+                    let randomizationElement: PointRandomization = {
+                        var builder = PointRandomization()
+                        builder.randomizeIn(size: reader.size)
+                        builder.id = randomization[i].id
+                        return builder
+                    }()
+                    randomizationBuilder.append(randomizationElement)
                 }
+                randomization = randomizationBuilder
             }
             .frame(width: reader.size.width,
                    height: reader.size.height)
