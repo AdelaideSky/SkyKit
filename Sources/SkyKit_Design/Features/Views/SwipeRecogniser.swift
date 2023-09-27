@@ -22,7 +22,7 @@ struct SKSwipeRecogniser: ViewModifier {
     
     var minDistance: CGFloat
     
-    init(left: @escaping () -> Void = {}, right: @escaping () -> Void = {}, up: @escaping () -> Void = {}, down: @escaping () -> Void = {}, triggerDistance: CGFloat = 3) {
+    init(left: @escaping () -> Void = {}, right: @escaping () -> Void = {}, up: @escaping () -> Void = {}, down: @escaping () -> Void = {}, triggerDistance: CGFloat = 20) {
         self.left = left
         self.right = right
         self.up = up
@@ -60,7 +60,7 @@ struct SKSwipeRecogniser: ViewModifier {
 }
 
 public extension View {
-    func onSwipe(left: @escaping () -> Void = {}, right: @escaping () -> Void = {}, up: @escaping () -> Void = {}, down: @escaping () -> Void = {}, triggerDistance: CGFloat = 3) -> some View {
+    func onSwipe(left: @escaping () -> Void = {}, right: @escaping () -> Void = {}, up: @escaping () -> Void = {}, down: @escaping () -> Void = {}, triggerDistance: CGFloat = 20) -> some View {
         self
             .modifier(SKSwipeRecogniser(left: left, right: right, up: up, down: down, triggerDistance: triggerDistance))
     }
