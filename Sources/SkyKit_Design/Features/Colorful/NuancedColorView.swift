@@ -84,8 +84,6 @@ public struct SKNuancedColorfulView: View {
                 }
                 randomization = randomizationBuilder
             }
-            .frame(width: reader.size.width,
-                   height: reader.size.height)
             .onAppear {
                 if !(!animated && alreadyInitialised) {
                     var randomizationBuilder = [PointRandomization]()
