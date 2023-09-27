@@ -15,6 +15,7 @@ public struct SKNuancedColorfulView: View {
     var color: Color
     private let animation: Animation
     private let animated: Bool
+    private let deferLaunch: Bool
     private let blurRadius: CGFloat
     
     private var timer = Timer
@@ -27,12 +28,14 @@ public struct SKNuancedColorfulView: View {
         blurRadius: CGFloat = 1,
         amount: Int = 32,
         animated: Bool = true,
-        speed: TimeInterval = 5
+        speed: TimeInterval = 5,
+        deferLaunch: Bool = true
     ) {
         assert(blurRadius > 0)
         assert(amount > 0)
 
         self.animation = animation
+        self.deferLaunch = deferLaunch
         self.blurRadius = blurRadius
         self.animated = animated
         
@@ -71,7 +74,7 @@ public struct SKNuancedColorfulView: View {
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 .onAppear {
-                    if animated {
+                    if animated && deferLaunch {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             animatedReroll(geo.size)
                         }
