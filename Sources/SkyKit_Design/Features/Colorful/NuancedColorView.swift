@@ -115,24 +115,17 @@ public struct SKNuancedColorfulView: View {
     }
 
     private func randomizationStart() {
-        print("updating in \(size.height)")
-        if updating {
-            updating = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.updating = true
-            }
-            var randomizationBuilder = [PointRandomization]()
-            for i in 0 ..< randomization.count {
-                let randomizationElement: PointRandomization = {
-                    var builder = PointRandomization()
-                    builder.randomizeIn(size: size)
-                    builder.id = randomization[i].id
-                    return builder
-                }()
-                randomizationBuilder.append(randomizationElement)
-            }
-            randomization = randomizationBuilder
+        var randomizationBuilder = [PointRandomization]()
+        for i in 0 ..< randomization.count {
+            let randomizationElement: PointRandomization = {
+                var builder = PointRandomization()
+                builder.randomizeIn(size: size)
+                builder.id = randomization[i].id
+                return builder
+            }()
+            randomizationBuilder.append(randomizationElement)
         }
+        randomization = randomizationBuilder
     }
 
     private func obtainRangeAndUpdate(size: CGSize) -> [PointRandomization] {
