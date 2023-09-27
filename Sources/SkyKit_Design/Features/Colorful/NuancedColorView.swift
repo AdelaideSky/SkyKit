@@ -57,20 +57,18 @@ public struct SKNuancedColorfulView: View {
     public var body: some View {
         GeometryReader { reader in
             ZStack {
-                if randomization.first!.offsetX != 0 {
-                    ForEach(randomization) { configure in
-                        Circle()
-                            .foregroundColor(configure.nuance(color))
-                            .opacity(0.5)
-                            .frame(
-                                width: configure.diameter,
-                                height: configure.diameter
-                            )
-                            .offset(
-                                x: configure.offsetX,
-                                y: configure.offsetY
-                            )
-                    }
+                ForEach(obtainRangeAndUpdate(size: CGSize)) { configure in
+                    Circle()
+                        .foregroundColor(configure.nuance(color))
+                        .opacity(0.5)
+                        .frame(
+                            width: configure.diameter,
+                            height: configure.diameter
+                        )
+                        .offset(
+                            x: configure.offsetX,
+                            y: configure.offsetY
+                        )
                 }
             }
             .onChange(of: reader.size) { _ in
