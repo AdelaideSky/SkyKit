@@ -114,7 +114,7 @@ public struct SKNuancedColorfulView: View {
             randomizationStart()
             return
         }
-        if alreadyInitialised {
+        if !alreadyInitialised {
             withAnimation(animation) {
                 randomizationStart()
             }
