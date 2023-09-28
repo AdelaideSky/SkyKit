@@ -19,7 +19,6 @@ public struct GentleFillingButtonStyle: ButtonStyle {
     }
     public init(darkStyle: Bool = false) {
         self.darkStyle = darkStyle
-        print("darkStyle")
     }
     
     public init() {}
@@ -36,11 +35,21 @@ public struct GentleFillingButtonStyle: ButtonStyle {
         }.background {
             if darkStyle {
                 if colorScheme == .dark {
+                    #if canImport(UIKit)
+                    Color(uiColor: .secondarySystemGroupedBackground)
+                        .opacity(configuration.isPressed ? 1 : 0.9)
+                    #else
                     Rectangle().fill(.background)
-                        .opacity(configuration.isPressed ? 0.1 : 0.9)
+                        .opacity(configuration.isPressed ? 1 : 0.9)
+                    #endif
                 } else {
-                    Color.white
-                        .opacity(configuration.isPressed ? 0.9 : 0.8)
+                    #if canImport(UIKit)
+                    Color(uiColor: .secondarySystemGroupedBackground)
+                        .opacity(configuration.isPressed ? 1 : 0.9)
+                    #else
+                    Rectangle().fill(.white)
+                        .opacity(configuration.isPressed ? 1 : 0.9)
+                    #endif
                 }
             } else {
                 Color.gray
