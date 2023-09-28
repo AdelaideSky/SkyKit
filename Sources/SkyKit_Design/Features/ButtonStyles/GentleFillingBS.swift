@@ -36,7 +36,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
             if darkStyle {
                 if colorScheme == .dark {
                     Rectangle().fill(.background)
-                        .opacity(configuration.isPressed ? 0.9 : 0.8)
+                        .opacity(configuration.isPressed ? 0.1 : 0.9)
                 } else {
                     Color.white
                         .opacity(configuration.isPressed ? 0.9 : 0.8)
@@ -46,7 +46,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
                     .opacity(configuration.isPressed ? 0.2 : 0.1)
             }
         }
-        .cornerRadius(5)
+        .cornerRadius(darkStyle ? 10 : 5)
         .symbolVariant(configuration.isPressed ? .fill : .none)
         .symbolRenderingMode(multicolorIconOnClick ? .monochrome : configuration.isPressed ? .multicolor : .monochrome)
     }
