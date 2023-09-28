@@ -35,7 +35,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
         }.background {
             if darkStyle {
                 if colorScheme == .dark {
-                    Color.gray
+                    Rectangle().fill(.background)
                         .opacity(configuration.isPressed ? 0.9 : 0.8)
                 } else {
                     Color.white
