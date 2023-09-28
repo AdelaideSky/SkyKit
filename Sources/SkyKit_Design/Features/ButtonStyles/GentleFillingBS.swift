@@ -19,6 +19,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
     }
     public init(darkStyle: Bool = false) {
         self.darkStyle = darkStyle
+        print("darkStyle")
     }
     
     public init() {}
