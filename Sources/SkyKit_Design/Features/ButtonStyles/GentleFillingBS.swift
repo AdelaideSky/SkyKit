@@ -15,7 +15,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
     let darkStyle: Bool
     
     public init(multicolorIconOnClick: Bool = false) {
-        self.multicolorIconOnClick = multicolorIconOnClick
+        self._multicolorIconOnClick = .init(initialValue: multicolorIconOnClick)
         self.darkStyle = false
     }
     public init(darkStyle: Bool = false) {
