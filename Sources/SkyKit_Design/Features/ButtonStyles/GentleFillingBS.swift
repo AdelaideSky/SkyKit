@@ -12,7 +12,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     
     @State var multicolorIconOnClick = false
-    let darkStyle
+    let darkStyle: Bool
     
     public init(multicolorIconOnClick: Bool = false) {
         self.multicolorIconOnClick = multicolorIconOnClick
@@ -23,7 +23,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
         print(darkStyle)
     }
     
-    public init() {self.darkStyle =false}
+    public init() {self.darkStyle = false}
     
     public func makeBody(configuration: Self.Configuration) -> some View {
         VStack {
