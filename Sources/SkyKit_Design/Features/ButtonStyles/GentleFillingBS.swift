@@ -20,7 +20,6 @@ public struct GentleFillingButtonStyle: ButtonStyle {
     }
     public init(darkStyle: Bool = false) {
         self.darkStyle = darkStyle
-        print(darkStyle)
     }
     
     public init() {self.darkStyle = false}
@@ -47,7 +46,7 @@ public struct GentleFillingButtonStyle: ButtonStyle {
                 } else {
                     #if canImport(UIKit)
                     Color(uiColor: .secondarySystemGroupedBackground)
-                        .opacity(configuration.isPressed ? 1 : 0.9)
+                        .opacity(configuration.isPressed ? 0.9 : 0.8)
                     #else
                     Rectangle().fill(.white)
                         .opacity(configuration.isPressed ? 1 : 0.9)
