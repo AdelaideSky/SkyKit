@@ -12,13 +12,14 @@ public struct GentleFillingButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     
     @State var multicolorIconOnClick = false
-    @State var darkStyle = false
+    let darkStyle = false
     
     public init(multicolorIconOnClick: Bool = false) {
         self.multicolorIconOnClick = multicolorIconOnClick
     }
     public init(darkStyle: Bool = false) {
         self.darkStyle = darkStyle
+        print(darkStyle)
     }
     
     public init() {}
