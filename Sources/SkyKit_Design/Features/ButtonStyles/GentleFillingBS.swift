@@ -12,9 +12,13 @@ public struct GentleFillingButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     
     @State var multicolorIconOnClick = false
+    @State var darkStyle = false
     
     public init(multicolorIconOnClick: Bool = false) {
         self.multicolorIconOnClick = multicolorIconOnClick
+    }
+    public init(darkStyle: Bool = false) {
+        self.darkStyle = darkStyle
     }
     
     public init() {}
@@ -29,8 +33,18 @@ public struct GentleFillingButtonStyle: ButtonStyle {
             }
             Spacer(minLength: 0)
         }.background {
-            Color.gray
-                .opacity(configuration.isPressed ? 0.2 : 0.1)
+            if darkStyle {
+                if colorScheme == .dark {
+                    Color.secondary
+                        .opacity(configuration.isPressed ? 0.5 : 0.4)
+                } else {
+                    Color.secondary
+                        .opacity(configuration.isPressed ? 0.2 : 0.1)
+                }
+            } else {
+                Color.gray
+                    .opacity(configuration.isPressed ? 0.2 : 0.1)
+            }
         }
         .cornerRadius(5)
         .symbolVariant(configuration.isPressed ? .fill : .none)
@@ -40,5 +54,6 @@ public struct GentleFillingButtonStyle: ButtonStyle {
 
 public extension ButtonStyle where Self == GentleFillingButtonStyle {
     static var gentleFilling: Self { Self() }
+    static func gentleFilling(darkStyle: Bool) -> Self { Self(darkStyle: darkStyle) }
 }
 
