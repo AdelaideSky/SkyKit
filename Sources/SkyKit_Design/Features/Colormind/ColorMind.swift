@@ -27,7 +27,7 @@ public class SKColorMind: ObservableObject {
     }
     
     public init() {
-        let modelsRequest = AF.request(modelsURL, method: .get)
+        let _ = AF.request(modelsURL, method: .get)
             .validate()
             .responseString() { response in
                 guard response.data != nil else {
@@ -38,13 +38,13 @@ public class SKColorMind: ObservableObject {
                 self.models = []
                 
                 do {
-                    var json = try? JSON(data: response.data!)
+                    let json = try? JSON(data: response.data!)
                     for model in json!["result"].arrayValue {
                         self.models.append(model.stringValue)
                     }
                 }
             }
-        let request = AF.request(self.apiURL, method: .post, parameters: self.body, encoding: JSONEncoding.default)
+        let _ = AF.request(self.apiURL, method: .post, parameters: self.body, encoding: JSONEncoding.default)
             .validate()
             .responseString() { response in
                 guard response.data != nil else {
@@ -53,7 +53,7 @@ public class SKColorMind: ObservableObject {
                 }
                 
                 do {
-                    var json = try? JSON(data: response.data!)
+                    let json = try? JSON(data: response.data!)
                     for color in json!["result"].arrayValue {
                         #if os(macOS)
                         let color = NSColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
@@ -71,7 +71,7 @@ public class SKColorMind: ObservableObject {
 public extension SKColorMind {
     func regenerate(using model: String = SKColorMind.shared.model) {
         self.model = model
-        let request = AF.request(self.apiURL, method: .post, parameters: self.body, encoding: JSONEncoding.default)
+        let _ = AF.request(self.apiURL, method: .post, parameters: self.body, encoding: JSONEncoding.default)
             .validate()
             .responseString() { response in
                 guard response.data != nil else {
@@ -82,7 +82,7 @@ public extension SKColorMind {
                 do {
                     var tmpColors: [Color] = []
                     
-                    var json = try? JSON(data: response.data!)
+                    let json = try? JSON(data: response.data!)
                     for color in json!["result"].arrayValue {
                         
                         #if os(macOS)
@@ -99,7 +99,7 @@ public extension SKColorMind {
     }
     
     func getModels() {
-        let modelsRequest = AF.request(modelsURL, method: .get)
+        let _ = AF.request(modelsURL, method: .get)
             .validate()
             .responseString() { response in
                 guard response.data != nil else {
@@ -110,7 +110,7 @@ public extension SKColorMind {
                 self.models = []
                 
                 do {
-                    var json = try? JSON(data: response.data!)
+                    let json = try? JSON(data: response.data!)
                     for model in json!["result"].arrayValue {
                         self.models.append(model.stringValue)
                     }

@@ -1,4 +1,4 @@
-// swift-tools-version: 5.8
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -7,13 +7,16 @@ let package = Package(
     name: "SkyKit",
     platforms: [
         .macOS(.v13),
-        .iOS(.v16)
+        .iOS(.v17)
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "SkyKit_Design",
             targets: ["SkyKit_Design"]),
+        .library(
+            name: "SkyKit_Charts",
+            targets: ["SkyKit_Charts"]),
         .library(
             name: "SkyKitC",
             targets: ["SkyKitC"]),
@@ -31,6 +34,9 @@ let package = Package(
             name: "SkyKit_Design",
             dependencies: ["Alamofire", "SwiftyJSON", "SkyKitC"],
             resources: [.process("Resources")]),
+        .target(
+            name: "SkyKit_Charts",
+            dependencies: ["Alamofire", "SwiftyJSON", "SkyKitC"]),
         .target(name: "SkyKitC"),
         .testTarget(
             name: "SkyKitTests",

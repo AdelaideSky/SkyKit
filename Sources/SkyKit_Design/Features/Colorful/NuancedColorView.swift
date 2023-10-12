@@ -86,7 +86,7 @@ public struct SKNuancedColorfulView: View {
             .onReceive(timer) { _ in
                 animatedReroll(geo.size)
             }
-            .onChange(of: color) { _ in
+            .onChange(of: color) { _, _ in
                 withAnimation(Animation
                     .interpolatingSpring(stiffness: 20, damping: 1)
                     .speed(0.2)) {

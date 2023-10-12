@@ -116,7 +116,7 @@ public struct SKColorfulView: View {
         .onReceive(timer) { _ in
             dispatchUpdate()
         }
-        .onChange(of: colorElements) { _ in
+        .onChange(of: colorElements) { _, _ in
             withAnimation(Animation
                 .interpolatingSpring(stiffness: 20, damping: 1)
                 .speed(0.2)) {

@@ -41,7 +41,7 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
                 GeometryReader { geo in
                     Spacer()
                         .frame(maxWidth: .infinity)
-                        .onChange(of: geo.size) { value in
+                        .onChange(of: geo.size) { value, _ in
                             availableWidth = value.width
                         }
                         .onAppear() {

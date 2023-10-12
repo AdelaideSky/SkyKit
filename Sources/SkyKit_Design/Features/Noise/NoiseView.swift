@@ -39,7 +39,7 @@ public struct SKNoiseTexture: View {
                         .scaledToFill()
                 }
                 
-            }.onChange(of: geo.size) { _ in
+            }.onChange(of: geo.size) { _, _ in
                 regenerate(geo: geo)
             }
             .onAppear {
