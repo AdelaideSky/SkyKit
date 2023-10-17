@@ -68,20 +68,11 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
     @State private var selection: Int? = nil
     
     private var selectedItem: TransformedData? {
-        var precedentValue: Int = 0
-        for item in data.sorted(using: KeyPathComparator(\.count)) {
-            if (precedentValue...(precedentValue+item.count)).contains(selection ?? -1) {
-                return item
-            }
-            precedentValue+=item.count
-        }
-        return nil
+        return data.first(where: { $0.range.contains(selection ?? -1) })
     }
     
     public var smallRepresentation: some View {
         VStack {
-            Text("\(data.sorted(using: KeyPathComparator(\.count)).map { $0.count }.description)")
-            Text(selectedItem?.value ?? "idfk")
             Chart(data.sorted(using: KeyPathComparator(\.count))) { element in
                 SectorMark(
                     angle: .value("Value", element.count),
