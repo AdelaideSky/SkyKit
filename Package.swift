@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SkyKit",
     platforms: [
-        .macOS(.v13),
+        .macOS(.v14),
         .iOS(.v17)
     ],
     products: [
@@ -16,10 +16,10 @@ let package = Package(
 //            targets: ["SkyKit_Design"]),
         .library(
             name: "SkyKit",
-            targets: ["SkyKit_Design"]),
+            targets: ["SkyKit"]),
         .library(
-            name: "SkyKit_Charts",
-            targets: ["SkyKit_Charts"]),
+            name: "SkyCharts",
+            targets: ["SkyCharts"]),
         .library(
             name: "SkyKitC",
             targets: ["SkyKitC"]),
@@ -34,15 +34,15 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "SkyKit_Design",
+            name: "SkyKit",
             dependencies: ["Alamofire", "SwiftyJSON", "SkyKitC"],
             resources: [.process("Resources")]),
         .target(
-            name: "SkyKit_Charts",
+            name: "SkyCharts",
             dependencies: ["Alamofire", "SwiftyJSON", "SkyKitC"]),
         .target(name: "SkyKitC"),
         .testTarget(
             name: "SkyKitTests",
-            dependencies: ["SkyKit_Design"]),
+            dependencies: ["SkyKit"]),
     ]
 )
