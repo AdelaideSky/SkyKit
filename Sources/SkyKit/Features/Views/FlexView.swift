@@ -84,6 +84,15 @@ extension View {
         )
         .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
     }
+    func getSize(onChange: @escaping (CGSize) -> Void) -> some View {
+        background(
+            GeometryReader { geometryProxy in
+                Path { _ in
+                    onChange(geometryProxy.size)
+                }
+            }
+        )
+    }
 }
 
 private struct SizePreferenceKey: PreferenceKey {

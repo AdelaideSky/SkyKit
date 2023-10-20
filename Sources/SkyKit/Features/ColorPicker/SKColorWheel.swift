@@ -8,10 +8,10 @@
 import SwiftUI
 import SkyKitC
 #if os(macOS)
-fileprivate func calcPosition(_ color: Color, geo: GeometryProxy) -> CGPoint {
+fileprivate func calcPosition(_ color: Color, size: CGSize) -> CGPoint {
     autoreleasepool {
         let hsb = color.getHSB()
-        let pos = calcPos(hsb.0, hsb.1, geo.size.height, geo.size.width)
+        let pos = calcPos(hsb.0, hsb.1, size.height, size.width)
         return .init(x: pos.x, y: pos.y)
     }
 }
@@ -37,13 +37,12 @@ public struct SKColorWheel: View {
         self._selection = selection
         self.geo = geo
         
-        self._knobPosition = .init(initialValue: calcPosition(selection.wrappedValue, geo: geo))
+        self._knobPosition = .init(initialValue: calcPosition(selection.wrappedValue, size: geo.size))
         self.showingKnob = showingKnob
         self.onSubmit = onSubmit
         self._isDragging = isDragging
         self.scrollControls = scrollControls
     }
-    
     
     
     var y0: CGFloat {
@@ -69,98 +68,105 @@ public struct SKColorWheel: View {
     let knobSize: CGFloat = 30
     
     var content: some View {
-        VStack {
-            GeometryReader { geometry in
-                Wheel(brightness: brightness)
-                    .overlay {
-                        Group {
-                            if showingKnob {
-                                Circle()
-                                    .stroke(isDragging ? Color.primary : Color.secondary, lineWidth: 2)
-                                    .background {
-                                        Circle()
-                                            .foregroundStyle(.tertiary)
-                                            .opacity(0.3)
-                                    }
-                                    .frame(width: isDragging ? 25 : 20, height: isDragging ? 25 : 20)
-                                    .animation(.spring, value: isDragging)
-                                    .position(knobPosition)
-                            }
-                        }.animation(.easeInOut, value: showingKnob)
-                    }
-                    .onChange(of: geometry.size) { newValue in
-                        DispatchQueue(label: "SKColorWheelUpdate").async {
-                            updatePosition()
-                        }
-                    }
-                    .onChange(of: selection.description) { newValue in
-                        DispatchQueue(label: "SKColorWheelUpdate").async {
-                            updatePosition()
-                        }
-                    }
+        Wheel(brightness: brightness)
+            .overlay {
+                if showingKnob {
+                    Circle()
+                        .fill( Color(.tertiarySystemFill).opacity(0.3) )
+                        .stroke(isDragging ? Color.primary : Color.secondary, lineWidth: 2)
+                        .frame(width: isDragging ? 25 : 20, height: isDragging ? 25 : 20)
+                        .animation(.spring, value: isDragging)
+                        .animation(.easeInOut, value: showingKnob)
+                        .position(knobPosition)
+                }
             }
-            
-        }
+            .onChange(of: geo.size) { newValue, _ in
+                DispatchQueue(label: "SKColorWheelUpdate").async {
+                    updatePosition()
+                }
+            }
+            .onChange(of: selection.description) { newValue, _ in
+                DispatchQueue(label: "SKColorWheelUpdate").async {
+                    updatePosition()
+                }
+            }
     }
     
     public var body: some View {
-        Group {
-            if scrollControls {
-                BindableScrollReader(xRange: 10...(geo.size.width-10), yRange: 10...(geo.size.height-10), value: .init(get: {
-                    return .init(width: knobPosition.x, height: knobPosition.y)
-                }, set: { val in
-                    DispatchQueue(label: "SKColorWheelUpdate").async {
-                        autoreleasepool {
-                            let newPos = CGPoint(x: val.width, y: val.height)
-                            let angle = angle(newPos)
-                            let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
-                            if newSelection != selection {
-                                DispatchQueue.main.async {
-                                    isDragging = true
-                                    selection = newSelection
-                                }
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                isDragging = false
-                            }
-                            
-                        }
-                    }
-                })) {
-                    content
-                }
-            } else {
-                content
-            }
-        }.simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { value in
-                    isDragging = true
-                    DispatchQueue(label: "SKColorWheelUpdate").async {
-                        autoreleasepool {
-                            let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
-                            let angle = angle(newPos)
-                            let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+        if scrollControls {
+            BindableScrollReader(xRange: 10...(geo.size.width-10), yRange: 10...(geo.size.height-10), value: .init(get: {
+                return .init(width: knobPosition.x, height: knobPosition.y)
+            }, set: { val in
+                DispatchQueue(label: "SKColorWheelUpdate").async {
+                    autoreleasepool {
+                        let newPos = CGPoint(x: val.width, y: val.height)
+                        let angle = angle(newPos)
+                        let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                        if newSelection != selection {
                             DispatchQueue.main.async {
+                                isDragging = true
                                 selection = newSelection
                             }
                         }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            isDragging = false
+                        }
+                        
                     }
                 }
-                .onEnded { _ in
-                    isDragging = false
-                    onSubmit()
-                }
-        )
-        .frame(minHeight: 100)
+            })) {
+                content
+                
+            }.simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        isDragging = true
+                        DispatchQueue(label: "SKColorWheelUpdate").async {
+                            autoreleasepool {
+                                let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
+                                let angle = angle(newPos)
+                                let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                                DispatchQueue.main.async {
+                                    selection = newSelection
+                                }
+                            }
+                        }
+                    }
+                    .onEnded { _ in
+                        isDragging = false
+                        onSubmit()
+                    }
+            )
+        } else {
+            content.simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        isDragging = true
+                        DispatchQueue(label: "SKColorWheelUpdate").async {
+                            autoreleasepool {
+                                let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
+                                let angle = angle(newPos)
+                                let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                                DispatchQueue.main.async {
+                                    selection = newSelection
+                                }
+                            }
+                        }
+                    }
+                    .onEnded { _ in
+                        isDragging = false
+                        onSubmit()
+                    }
+            )
+        }
     }
     
     func updatePosition() {
         DispatchQueue(label: "SKColorWheelUpdate").async {
-            let newValue = calcPosition(selection, geo: geo)
+            let newValue = calcPosition(selection, size: geo.size)
             
             DispatchQueue.main.async {
-                self.knobPosition = calcPosition(selection, geo: geo)
+                self.knobPosition = newValue
             }
         }
     }

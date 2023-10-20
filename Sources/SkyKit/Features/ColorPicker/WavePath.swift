@@ -24,7 +24,6 @@ struct Wave: Shape {
             let height = Double(rect.height)
             let midHeight = height / 2
 
-
             // start at the left center
             path.move(to: CGPoint(x: 0, y: midHeight))
             
