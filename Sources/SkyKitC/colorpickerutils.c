@@ -89,15 +89,11 @@ char* doubleToHexString(double value) {
 char* rgbToHexString(double r, double g, double b) {
     char* hexString = malloc(7 * sizeof(char));
     
-    char* red = doubleToHexString(r);
-    char* green = doubleToHexString(g);
-    char* blue = doubleToHexString(b);
+    int redValue = (int)(r * 255);
+    int greenValue = (int)(g * 255);
+    int blueValue = (int)(b * 255);
     
-    sprintf(hexString, "%s%s%s", red, green, blue);
-    
-    free(red);
-    free(green);
-    free(blue);
+    sprintf(hexString, "%02x%02x%02x", red, green, blue);
     
     return hexString;
 }
