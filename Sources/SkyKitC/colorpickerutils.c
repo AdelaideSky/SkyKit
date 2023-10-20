@@ -93,7 +93,7 @@ char* rgbToHexString(double r, double g, double b) {
     int greenValue = (int)(g * 255);
     int blueValue = (int)(b * 255);
     
-    sprintf(hexString, "%02x%02x%02x", red, green, blue);
+    sprintf(hexString, "%02x%02x%02x", redValue, greenValue, blueValue);
     
     return hexString;
 }
