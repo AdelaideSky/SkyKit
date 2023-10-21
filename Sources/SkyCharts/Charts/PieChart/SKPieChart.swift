@@ -21,7 +21,14 @@ extension Array where Element: Hashable {
         
         return result
     }
+    
+    var unorderedUniqued: Self {
+        let result = Set(self)
+        
+        return Array(result)
+    }
 }
+
 public struct SKPieChartData<Value: StringProtocol & Plottable>: ChartData {
     public var id: Int {
         timestamp.hashValue
@@ -38,21 +45,37 @@ public struct SKPieChartData<Value: StringProtocol & Plottable>: ChartData {
         self.timestamp = timestamp
     }
 }
-
-public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable, View {
+public class SKPieChartTransformedData<Value: StringProtocol & Plottable>: Identifiable {
+    public var id: Int = 0
+    
+    public let value: Value
+    public var count: Int = 0
+    public var range: ClosedRange<Int> = 0...0
+    
+    init(value: Value, count: Int, range: ClosedRange<Int>) {
+        self.value = value
+        self.id = value.hash
+        self.count = count
+        self.range = range
+    }
+    
+}
+public struct SKPieChart<Value: StringProtocol & Plottable, CenterContent: View>: ChartRepresentable, View {
+    public typealias TransformedData = SKPieChartTransformedData<Value>
     public var id = UUID()
         
     private let sourceData: [SKPieChartData<Value>]
     private var data: [TransformedData]
     
     public var label: LocalizedStringKey
+    @ViewBuilder let centerView: (TransformedData?, TransformedData?) -> CenterContent?
     
     public var body: some View {
         smallRepresentation
     }
     
-    private var mostPresent: String {
-        String(data.sorted(by: { $0.count > $1.count}).first!.value)
+    private var mostPresent: TransformedData? {
+        data.sorted(by: { $0.count > $1.count}).first
     }
     
     @State private var selection: Int? = nil
@@ -76,23 +99,7 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
                 .chartBackground { chartProxy in
                     GeometryReader { geometry in
                         let frame = geometry[chartProxy.plotFrame!]
-                        VStack {
-                            if let selection = selectedItem {
-                                Text(selection.value)
-                                    .font(.callout)
-                                    .foregroundStyle(.secondary)
-                                Text("\(selection.count) present")
-                                    .font(.title2.bold())
-                                    .foregroundColor(.primary)
-                            } else {
-                                Text("Most Present Value")
-                                    .font(.callout)
-                                    .foregroundStyle(.secondary)
-                                Text(mostPresent)
-                                    .font(.title2.bold())
-                                    .foregroundColor(.primary)
-                            }
-                        }
+                        centerView(selectedItem, mostPresent)
                         .position(x: frame.midX, y: frame.midY)
                     }
             }
@@ -105,7 +112,10 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
         HStack {}
     }
     
-    public init(id: UUID = UUID(), data: [SKPieChartData<Value>], label: LocalizedStringKey) {
+    public init(id: UUID = UUID(),
+                data: [SKPieChartData<Value>],
+                label: LocalizedStringKey,
+                @ViewBuilder centerView: @escaping (TransformedData?, TransformedData?) -> CenterContent? = { _, _ in nil }) {
         self.id = id
         self.sourceData = data
         self.label = label
@@ -113,7 +123,7 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
         var answer: [TransformedData] = []
         
         
-        for category in sourceData.map { $0.categories }.flatMap {$0}.uniqued {
+        for category in sourceData.map { $0.categories }.flatMap {$0}.unorderedUniqued {
             let count = sourceData.filter({ $0.categories.contains(category)}).count
             answer.append(.init(value: category, count: count, range: 0...1))
         }
@@ -124,23 +134,7 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
             lastIndex+=item.count
             return .init(value: item.value, count: item.count, range: range)
         }
-        print(self.data.map({$0.value}))
-    }
-    
-    private class TransformedData: Identifiable {
-        var id: Int = 0
-        
-        let value: Value
-        var count: Int = 0
-        var range: ClosedRange<Int> = 0...0
-        
-        init(value: Value, count: Int, range: ClosedRange<Int>) {
-            self.value = value
-            self.id = value.hash
-            self.count = count
-            self.range = range
-        }
-        
+        self.centerView = centerView
     }
     
 }
