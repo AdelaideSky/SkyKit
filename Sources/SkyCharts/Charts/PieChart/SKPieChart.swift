@@ -100,6 +100,7 @@ public struct SKPieChart<Value: StringProtocol & Plottable, CenterContent: View>
                     GeometryReader { geometry in
                         let frame = geometry[chartProxy.plotFrame!]
                         centerView(selectedItem, mostPresent)
+                            .frame(width: frame.width*0.618, height: frame.height*0.618)
                         .position(x: frame.midX, y: frame.midY)
                     }
             }
