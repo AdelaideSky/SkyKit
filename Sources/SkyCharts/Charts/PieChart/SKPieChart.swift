@@ -60,18 +60,27 @@ public class SKPieChartTransformedData<Value: StringProtocol & Plottable>: Ident
     }
     
 }
-public struct SKPieChart<Value: StringProtocol & Plottable, CenterContent: View>: ChartRepresentable, View {
+public struct SKPieChart<Value: StringProtocol & Plottable, 
+                        CenterContent: View,
+                        SmallContent: View,
+                        ContentLabel: View>: ChartRepresentable, View {
     public typealias TransformedData = SKPieChartTransformedData<Value>
-    public var id = UUID()
+    public let id: UUID
+    let title: String
         
     private let sourceData: [SKPieChartData<Value>]
     private var data: [TransformedData]
     
-    public var label: LocalizedStringKey
+    public var label: ContentLabel
     @ViewBuilder let centerView: (TransformedData?, TransformedData?) -> CenterContent?
+    @ViewBuilder let smallContent: (TransformedData?) -> SmallContent?
     
     public var body: some View {
-        smallRepresentation
+        NavigationStack {
+            NavigationLink(destination: {fullRepresentation}) {
+                smallRepresentation.padding()
+            }.buttonStyle(.plain)
+        }
     }
     
     private var mostPresent: TransformedData? {
@@ -85,6 +94,39 @@ public struct SKPieChart<Value: StringProtocol & Plottable, CenterContent: View>
     }
     
     public var smallRepresentation: some View {
+        GroupBox(content: {
+            HStack {
+                smallContent(mostPresent)
+                Spacer()
+                Chart(data) { element in
+                    SectorMark(
+                        angle: .value("Value", element.count),
+                        innerRadius: .ratio(0.618),
+                        angularInset: 1.5
+                    ).foregroundStyle(by: .value("Name", element.value))
+                        .cornerRadius(5)
+                        .opacity(element.value == mostPresent?.value ? 1 : 0.3)
+                }.chartLegend(.hidden)
+                    .aspectRatio(1, contentMode: .fit)
+            }
+        }, label: {
+            HStack {
+                label
+                Spacer()
+                Group {
+                    Text("Last 5 minutes")
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.tertiary)
+                        .bold()
+                }.font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }).frame(height: 150)
+    }
+    public var mediumRepresentation: some View {
+        VStack {}
+    }
+    public var fullRepresentation: some View {
         VStack {
             Chart(data) { element in
                 SectorMark(
@@ -104,19 +146,15 @@ public struct SKPieChart<Value: StringProtocol & Plottable, CenterContent: View>
                         .position(x: frame.midX, y: frame.midY)
                     }
             }
-        }
-    }
-    public var mediumRepresentation: some View {
-        VStack {}
-    }
-    public var fullRepresentation: some View {
-        HStack {}
+        }.navigationTitle(title)
     }
     
     public init(id: UUID = UUID(),
+                _ title: String,
                 data: [SKPieChartData<Value>],
-                label: LocalizedStringKey,
-                @ViewBuilder centerView: @escaping (TransformedData?, TransformedData?) -> CenterContent? = { _, _ in nil }) {
+                label: ContentLabel,
+                @ViewBuilder centerView: @escaping (TransformedData?, TransformedData?) -> CenterContent? = { _, _ in nil },
+                @ViewBuilder smallContent: @escaping (TransformedData?) -> SmallContent? = { _ in nil }) {
         self.id = id
         self.sourceData = data
         self.label = label
@@ -136,6 +174,8 @@ public struct SKPieChart<Value: StringProtocol & Plottable, CenterContent: View>
             return .init(value: item.value, count: item.count, range: range)
         }
         self.centerView = centerView
+        self.smallContent = smallContent
+        self.title = title
     }
     
 }

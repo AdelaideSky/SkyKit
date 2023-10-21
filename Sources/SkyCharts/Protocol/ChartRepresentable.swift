@@ -14,7 +14,7 @@ public struct ExpandableChartRepresentationView<Chart: ChartRepresentable>: View
     @State var isExpanded: Bool = false
     
     public var body: some View {
-        DisclosureGroup(chart.label, isExpanded: $isExpanded) {}
+        DisclosureGroup("", isExpanded: $isExpanded) {}
         if isExpanded {
             chart.mediumRepresentation
         } else {
@@ -58,9 +58,7 @@ public enum SKChartsRepresentation {
     case navExpandable
 }
 
-public protocol ChartRepresentable: Identifiable {
-    var label: LocalizedStringKey { get set }
-    
+public protocol ChartRepresentable: Identifiable {    
     associatedtype SmallRepresentation: SwiftUI.View
     associatedtype MediumRepresentation: SwiftUI.View
     associatedtype FullRepresentation: SwiftUI.View
