@@ -76,11 +76,9 @@ public struct SKPieChart<Value: StringProtocol & Plottable,
     @ViewBuilder let smallContent: (TransformedData?) -> SmallContent?
     
     public var body: some View {
-        NavigationStack {
-            NavigationLink(destination: {fullRepresentation}) {
-                smallRepresentation.padding()
-            }.buttonStyle(.plain)
-        }
+        NavigationLink(destination: {fullRepresentation}) {
+            smallRepresentation.padding()
+        }.buttonStyle(.plain)
     }
     
     private var mostPresent: TransformedData? {
