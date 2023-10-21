@@ -82,7 +82,7 @@ public struct SKPieChart<Value: StringProtocol & Plottable,
     }
     
     private var mostPresent: TransformedData? {
-        data.sorted(by: { $0.count > $1.count}).first
+        data.first
     }
     
     @State private var selection: Int? = nil
