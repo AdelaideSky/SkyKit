@@ -18,7 +18,6 @@ typedef struct {
 xy calcPos(double h, double s, double height, double width);
 double calcAngle(double x, double y, double x0, double y0);
 double calcR(double x, double y, double width, double height, double angle);
-char* doubleToHexString(double value);
 char* rgbToHexString(double r, double g, double b);
 xy *wave(double width, double height, double frequency, double strength, double midHeight);
 void freeWave(xy *array);

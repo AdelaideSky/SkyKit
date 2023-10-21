@@ -77,15 +77,6 @@ double calcR(double x,
     }
 }
 
-char* doubleToHexString(double value) {
-    int intValue = (int)(value * 255);
-    char* hexString = malloc(3 * sizeof(char));
-    
-    sprintf(hexString, "%02x", intValue);
-    
-    return hexString;
-}
-
 char* rgbToHexString(double r, double g, double b) {
     char* hexString = malloc(7 * sizeof(char));
     

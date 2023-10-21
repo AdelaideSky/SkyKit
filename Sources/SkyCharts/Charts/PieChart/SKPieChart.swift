@@ -43,17 +43,7 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
     public var id = UUID()
         
     private let sourceData: [SKPieChartData<Value>]
-    private var data: [TransformedData] {
-        var answer: [TransformedData] = []
-        var lastIndex: Int = 0
-        
-        for category in sourceData.map { $0.categories }.flatMap {$0}.uniqued {
-            let count = sourceData.filter({ $0.categories.contains(category)}).count
-            answer.append(.init(value: category, count: count, range: lastIndex...lastIndex+count))
-            lastIndex+=count
-        }
-        return answer
-    }
+    private var data: [TransformedData]
     
     public var label: LocalizedStringKey
     
@@ -68,12 +58,12 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
     @State private var selection: Int? = nil
     
     private var selectedItem: TransformedData? {
-        return data.first(where: { $0.range.contains(selection ?? -1) })
+        data.first(where: { $0.range.contains(selection ?? -1) })
     }
     
     public var smallRepresentation: some View {
         VStack {
-            Chart(data.sorted(using: KeyPathComparator(\.count))) { element in
+            Chart(data) { element in
                 SectorMark(
                     angle: .value("Value", element.count),
                     innerRadius: .ratio(0.618),
@@ -81,16 +71,11 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
                 ).foregroundStyle(by: .value("Name", element.value))
                     .cornerRadius(5)
                     .opacity(selectedItem != nil ? element.value == selectedItem?.value ? 1 : 0.3 : 1)
-            }.chartAngleSelection(value: Binding<Int?>.init(get: {
-                print("get")
-                return selection
-            }, set: { newValue in
-                print(newValue)
-                selection = newValue
-            })).animation(.easeInOut(duration: 0.2), value: selection)
+            }.chartAngleSelection(value: $selection)
+                .animation(.easeInOut(duration: 0.2), value: selection)
                 .chartBackground { chartProxy in
                     GeometryReader { geometry in
-                        let frame = geometry[chartProxy.plotAreaFrame]
+                        let frame = geometry[chartProxy.plotFrame!]
                         VStack {
                             if let selection = selectedItem {
                                 Text(selection.value)
@@ -124,6 +109,22 @@ public struct SKPieChart<Value: StringProtocol & Plottable>: ChartRepresentable,
         self.id = id
         self.sourceData = data
         self.label = label
+        
+        var answer: [TransformedData] = []
+        
+        
+        for category in sourceData.map { $0.categories }.flatMap {$0}.uniqued {
+            let count = sourceData.filter({ $0.categories.contains(category)}).count
+            answer.append(.init(value: category, count: count, range: 0...1))
+        }
+        
+        var lastIndex: Int = 0
+        self.data = answer.sorted(by: {$0.count > $1.count}).map { item in
+            let range = lastIndex...lastIndex+item.count
+            lastIndex+=item.count
+            return .init(value: item.value, count: item.count, range: range)
+        }
+        print(self.data.map({$0.value}))
     }
     
     private class TransformedData: Identifiable {
