@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import SkyKitC
 extension SKColorfulView {
     struct PointRandomization: Equatable, Hashable, Identifiable {
         var id = UUID()
@@ -16,10 +16,10 @@ extension SKColorfulView {
         var offsetY: CGFloat = 0
 
         mutating func randomizeIn(size: CGSize) {
-            let decision = (size.width + size.height) / 4
-            diameter = CGFloat.random(in: (decision * 0.25) ... (decision * 0.75))
-            offsetX = CGFloat.random(in: -(size.width / 2) ... +(size.width / 2))
-            offsetY = CGFloat.random(in: -(size.height / 2) ... +(size.height / 2))
+            let answer = SkyKitC.randomizeIn(Float(size.width), Float(size.width))
+            self.diameter = CGFloat(answer.diameter)
+            self.offsetX = CGFloat(answer.offsetX)
+            self.offsetY = CGFloat(answer.offsetY)
         }
         
         mutating func set(from: PointRandomization) {
@@ -51,10 +51,10 @@ extension SKNuancedColorfulView {
         var variant: Variant = .normal
 
         mutating func randomizeIn(size: CGSize) {
-            let decision = (size.width + size.height) / 4
-            diameter = CGFloat.random(in: (decision * 0.25) ... (decision * 0.75))
-            offsetX = CGFloat.random(in: -(size.width / 2) ... +(size.width / 2))
-            offsetY = CGFloat.random(in: -(size.height / 2) ... +(size.height / 2))
+            let answer = SkyKitC.randomizeIn(Float(size.width), Float(size.width))
+            self.diameter = CGFloat(answer.diameter)
+            self.offsetX = CGFloat(answer.offsetX)
+            self.offsetY = CGFloat(answer.offsetY)
         }
         
         mutating func set(from: PointRandomization) {

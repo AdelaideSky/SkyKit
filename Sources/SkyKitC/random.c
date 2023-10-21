@@ -20,3 +20,27 @@ int *randomAlpha(int n) {
     }
     return array;
 }
+//
+//struct RandomPoints {
+//    float diameter;
+//    float offsetX;
+//    float offsetY;
+//};
+
+RandomPoints randomizeIn(float width, float height) {
+    RandomPoints result;
+    
+    static int seeded = 0;
+    if (!seeded) {
+        srand(time(NULL));
+        seeded = 1;
+    }
+    
+    float decision = (width+height) / 4;
+    
+    result.diameter = ((float)rand() / RAND_MAX) * (decision * 0.5) + (decision * 0.25);
+    result.offsetX = ((float)rand() / RAND_MAX) * width - (width * 0.5);
+    result.offsetY = ((float)rand() / RAND_MAX) * height - (height * 0.5);
+    
+    return result;
+}
