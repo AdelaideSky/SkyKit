@@ -38,7 +38,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                         .fill(list.contains(where: {$0 == element}) ? .white : .gray.opacity(0.3))
                 } else {
                     Capsule()
-                        .fill(list.contains(where: {$0 == element}) ? .black.opacity(0.5) : Color("F6F6F6"))
+                        .fill(list.contains(where: {$0 == element}) ? .black.opacity(0.5) : Color("F6F4F1"))
                 }
             }
             .onTapGesture {
