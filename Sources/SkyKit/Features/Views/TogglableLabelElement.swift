@@ -35,7 +35,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
             .background {
                 if colorScheme == .dark {
                     Capsule()
-                        .fill(list.contains(where: {$0 == element}) ? .white.brightness(-0.1) : .gray.opacity(0.3))
+                        .fill(list.contains(where: {$0 == element}) ? .init(hex: "F6F6F6") : .gray.opacity(0.3))
                 } else {
                     Capsule()
                         .fill(list.contains(where: {$0 == element}) ? .black.opacity(0.5) : .white)
