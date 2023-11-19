@@ -36,7 +36,7 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
                     Spacer()
                 }
             }
-        }.frame(width: availableWidth)
+        }.frame(maxWidth: .infinity)
             .overlay {
                 GeometryReader { geo in
                     Spacer()
