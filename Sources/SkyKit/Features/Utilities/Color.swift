@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 import SkyKitC
-#if os(macOS)
+
 public extension Color {
     var hex: String {
         autoreleasepool {
@@ -57,4 +57,3 @@ public extension Color {
         self.init(red: r, green: g, blue: b, opacity: a)
     }
 }
-#endif
