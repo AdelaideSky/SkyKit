@@ -55,6 +55,14 @@ import AppKit
                    priority: CUnsignedInt,
                    msecUntilFade: CUnsignedInt)
     
+    func showImage(_ img: OSDImage,
+                   onDisplayID: CGDirectDisplayID,
+                   priority: CUnsignedInt,
+                   msecUntilFade: CUnsignedInt, 
+                   filledChiclets: CUnsignedInt,
+                   totalChiclets: CUnsignedInt,
+                   locked: Bool)
+    
 //    "showFullScreenImage:onDisplayID:priority:msecToAnimate:
     func showFullScreenImage(_ img: OSDImage, onDisplayID: CGDirectDisplayID, priority: CUnsignedInt, msecToAnimate: CUnsignedInt)
 }
@@ -92,6 +100,24 @@ public struct SKSystemHUD {
                                     priority: CUnsignedInt = 0x1f4,
                                     msecToAnimate: CUnsignedInt = 2000) {
         getHelper().showFullScreenImage(img, onDisplayID: onDisplayID, priority: priority, msecToAnimate: msecToAnimate)
+    }
+    
+    public static func showImage(_ img: OSDImage,
+                                    onDisplayID: CGDirectDisplayID = CGMainDisplayID(),
+                                    priority: CUnsignedInt = 0x1f4,
+                                    msecUntilFade: CUnsignedInt = 2000,
+                                    filledChiclets: CUnsignedInt,
+                                    totalChiclets: CUnsignedInt,
+                                    locked: Bool = false) {
+        getHelper().showImage(img, onDisplayID: onDisplayID, priority: priority, msecUntilFade: msecUntilFade, filledChiclets: filledChiclets, totalChiclets: totalChiclets, locked: locked)
+    }
+    public static func showImage(_ img: OSDImage,
+                                    onDisplayID: CGDirectDisplayID = CGMainDisplayID(),
+                                    priority: CUnsignedInt = 0x1f4,
+                                    msecUntilFade: CUnsignedInt = 2000,
+                                    percent: Double,
+                                    locked: Bool = false) {
+        getHelper().showImage(img, onDisplayID: onDisplayID, priority: priority, msecUntilFade: msecUntilFade, filledChiclets: UInt32(percent*100), totalChiclets: 10000, locked: locked)
     }
 }
 #endif
