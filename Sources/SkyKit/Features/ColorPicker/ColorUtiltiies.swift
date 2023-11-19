@@ -63,10 +63,7 @@ extension Color {
 //    }
     func getRGB() -> (CGFloat, CGFloat, CGFloat) {
         autoreleasepool {
-            guard let uiColor = UIColor(self) else {
-                return (0, 0, 0)
-            }
-            
+            let uiColor = UIColor(self) 
             var red: CGFloat = 0
             var green: CGFloat = 0
             var blue: CGFloat = 0
