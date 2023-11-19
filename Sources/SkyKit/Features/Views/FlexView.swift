@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.Element: Hashable {
+public struct SKFlexibleView<Data: RandomAccessCollection, Content: View>: View where Data.Element: Hashable {
     @State var availableWidth: CGFloat = 0
     let data: Data
-    let spacing: CGFloat
+    let spacing: Double
     let alignment: HorizontalAlignment
     let content: (Data.Element) -> Content
     @State var elementsSize: [Data.Element: CGSize] = [:]
     
-    public init(_ data: Data, spacing: CGFloat = 10, alignment: HorizontalAlignment = .leading, content: @escaping (Data.Element) -> Content) {
+    public init(_ data: Data, spacing: Double = 10, alignment: HorizontalAlignment = .leading, content: @escaping (Data.Element) -> Content) {
         self.data = data
         self.spacing = spacing
         self.alignment = alignment
@@ -23,79 +23,65 @@ public struct SKFlexibleView<Data: Collection, Content: View>: View where Data.E
     }
     
     public var body : some View {
-        VStack(alignment: alignment, spacing: spacing) {
-            ForEach(computeRows(), id: \.self) { rowElements in
-                HStack(spacing: spacing) {
-                    ForEach(rowElements, id: \.self) { element in
-                        content(element)
-                            .fixedSize()
-                            .readSize { size in
-                                elementsSize[element] = size
-                            }
-                    }
-                    Spacer()
-                }
+        MultipleLineHStackLayout(horizontaleSpacing: spacing, verticalSpacing: spacing) {
+            ForEach(data, id:\.hashValue) { element in
+                content(element)
             }
-        }.frame(maxWidth: .infinity)
-            .overlay {
-                GeometryReader { geo in
-                    Spacer()
-                        .frame(maxWidth: .infinity)
-                        .onChange(of: geo.size) { value, _ in
-                            availableWidth = value.width
-                        }
-                        .onAppear() {
-                            availableWidth = geo.size.width
-                        }
-                }.frame(maxWidth: .infinity)
-
-            }
-    }
-    
-    func computeRows() -> [[Data.Element]] {
-        var rows: [[Data.Element]] = [[]]
-        var currentRow = 0
-        var remainingWidth = availableWidth
-        
-        for element in data {
-            let elementSize = elementsSize[element, default: CGSize(width: availableWidth, height: 1)]
-            
-            if remainingWidth - (elementSize.width + spacing) >= 0 {
-                rows[currentRow].append(element)
-            } else {
-                currentRow = currentRow + 1
-                rows.append([element])
-                remainingWidth = availableWidth
-            }
-            
-            remainingWidth = remainingWidth - (elementSize.width + spacing)
         }
-        
-        return rows
-    }
-}
-extension View {
-    func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
-        background(
-            GeometryReader { geometryProxy in
-                Color.clear
-                    .preference(key: SizePreferenceKey.self, value: geometryProxy.size)
-            }
-        )
-        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
-    }
-    func getSize(onChange: @escaping (CGSize) -> Void) -> some View {
-        background(
-            GeometryReader { geometryProxy in
-                Path { _ in
-                    onChange(geometryProxy.size)
-                }
-            }
-        )
     }
 }
 
-private struct SizePreferenceKey: PreferenceKey {
-    static var defaultValue: CGSize = .zero
-    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
+@available(iOS 16.0, *)
+struct MultipleLineHStackLayout: Layout {
+    let horizontaleSpacing: Double
+    let verticalSpacing: Double
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let nbRows = Double(calculateNumberOrRow(for: subviews, with: proposal.width!))
+        let minHeight = subviews.map { $0.sizeThatFits(proposal).height }.reduce(0) { max($0, $1).rounded(.up) }
+        let height = nbRows * minHeight + max(nbRows - 1, 0) * verticalSpacing
+
+        return CGSize(width: proposal.width!, height: height + 6)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let minHeight = subviews.map { $0.sizeThatFits(proposal).height }.reduce(0) { max($0, $1).rounded(.up) }
+        var pt = CGPoint(x: bounds.minX, y: bounds.minY + 3)
+    
+        for subview in subviews.sorted(by: { $0.priority > $1.priority }) {
+            let width = subview.sizeThatFits(proposal).width
+        
+            if (pt.x +  width) > bounds.maxX {
+                pt.x = bounds.minX
+                pt.y += minHeight + verticalSpacing
+            }
+        
+            subview.place(at: pt, anchor: .topLeading, proposal: proposal)
+            pt.x += width + horizontaleSpacing
+        }
+    }
+
+
+    func calculateNumberOrRow(for subviews: Subviews, with width: Double) -> Int {
+        var nbRows = 0
+        var x: Double = 0
+    
+        for subview in subviews {
+            let addedX = subview.sizeThatFits(.unspecified).width + horizontaleSpacing
+        
+            let isXWillGoBeyondBounds =  x + addedX > width
+            if isXWillGoBeyondBounds {
+                x = 0
+                nbRows += 1
+            }
+        
+            x += addedX
+        }
+    
+        if x > 0 {
+            nbRows += 1
+        }
+    
+        return nbRows
+    }
 }
