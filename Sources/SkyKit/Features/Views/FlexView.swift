@@ -35,6 +35,16 @@ public struct SKFlexibleView<Data: RandomAccessCollection, Content: View>: View 
 public struct SKFlexHStack: Layout {
     let horizontaleSpacing: Double
     let verticalSpacing: Double
+    
+    public init(horizontaleSpacing: Double, verticalSpacing: Double) {
+        self.horizontaleSpacing = horizontaleSpacing
+        self.verticalSpacing = verticalSpacing
+    }
+    
+    public init(spacing: Double) {
+        self.horizontaleSpacing = spacing
+        self.verticalSpacing = spacing
+    }
 
     public func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let nbRows = Double(calculateNumberOrRow(for: subviews, with: proposal.width!))
@@ -60,7 +70,6 @@ public struct SKFlexHStack: Layout {
             pt.x += width + horizontaleSpacing
         }
     }
-
 
     func calculateNumberOrRow(for subviews: Subviews, with width: Double) -> Int {
         var nbRows = 0
