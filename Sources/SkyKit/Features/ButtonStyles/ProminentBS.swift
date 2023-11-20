@@ -68,7 +68,7 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
                     SKNoiseTexture()
                         .opacity(0.1)
                 }
-                    .opacity(configuration.isPressed ? 0.8 : 1)
+                .brightness(configuration.isPressed ? 0.8 : 0.9)
             }
             .cornerRadius(10)
             .symbolVariant(configuration.isPressed ? .fill : .none)
