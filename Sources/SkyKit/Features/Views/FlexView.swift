@@ -23,7 +23,7 @@ public struct SKFlexibleView<Data: RandomAccessCollection, Content: View>: View 
     }
     
     public var body : some View {
-        MultipleLineHStackLayout(horizontaleSpacing: spacing, verticalSpacing: spacing) {
+        SKFlexHStack(horizontaleSpacing: spacing, verticalSpacing: spacing) {
             ForEach(data, id:\.hashValue) { element in
                 content(element)
             }
@@ -32,11 +32,11 @@ public struct SKFlexibleView<Data: RandomAccessCollection, Content: View>: View 
 }
 
 @available(iOS 16.0, *)
-struct MultipleLineHStackLayout: Layout {
+public struct SKFlexHStack: Layout {
     let horizontaleSpacing: Double
     let verticalSpacing: Double
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    public func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let nbRows = Double(calculateNumberOrRow(for: subviews, with: proposal.width!))
         let minHeight = subviews.map { $0.sizeThatFits(proposal).height }.reduce(0) { max($0, $1).rounded(.up) }
         let height = nbRows * minHeight + max(nbRows - 1, 0) * verticalSpacing
@@ -44,7 +44,7 @@ struct MultipleLineHStackLayout: Layout {
         return CGSize(width: proposal.width!, height: height + 6)
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    public func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let minHeight = subviews.map { $0.sizeThatFits(proposal).height }.reduce(0) { max($0, $1).rounded(.up) }
         var pt = CGPoint(x: bounds.minX, y: bounds.minY + 3)
     
