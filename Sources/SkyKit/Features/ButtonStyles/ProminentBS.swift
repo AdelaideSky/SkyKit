@@ -69,7 +69,7 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
                         .opacity(0.1)
                 }
                 .brightness(configuration.isPressed ? -0.2 : -0.1)
-                .saturation(configuration.isPressed ? -0.1 : 0)
+                .saturation(configuration.isPressed ? 0.9 : 1)
             }
             .cornerRadius(10)
             .symbolVariant(configuration.isPressed ? .fill : .none)
