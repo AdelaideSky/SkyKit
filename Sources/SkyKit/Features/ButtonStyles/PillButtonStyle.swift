@@ -14,6 +14,7 @@ public struct PillButtonStyle: ButtonStyle {
     
     public func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
+            .foregroundStyle(.primary)
             .padding(.horizontal, 13)
             .padding(.vertical, 5)
             .background {
