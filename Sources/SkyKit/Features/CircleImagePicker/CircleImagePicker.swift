@@ -7,7 +7,6 @@
 
 import SwiftUI
 import PhotosUI
-import SwiftyCrop
 
 #if os(iOS)
 
@@ -35,11 +34,13 @@ public struct SKCircleImagePicker<Content: View>: View {
         }), content: {
             Group {
                 if let image {
-                    CropViewe(image) { result in
+                    CropView(image) { result in
                         if let result {
                             onDismiss(result)
-                            self.image = nil
                         }
+                    }.onDisappear() {
+                        self.image = nil
+                        self.photoItem = nil
                     }
                 } else {
                     Rectangle()
@@ -60,7 +61,7 @@ public struct SKCircleImagePicker<Content: View>: View {
         }
     }
 }
-struct CropViewe: View {
+struct CropView: View {
     @Environment(\.dismiss) private var dismiss
     
     private let image: UIImage
