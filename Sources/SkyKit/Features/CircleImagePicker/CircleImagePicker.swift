@@ -10,7 +10,7 @@ import PhotosUI
 
 #if os(iOS)
 
-public struct SKSquareImagePicker<Content: View>: View {
+public struct SKCircleImagePicker<Content: View>: View {
     @ViewBuilder let content: () -> (Content)
     
     @State var image: UIImage? = nil
@@ -114,7 +114,7 @@ struct CropView: View {
                     .scaleEffect(scale)
                     .offset(offset)
                     .mask(
-                        Rectangle()
+                        Circle()
                             .frame(width: maskRadius * 2, height: maskRadius * 2)
                     )
             }
