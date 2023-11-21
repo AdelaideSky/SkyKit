@@ -12,9 +12,11 @@ import SwiftyCrop
 #if os(iOS)
 
 public struct SKCircleImagePicker<Content: View>: View {
-    let content: () -> (Content)
+    @ViewBuilder let content: () -> (Content)
     
     @State var image: UIImage? = nil
+    
+    @State var photoItem: PhotosPickerItem? = nil
     
     let onDismiss: (UIImage?) -> ()
     
@@ -24,26 +26,37 @@ public struct SKCircleImagePicker<Content: View>: View {
     }
     
     public var body: some View {
-        PhotosPicker(selection: .init(get: {
-            return nil
-        }, set: { item in
-            Task {
-                if let item, let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
-                    self.image = image
-                }
-            }
-        }), label: content)
-        .fullScreenCover(isPresented: .init(get: { !(image == nil) }, set: { newValue in
+        
+        PhotosPicker(selection: $photoItem, matching: .images, label: content)
+        .fullScreenCover(isPresented: .init(get: { !(photoItem == nil) }, set: { newValue in
             if !newValue {
-                image = nil
+                photoItem = nil
             }
         }), content: {
-            CropViewe(image!) { result in
-                if let result {
-                    onDismiss(result)
+            Group {
+                if let image {
+                    CropViewe(image) { result in
+                        if let result {
+                            onDismiss(result)
+                        }
+                    }
+                } else {
+                    Rectangle()
+                        .fill(.background)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .ignoresSafeArea()
+                        .overlay {
+                            ProgressView()
+                                .padding()
+                        }
                 }
-            }
+            }.animation(.easeInOut, value: image)
         })
+        .task(id: photoItem) {
+            if let photoItem, let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                self.image = image
+            }
+        }
     }
 }
 struct CropViewe: View {
