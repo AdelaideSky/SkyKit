@@ -59,17 +59,20 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
                             .fill()
                             .foregroundStyle(.tint.shadow(.inner(color: configuration.isPressed ? .black.opacity(0.2) : .white.opacity(0.2), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.25), radius: 5, x: -5, y: -5)))
                             .opacity(isEnabled ? 1 : 0)
+                            .brightness(configuration.isPressed ? -0.2 : -0.1)
+                            .saturation(configuration.isPressed ? 0.9 : 1)
                     } else {
                         Rectangle()
                             .fill()
                             .foregroundStyle(.tint.shadow(.inner(color: configuration.isPressed ? .black.opacity(0.2) : .white.opacity(0.3), radius: 5, x: 5, y: 5)).shadow(.inner(color: .black.opacity(0.2), radius: 5, x: -5, y: -5)))
                             .opacity(isEnabled ? 1 : 0)
+                            .brightness(configuration.isPressed ? -0.1 : 0)
+                            .saturation(configuration.isPressed ? 0.95 : 1)
                     }
                     SKNoiseTexture()
                         .opacity(0.1)
                 }
-                .brightness(configuration.isPressed ? -0.2 : -0.1)
-                .saturation(configuration.isPressed ? 0.9 : 1)
+                
             }
             .cornerRadius(10)
             .symbolVariant(configuration.isPressed ? .fill : .none)
