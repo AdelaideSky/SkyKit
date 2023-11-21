@@ -16,10 +16,10 @@ public struct PillButtonStyle: ButtonStyle {
         configuration.label
             .foregroundStyle(.background)
             .padding(.horizontal, 13)
-            .padding(.vertical, 7)
+            .padding(.vertical, 5)
             .background {
                 Capsule()
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.thickMaterial)
                     .opacity(configuration.isPressed ? 0.9 : 1)
             }
             .symbolVariant(configuration.isPressed ? .fill : .none)
