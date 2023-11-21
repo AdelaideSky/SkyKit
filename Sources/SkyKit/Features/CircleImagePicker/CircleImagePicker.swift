@@ -114,7 +114,7 @@ struct CropView: View {
                     .scaleEffect(scale)
                     .offset(offset)
                     .mask(
-                        Square()
+                        Rectangle()
                             .frame(width: maskRadius * 2, height: maskRadius * 2)
                     )
             }
