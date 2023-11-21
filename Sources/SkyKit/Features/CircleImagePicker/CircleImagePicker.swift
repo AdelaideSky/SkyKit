@@ -38,6 +38,7 @@ public struct SKCircleImagePicker<Content: View>: View {
                     CropViewe(image) { result in
                         if let result {
                             onDismiss(result)
+                            self.image = nil
                         }
                     }
                 } else {
