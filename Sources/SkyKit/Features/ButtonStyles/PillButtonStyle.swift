@@ -14,12 +14,11 @@ public struct PillButtonStyle: ButtonStyle {
     
     public func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-            .foregroundStyle(.background)
             .padding(.horizontal, 13)
             .padding(.vertical, 5)
             .background {
                 Capsule()
-                    .foregroundStyle(.thickMaterial)
+                    .foregroundStyle(.thinMaterial)
                     .opacity(configuration.isPressed ? 0.9 : 1)
             }
             .symbolVariant(configuration.isPressed ? .fill : .none)
