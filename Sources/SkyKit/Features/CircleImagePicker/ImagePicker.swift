@@ -42,7 +42,7 @@ public struct SKImagePicker<Content: View>: View {
         }), content: {
             Group {
                 if let image {
-                    CropView(image) { result in
+                    CropView(image, shape: shape) { result in
                         if let result {
                             onDismiss(result)
                         }
