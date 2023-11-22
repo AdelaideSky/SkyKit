@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct SKNoiseTexture: View {
+public struct SKMetalNoiseTexture: View {
     public init() {}
     public var body: some View {
         Rectangle()
@@ -16,8 +16,8 @@ public struct SKNoiseTexture: View {
     }
 }
 
-@available(*, deprecated, renamed: "SKNoiseTexture", message: "Switched to a Metal shader system, more efficient, more sharp. You may still want to use the legacy visuals though, as the pixels are bigger. Though, this isn't recommended")
-public struct SKLegacyNoiseTexture: View {
+//@available(*, deprecated, renamed: "SKNoiseTexture", message: "Switched to a Metal shader system, more efficient, more sharp. You may still want to use the legacy visuals though, as the pixels are bigger. Though, this isn't recommended")
+public struct SKNoiseTexture: View {
     
     @State var image: Image?
     

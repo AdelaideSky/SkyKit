@@ -6,7 +6,7 @@
 //
 
 #include <metal_stdlib>
-#include "Noise_Header.metal"
+#include "Noise_header.metal"
 using namespace metal;
 
 ///
@@ -68,7 +68,6 @@ thread float Random::rand() {
     
     Random rng = Random(position.x + 1, position.y + 1);
     
-    // When using Loki, it's as simple as just calling rand()!
     float random_float = rng.rand();
     return half4(random_float, random_float, random_float, random_float);
 }
