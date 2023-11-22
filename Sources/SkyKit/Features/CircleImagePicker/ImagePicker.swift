@@ -10,7 +10,12 @@ import PhotosUI
 
 #if os(iOS)
 
-public struct SKCircleImagePicker<Content: View>: View {
+public enum SKShapeType {
+    case circle
+    case square
+}
+
+public struct SKImagePicker<Content: View>: View {
     @ViewBuilder let content: () -> (Content)
     
     @State var image: UIImage? = nil
@@ -19,9 +24,12 @@ public struct SKCircleImagePicker<Content: View>: View {
     
     let onDismiss: (UIImage?) -> ()
     
-    public init(onDismiss: @escaping (UIImage?) -> (), _ content: @escaping () -> Content) {
+    let shape: SKShapeType
+    
+    public init(shape: SKShapeType = .circle, onDismiss: @escaping (UIImage?) -> (), _ content: @escaping () -> Content) {
         self.content = content
         self.onDismiss = onDismiss
+        self.shape = shape
     }
     
     public var body: some View {
@@ -76,12 +84,16 @@ struct CropView: View {
     @State var imageSizeInView: CGSize = .zero
     var maskRadius: CGFloat = 130
     
+    let shape: SKShapeType
+    
     init(
         _ image: UIImage,
+        shape: SKShapeType,
         onComplete: @escaping (UIImage?) -> Void
     ) {
         self.image = image
         self.onComplete = onComplete
+        self.shape = shape
     }
     
     var body: some View {
@@ -114,8 +126,16 @@ struct CropView: View {
                     .scaleEffect(scale)
                     .offset(offset)
                     .mask(
-                        Circle()
-                            .frame(width: maskRadius * 2, height: maskRadius * 2)
+                        switch shape {
+                        case .circle:
+                            Circle()
+                                .frame(width: maskRadius * 2, height: maskRadius * 2)
+                        case .square:
+                            RoundedRectangle(cornerRadius: 10) {
+                                .frame(width: maskRadius * 2, height: maskRadius * 2)
+                            }
+                        }
+                            
                     )
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
