@@ -126,16 +126,14 @@ struct CropView: View {
                     .scaleEffect(scale)
                     .offset(offset)
                     .mask(
-                        Group {
-                            switch shape {
-                            case .circle:
-                                Circle()
-                                    .frame(width: maskRadius * 2, height: maskRadius * 2)
-                            case .square:
-                                RoundedRectangle(cornerRadius: 10) {
-                                    .frame(width: maskRadius * 2, height: maskRadius * 2)
-                                }
-                            }
+                        switch shape {
+                        case .circle:
+                            Circle()
+                                .frame(width: maskRadius * 2, height: maskRadius * 2)
+                        case .square:
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: maskRadius * 2, height: maskRadius * 2)
+                            
                         }
                     )
             }
