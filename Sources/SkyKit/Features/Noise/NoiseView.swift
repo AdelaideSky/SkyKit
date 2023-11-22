@@ -8,6 +8,15 @@
 import SwiftUI
 
 public struct SKNoiseTexture: View {
+    public var body: some View {
+        Rectangle()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .colorEffect(ShaderLibrary.noise())
+    }
+}
+
+@available(*, deprecated, renamed: "SKNoiseTexture", message: "Switched to a Metal shader system, more efficient, more sharp. You may still want to use the legacy visuals though, as the pixels are bigger. Though, this isn't recommended")
+public struct SKLegacyNoiseTexture: View {
     
     @State var image: Image?
     
