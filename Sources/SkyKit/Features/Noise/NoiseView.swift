@@ -8,6 +8,7 @@
 import SwiftUI
 
 public struct SKNoiseTexture: View {
+    public init() {}
     public var body: some View {
         Rectangle()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
