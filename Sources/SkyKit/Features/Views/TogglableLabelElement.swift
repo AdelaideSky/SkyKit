@@ -8,11 +8,17 @@
 import SwiftUI
 
 public struct SKTogglableLabelElement<Element: Equatable>: View {
+    @Environment(\.isEnabled) var isEnabled
     @Environment(\.colorScheme) private var colorScheme
     
     var element: Element
     @Binding var list: [Element]
     var label: String
+    
+    var shouldHighlight {
+        guard isEnabled else { return false }
+        return list.contains(where: {$0 == element})
+    }
     
     public init(_ element: Element, label: String, list: Binding<[Element]>) {
         self.element = element
@@ -23,10 +29,10 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
         Group {
             if colorScheme == .dark {
                 Text(label)
-                    .foregroundStyle(list.contains(where: {$0 == element}) ? .black : .white)
+                    .foregroundStyle(shouldHighlight ? .black : .white)
             } else {
                 Text(label)
-                    .foregroundStyle(list.contains(where: {$0 == element}) ? .white : .black)
+                    .foregroundStyle(shouldHighlight ? .white : .black)
             }
         }
             .font(.system(size: 15))
@@ -35,10 +41,10 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
             .background {
                 if colorScheme == .dark {
                     Capsule()
-                        .fill(list.contains(where: {$0 == element}) ? .white : .gray.opacity(0.3))
+                        .fill(shouldHighlight ? .white : .gray.opacity(0.3))
                 } else {
                     Capsule()
-                        .fill(list.contains(where: {$0 == element}) ? .black.opacity(0.5) : Color(hex: "F6F6F6")!)
+                        .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6")!)
                 }
             }
             .onTapGesture {
