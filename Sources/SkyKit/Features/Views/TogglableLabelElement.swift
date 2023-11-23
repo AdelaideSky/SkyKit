@@ -15,7 +15,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
     @Binding var list: [Element]
     var label: String
     
-    var shouldHighlight {
+    var shouldHighlight: Bool {
         guard isEnabled else { return false }
         return list.contains(where: {$0 == element})
     }
