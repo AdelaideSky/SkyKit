@@ -69,20 +69,19 @@ public struct SKImagePicker<Content: View>: View {
         }
     }
 }
+
 struct CropView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     
     private let image: UIImage
     private let onComplete: (UIImage?) -> Void
-    @State var scale: CGFloat = 1.0
-    @State var lastScale: CGFloat = 1.0
-    @State var offset: CGSize = .zero
-    @State var lastOffset: CGSize = .zero
-    @State var circleSize: CGSize = .zero
-
-    let maxMagnificationScale: CGFloat = 4.0
-    @State var imageSizeInView: CGSize = .zero
-    var maskRadius: CGFloat = 130
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+    @State private var imageSizeInView: CGSize = .zero
+    private let maskRadius: CGFloat = 130
     
     let shape: SKShapeType
     
@@ -97,130 +96,126 @@ struct CropView: View {
     }
     
     var body: some View {
-        VStack {
-            Text("Move and scale")
-                .font(.system(size: 16, weight: .regular))
-                .foregroundColor(.white)
-                .padding(.top, 80)
-                .zIndex(1)
-            
-            ZStack {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .scaleEffect(scale)
-                    .offset(offset)
-                    .opacity(0.5)
-                    .overlay(
-                        GeometryReader { geometry in
-                            Color.clear
-                                .onAppear {
-                                    imageSizeInView = geometry.size
+        NavigationView {
+            VStack {
+                ZStack {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .scaleEffect(scale)
+                        .offset(offset)
+                        .opacity(0.5)
+                        .overlay(
+                            GeometryReader { geometry in
+                                Color.clear
+                                    .onAppear {
+                                        imageSizeInView = geometry.size
+                                        
+                                        lastScale = 1
+                                        let maxScaleValues = calculateMagnificationGestureMaxValues()
+                                        scale = min(max(self.scale, maxScaleValues.0), maxScaleValues.1)
+                                    }
+                            }
+                        )
+                    
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .scaleEffect(scale)
+                        .offset(offset)
+                        .mask(
+                            Group {
+                                switch shape {
+                                case .circle:
+                                    Circle()
+                                        .frame(width: maskRadius * 2, height: maskRadius * 2)
+                                case .square:
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .frame(width: maskRadius * 2, height: maskRadius * 2)
                                 }
+                            }
+                        )
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .gesture(
+                    MagnificationGesture()
+                        .onChanged { value in
+                            let delta = value / lastScale
+                            lastScale = value
+                            let maxScaleValues = calculateMagnificationGestureMaxValues()
+                            
+                            scale = min(max(self.scale * delta, maxScaleValues.0), maxScaleValues.1)
+                            
+                            let maxOffsetPoint = calculateDragGestureMax()
+                            let newX = min(max(lastOffset.width, -maxOffsetPoint.x), maxOffsetPoint.x)
+                            let newY = min(max(lastOffset.height, -maxOffsetPoint.y), maxOffsetPoint.y)
+                            offset = CGSize(width: newX, height: newY)
                         }
-                    )
-                
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .scaleEffect(scale)
-                    .offset(offset)
-                    .mask(
-                        Group {
-                            switch shape {
-                            case .circle:
-                                Circle()
-                                    .frame(width: maskRadius * 2, height: maskRadius * 2)
-                            case .square:
-                                RoundedRectangle(cornerRadius: 10)
-                                    .frame(width: maskRadius * 2, height: maskRadius * 2)
-                                
-                            }
+                        .onEnded { _ in
+                            lastScale = 1.0
+                            lastOffset = offset
                         }
-                    )
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .gesture(
-                MagnificationGesture()
-                    .onChanged { value in
-                        let delta = value / lastScale
-                        lastScale = value
-                        let maxScaleValues = calculateMagnificationGestureMaxValues()
-                        
-                        scale = min(max(self.scale * delta, maxScaleValues.0), maxScaleValues.1)
-                        
-                        let maxOffsetPoint = calculateDragGestureMax()
-                        let newX = min(max(lastOffset.width, -maxOffsetPoint.x), maxOffsetPoint.x)
-                        let newY = min(max(lastOffset.height, -maxOffsetPoint.y), maxOffsetPoint.y)
-                        offset = CGSize(width: newX, height: newY)
-                    }
-                    .onEnded { _ in
-                        lastScale = 1.0
-                        lastOffset = offset
-                    }
-                    .simultaneously(
-                        with: DragGesture()
-                            .onChanged { value in
-                                let maxOffsetPoint = calculateDragGestureMax()
-                                let newX = min(max(value.translation.width + lastOffset.width, -maxOffsetPoint.x), maxOffsetPoint.x)
-                                let newY = min(max(value.translation.height + lastOffset.height, -maxOffsetPoint.y), maxOffsetPoint.y)
-                                offset = CGSize(width: newX, height: newY)
-                            }
-                            .onEnded { _ in
-                                lastOffset = offset
-                            }
-                    )
-            )
-            
-            HStack {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Cancel")
-                        .foregroundStyle(.background)
-                }.font(.system(size: 15))
-                    .padding(.horizontal, 13)
-                    .padding(.vertical, 7)
-                    .background {
-                        Capsule()
-                            .foregroundStyle(.primary)
-                            .opacity(0.8)
-                    }
-                
+                        .simultaneously(
+                            with: DragGesture()
+                                .onChanged { value in
+                                    let maxOffsetPoint = calculateDragGestureMax()
+                                    let newX = min(max(value.translation.width + lastOffset.width, -maxOffsetPoint.x), maxOffsetPoint.x)
+                                    let newY = min(max(value.translation.height + lastOffset.height, -maxOffsetPoint.y), maxOffsetPoint.y)
+                                    offset = CGSize(width: newX, height: newY)
+                                }
+                                .onEnded { _ in
+                                    lastOffset = offset
+                                }
+                        )
+                )
                 Spacer()
-                
-                Button {
-                    onComplete(crop(image))
-                    dismiss()
-                } label: {
-                    Text("Save")
-                        .foregroundStyle(.background)
-                }.font(.system(size: 15))
-                    .padding(.horizontal, 13)
-                    .padding(.vertical, 7)
-                    .background {
-                        Capsule()
-                            .foregroundStyle(.primary)
-                            .opacity(0.8)
+            }
+            .background(.background)
+            .allowsTightening(true)
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitle("Move and scale")
+            .toolbar {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Cancel")
+                            .foregroundStyle(.background)
+                            .padding(.vertical, 5)
+                            .frame(width: 80)
+                            .background {
+                                Capsule()
+                                    .fill(Color(uiColor: UIColor.label).opacity(0.9))
+                            }
                     }
-            }.padding()
-            .frame(maxWidth: .infinity, alignment: .bottom)
-        }.ignoresSafeArea()
-        .background(.background)
+                    Spacer()
+                    Button {
+                        onComplete(crop(image))
+                        dismiss()
+                    } label: {
+                        Text("Save")
+                            .foregroundStyle(.background)
+                            .padding(.vertical, 5)
+                            .frame(width: 60)
+                            .background {
+                                Capsule()
+                                    .fill(Color(uiColor: UIColor.label).opacity(0.9))
+                            }
+                    }
+                }
+            }
+        }
     }
+    
     func calculateDragGestureMax() -> CGPoint {
         let yLimit = ((imageSizeInView.height / 2) * scale) - maskRadius
         let xLimit = ((imageSizeInView.width / 2) * scale) - maskRadius
         return CGPoint(x: xLimit, y: yLimit)
     }
     
-    /**
-     Calculates the maximum magnification values that are applied when zooming the image, so that the image can not be zoomed out of its own size.
-     - Returns: A tuple (CGFloat, CGFloat) representing the minimum and maximum magnification scale values. The first value is the minimum scale at which the image can be displayed without being smaller than its own size. The second value is the preset maximum magnification scale.
-     */
     func calculateMagnificationGestureMaxValues() -> (CGFloat, CGFloat) {
         let minScale = (maskRadius * 2) / min(imageSizeInView.width, imageSizeInView.height)
-        return (minScale, maxMagnificationScale)
+        return (minScale, 4.0) // Assuming maxMagnificationScale is always 4.0
     }
     
     /**
