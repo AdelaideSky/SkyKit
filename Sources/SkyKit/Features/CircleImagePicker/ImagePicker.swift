@@ -63,7 +63,6 @@ public struct SKImagePicker<Content: View>: View {
                         }
                 }
             }.animation(.easeInOut, value: image)
-                .presentationBackgroundInteraction(.disabled)
                 .interactiveDismissDisabled(true)
         })
         .task(id: photoItem) {
@@ -173,9 +172,13 @@ struct CropView: View {
                         )
                 )
                 Spacer()
-            }
-            .background(.background)
-            .allowsTightening(true)
+            }.allowsHitTesting(true)
+                .background(content: {
+                    Rectangle()
+                        .fill(.background)
+                        .allowsHitTesting(false)
+                })
+            
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarTitle("Move and scale")
             .toolbar {
