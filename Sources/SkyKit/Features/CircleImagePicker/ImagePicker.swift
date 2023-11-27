@@ -34,7 +34,9 @@ public struct SKImagePicker<Content: View>: View {
     
     public var body: some View {
         
-        PhotosPicker(selection: $photoItem, matching: .images, label: content)
+        Group {
+            PhotosPicker(selection: $photoItem, matching: .images, label: content)
+        }
         .fullScreenCover(isPresented: .init(get: { !(photoItem == nil) }, set: { newValue in
             if !newValue {
                 photoItem = nil
@@ -62,6 +64,7 @@ public struct SKImagePicker<Content: View>: View {
                 }
             }.animation(.easeInOut, value: image)
                 .presentationBackgroundInteraction(.disabled)
+                .interactiveDismissDisabled(true)
         })
         .task(id: photoItem) {
             if let photoItem, let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
