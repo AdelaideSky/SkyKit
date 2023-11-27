@@ -61,6 +61,7 @@ public struct SKImagePicker<Content: View>: View {
                         }
                 }
             }.animation(.easeInOut, value: image)
+                .presentationBackgroundInteraction(.disabled)
         })
         .task(id: photoItem) {
             if let photoItem, let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
