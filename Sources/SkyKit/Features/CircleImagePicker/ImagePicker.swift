@@ -19,8 +19,9 @@ public struct SKImagePicker<Content: View>: View {
     @ViewBuilder let content: () -> (Content)
     
     @State var image: UIImage? = nil
-    
     @State var photoItem: PhotosPickerItem? = nil
+    
+    @State var displayPicker: Bool = false
     
     let onDismiss: (UIImage?) -> ()
     
@@ -34,16 +35,18 @@ public struct SKImagePicker<Content: View>: View {
     
     public var body: some View {
         
-        Group {
-            PhotosPicker(selection: $photoItem, matching: .images, label: content)
-        }
-        .sheet(isPresented: .init(get: { !(photoItem == nil) }, set: { newValue in
-            if !newValue {
-                photoItem = nil
+        Button(action: {
+            displayPicker = true
+        }, label: {
+            content()
+        }).buttonStyle(.plain)
+            .sheet(isPresented: $displayPicker) {
+                PhotosPicker(selection: $photoItem, matching: .images, label: { EmptyView() })
+                    .photosPickerStyle(.inline)
+                    .ignoresSafeArea(edges: .bottom)
             }
-        }), content: {
-            Group {
-                if let image {
+            .fullScreenCover(item: $image) { image in
+                Group {
                     CropView(image, shape: shape) { result in
                         if let result {
                             onDismiss(result)
@@ -52,22 +55,19 @@ public struct SKImagePicker<Content: View>: View {
                         self.image = nil
                         self.photoItem = nil
                     }
-                } else {
-                    ProgressView()
-                        .padding()
-                        .background(.background)
-                        .ignoresSafeArea()
-                }
-            }.animation(.easeInOut, value: image)
-                .interactiveDismissDisabled(true)
-        })
-        .task(id: photoItem) {
-            if let photoItem, let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
-                self.image = image
+                }.animation(.easeInOut, value: image)
+                    .interactiveDismissDisabled(true)
             }
-        }
+            .task(id: photoItem) {
+                displayPicker = false
+                if let photoItem, let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                    self.image = image
+                }
+            }
     }
 }
+
+extension UIImage: Identifiable {}
 
 struct CropView: View {
     @Environment(\.dismiss) private var dismiss
@@ -81,6 +81,10 @@ struct CropView: View {
     @State private var lastOffset: CGSize = .zero
     @State private var imageSizeInView: CGSize = .zero
     private let maskRadius: CGFloat = 130
+    
+    @State var blur: CGFloat = 10
+    
+    @State var timer: Timer? = nil
     
     let shape: SKShapeType
     
@@ -103,7 +107,8 @@ struct CropView: View {
                         .scaledToFit()
                         .scaleEffect(scale)
                         .offset(offset)
-                        .opacity(0.5)
+                        .opacity(0.7)
+//                        .blur(radius: blur)
                         .overlay(
                             GeometryReader { geometry in
                                 Color.clear
@@ -117,6 +122,11 @@ struct CropView: View {
                             }
                         )
                     
+                    Rectangle()
+                        .fill(.thinMaterial)
+                        .opacity(blur == 0 ? 0 : 1)
+                        .ignoresSafeArea()
+                    
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
@@ -127,18 +137,36 @@ struct CropView: View {
                                 switch shape {
                                 case .circle:
                                     Circle()
-                                        .frame(width: maskRadius * 2, height: maskRadius * 2)
                                 case .square:
                                     RoundedRectangle(cornerRadius: 10)
-                                        .frame(width: maskRadius * 2, height: maskRadius * 2)
                                 }
-                            }
+                            }.frame(width: maskRadius * 2, height: maskRadius * 2)
                         )
+                        .overlay(
+                            Group {
+                                switch shape {
+                                case .circle:
+                                    Circle()
+                                        .stroke(.secondary, lineWidth: 1)
+                                case .square:
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(.secondary, lineWidth: 1)
+                                }
+                            }.frame(width: maskRadius * 2, height: maskRadius * 2)
+                                .opacity(0.3)
+                        )
+                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .gesture(
                     MagnificationGesture()
                         .onChanged { value in
+                            timer?.invalidate()
+                            timer = nil
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                blur = 0
+                            }
+                            
                             let delta = value / lastScale
                             lastScale = value
                             let maxScaleValues = calculateMagnificationGestureMaxValues()
@@ -153,10 +181,21 @@ struct CropView: View {
                         .onEnded { _ in
                             lastScale = 1.0
                             lastOffset = offset
+                            self.timer = .scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
+                                withAnimation(.easeInOut) {
+                                    blur = 10
+                                }
+                            }
                         }
                         .simultaneously(
                             with: DragGesture()
                                 .onChanged { value in
+                                    timer?.invalidate()
+                                    timer = nil
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        blur = 0
+                                    }
+                                    
                                     let maxOffsetPoint = calculateDragGestureMax()
                                     let newX = min(max(value.translation.width + lastOffset.width, -maxOffsetPoint.x), maxOffsetPoint.x)
                                     let newY = min(max(value.translation.height + lastOffset.height, -maxOffsetPoint.y), maxOffsetPoint.y)
@@ -164,12 +203,17 @@ struct CropView: View {
                                 }
                                 .onEnded { _ in
                                     lastOffset = offset
+                                    self.timer = .scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                                        withAnimation(.easeInOut) {
+                                            blur = 10
+                                        }
+                                    }
                                 }
                         )
                 )
                 Spacer()
             }
-            .background(.background)
+            .background(.ultraThickMaterial)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarTitle("Move and scale")
             .toolbar {
