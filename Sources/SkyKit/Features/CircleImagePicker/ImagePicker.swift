@@ -37,7 +37,7 @@ public struct SKImagePicker<Content: View>: View {
         Group {
             PhotosPicker(selection: $photoItem, matching: .images, label: content)
         }
-        .fullScreenCover(isPresented: .init(get: { !(photoItem == nil) }, set: { newValue in
+        .sheet(isPresented: .init(get: { !(photoItem == nil) }, set: { newValue in
             if !newValue {
                 photoItem = nil
             }
@@ -53,14 +53,10 @@ public struct SKImagePicker<Content: View>: View {
                         self.photoItem = nil
                     }
                 } else {
-                    Rectangle()
-                        .fill(.background)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    ProgressView()
+                        .padding()
+                        .background(.background)
                         .ignoresSafeArea()
-                        .overlay {
-                            ProgressView()
-                                .padding()
-                        }
                 }
             }.animation(.easeInOut, value: image)
                 .interactiveDismissDisabled(true)
@@ -172,13 +168,8 @@ struct CropView: View {
                         )
                 )
                 Spacer()
-            }.allowsHitTesting(true)
-                .background(content: {
-                    Rectangle()
-                        .fill(.background)
-                        .allowsHitTesting(false)
-                })
-            
+            }
+            .background(.background)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarTitle("Move and scale")
             .toolbar {
@@ -211,6 +202,7 @@ struct CropView: View {
                     }
                 }
             }
+            .ignoresSafeArea()
         }
     }
     
