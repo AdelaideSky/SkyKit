@@ -39,6 +39,7 @@ public struct SKImagePicker<Content: View>: View {
             displayPicker = true
         }, label: {
             content()
+                .foregroundStyle(.tint)
         }).buttonStyle(.plain)
             .sheet(isPresented: $displayPicker) {
                 PhotosPicker(selection: $photoItem, matching: .images, label: { EmptyView() })
