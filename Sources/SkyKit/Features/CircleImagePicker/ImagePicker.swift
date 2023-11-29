@@ -124,7 +124,7 @@ struct CropView: View {
                         )
                     
                     Rectangle()
-                        .fill(.thinMaterial)
+                        .fill(.ultraThinMaterial)
                         .opacity(blur == 0 ? 0 : 1)
                         .ignoresSafeArea()
                     
