@@ -20,7 +20,7 @@ public struct SKDepthPicture<S: Shape>: View {
     
     @State var manager = SKMotionManager()
     
-    public init(_ image: UIImage, foreground: UIImage? = nil, clipShape: S = RoundedRectangle(cornerRadius: 7)) {
+    public init(_ image: UIImage, foreground: UIImage? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10)) {
         self.image = image
         self.foreground = foreground
         self.clipShape = clipShape
