@@ -40,7 +40,7 @@ public struct SKDepthPicture<S: Shape>: View {
                     .resizable()
                     .scaledToFit()
                     .padding(-5)
-                    .shadow(color: .black, radius: 10)
+                    .shadow(radius: 10)
                     .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude*3))
             }
         }.clipShape(clipShape)
