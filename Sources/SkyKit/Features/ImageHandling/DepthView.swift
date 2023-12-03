@@ -17,13 +17,14 @@ public struct SKDepthPicture<S: Shape>: View {
     var image: UIImage
     var foreground: UIImage? = nil
     var clipShape: S
-    
+    var magnitude: Int
     @State var manager = SKMotionManager()
     
-    public init(_ image: UIImage, foreground: UIImage? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10)) {
+    public init(_ image: UIImage, foreground: UIImage? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Int = 3) {
         self.image = image
         self.foreground = foreground
         self.clipShape = clipShape
+        self.magnitude = magnitude
     }
     
     public var body: some View {
@@ -33,14 +34,14 @@ public struct SKDepthPicture<S: Shape>: View {
                 .scaledToFit()
                 .padding(-10)
                 .blur(radius: foreground == nil || !isEnabled ? 0 : 5)
-                .modifier(SKParallaxMotionModifier(manager: manager, magnitude: 5, active: isEnabled))
+                .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude, active: isEnabled))
             if let foreground, isEnabled {
                 Image(uiImage: foreground)
                     .resizable()
                     .scaledToFit()
                     .padding(-5)
                     .shadow(color: .black, radius: 10)
-                    .modifier(SKParallaxMotionModifier(manager: manager, magnitude: 15))
+                    .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude*3))
             }
         }.clipShape(clipShape)
             .animation(.easeInOut, value: isEnabled)
