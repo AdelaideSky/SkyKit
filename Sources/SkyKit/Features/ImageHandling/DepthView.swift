@@ -81,18 +81,39 @@ public struct SKDepthToggle: View {
 }
 
 struct SKParallaxMotionModifier: ViewModifier {
+    @Environment(\.scenePhase) var scenePhase
     
     @ObservedObject var manager: SKMotionManager
     var magnitude: Double
     var active: Bool = true
     
     func body(content: Content) -> some View {
-        if active {
-            content
-                .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
-                .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
-        } else {
-            content
+        Group {
+            if active {
+                content
+                    .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
+                    .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
+            } else {
+                content
+            }
+        }
+        .onAppear() {
+            manager.start()
+        }
+        .onDisappear() {
+            manager.stop()
+        }
+        .onChange(of: scenePhase) {
+            switch scenePhase {
+            case .inactive:
+                manager.stop()
+            case .background:
+                manager.stop()
+            case .active:
+                manager.start()
+            default:
+                break
+            }
         }
     }
 }
@@ -105,10 +126,15 @@ class SKMotionManager: ObservableObject {
     
     @ObservationIgnored
     private var manager: CMMotionManager
-
-    init() {
-        self.manager = CMMotionManager()
-        self.manager.deviceMotionUpdateInterval = 1/60
+    
+    @ObservationIgnored
+    private var active: Bool = true
+    
+    func stop() {
+        self.manager.stopDeviceMotionUpdates()
+    }
+    
+    func start() {
         self.manager.startDeviceMotionUpdates(to: .main) { (motionData, error) in
             guard error == nil else {
                 print(error!)
@@ -120,7 +146,11 @@ class SKMotionManager: ObservableObject {
                 self.roll = motionData.attitude.roll
             }
         }
+    }
 
+    init() {
+        self.manager = CMMotionManager()
+        self.manager.deviceMotionUpdateInterval = 1/60
     }
 }
 
