@@ -41,11 +41,12 @@ public struct SKImagePicker<Content: View>: View {
             content()
                 .foregroundStyle(.tint)
         }).buttonStyle(.plain)
-            .sheet(isPresented: $displayPicker) {
-                PhotosPicker(selection: $photoItem, matching: .images, label: { EmptyView() })
-                    .photosPickerStyle(.inline)
-                    .ignoresSafeArea(edges: .bottom)
-            }
+            .photosPicker(isPresented: $displayPicker, selection: $photoItem, matching: .images)
+//            .sheet(isPresented: $displayPicker) {
+//                PhotosPicker(selection: $photoItem, matching: .images, label: { EmptyView() })
+//                    .photosPickerStyle(.inline)
+//                    .ignoresSafeArea(edges: .bottom)
+//            }
             .fullScreenCover(item: $image) { image in
                 Group {
                     CropView(image, shape: shape) { result in
@@ -125,7 +126,7 @@ struct CropView: View {
                     
                     Rectangle()
                         .fill(.ultraThinMaterial)
-                        .opacity(blur == 0 ? 0 : 1)
+                        .opacity(blur == 0 ? 0 : 0.9)
                         .ignoresSafeArea()
                     
                     Image(uiImage: image)
