@@ -49,6 +49,66 @@ public struct SKDepthPicture<S: Shape>: View {
     }
 }
 
+public struct SKAsyncDepthPicture<S: Shape>: View {
+    @Environment(\.isEnabled) var isEnabled
+    
+    @State var image: UIImage? = nil
+    @State var foreground: UIImage? = nil
+    
+    var imageData: Data
+    var foregroundData: Data? = nil
+    
+    
+    var clipShape: S
+    var magnitude: Double
+    @State var manager = SKMotionManager()
+    
+    public init(_ image: Data, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3) {
+        self.imageData = image
+        self.foregroundData = foreground
+        self.clipShape = clipShape
+        self.magnitude = magnitude
+    }
+    
+    public var body: some View {
+        ZStack {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .padding(-10)
+                    .blur(radius: foreground == nil || !isEnabled ? 0 : 5)
+                    .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude, active: isEnabled && foreground != nil))
+                if let foreground, isEnabled {
+                    Image(uiImage: foreground)
+                        .resizable()
+                        .scaledToFit()
+                        .padding(-5)
+                        .shadow(radius: 10)
+                        .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude*3))
+                }
+            }
+        }.clipShape(clipShape)
+            .animation(.easeInOut, value: isEnabled)
+            .animation(.easeInOut, value: foregroundData)
+            .task(id: imageData) {
+                DispatchQueue(label: "SKAsyncDepthPicture").async {
+                    let image = UIImage(data: imageData)
+                    DispatchQueue.main.sync { self.image = image }
+                }
+            }
+            .task(id: foregroundData) {
+                DispatchQueue(label: "SKAsyncDepthPicture").async {
+                    if let foregroundData {
+                        let image = UIImage(data: foregroundData)
+                        DispatchQueue.main.sync { self.foreground = image }
+                    } else {
+                        DispatchQueue.main.sync { self.foreground = nil }
+                    }
+                }
+            }
+    }
+}
 public struct SKDepthToggle: View {
     @Binding var enabled: Bool
     let state: SKAnalysisState
