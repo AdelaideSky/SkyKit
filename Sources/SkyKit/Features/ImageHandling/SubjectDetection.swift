@@ -9,6 +9,11 @@
 import SwiftUI
 import Vision
 
+class SKSubjectDetectionHandlerModel {
+    func process(_ image: UIImage?, state: Binding<SKAnalysisState>) async {
+        // Your asynchronous code here
+    }
+}
 struct SKSubjectDetectionHandler: ViewModifier {
     
     @Binding var image: UIImage?
@@ -16,37 +21,56 @@ struct SKSubjectDetectionHandler: ViewModifier {
     
     @Binding var state: SKAnalysisState
     
+    
+    
     func body(content: Content) -> some View {
         content
             .task(id: image) {
-                state = .unavailable
-                DispatchQueue(label: "ImageCropping").async {
-                    if let image {
-                        foreground = nil
-                        DispatchQueue.main.sync { state = .inProgress }
-                        
-                        let request = VNGenerateForegroundInstanceMaskRequest()
-                        let handler = VNImageRequestHandler(cgImage: image.cgImage!)
-                        
-                        try? handler.perform([request])
-                        
-                        guard let result = request.results?.first else {
-                            DispatchQueue.main.sync { state = .noSubject }
-                            return
-                        }
-                        
-                        if let buffer = try? result.generateMaskedImage(ofInstances: result.allInstances, from: handler, croppedToInstancesExtent: false) {
-                            let foreground = UIImage(pixelBuffer: buffer)
-                            DispatchQueue.main.sync {
+                await processImage()
+            }
+    }
+    
+    private func processImage() async {
+        if let image = image {
+            foreground = nil
+            state = .inProgress
+            
+            let request = VNGenerateForegroundInstanceMaskRequest()
+            let handler = VNImageRequestHandler(cgImage: image.cgImage!)
+            
+            do {
+                try await withCheckedThrowingContinuation { continuation in
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        do {
+                            try handler.perform([request])
+                            
+                            guard let result = request.results?.first else {
+                                state = .noSubject
+                                continuation.resume(returning: ())
+                                return
+                            }
+                            
+                            if let buffer = try? result.generateMaskedImage(ofInstances: result.allInstances, from: handler, croppedToInstancesExtent: false) {
+                                let foreground = UIImage(pixelBuffer: buffer)
                                 state = .successfull
                                 self.foreground = foreground
+                            } else {
+                                state = .noSubject
                             }
-                        } else {
-                            DispatchQueue.main.sync { state = .noSubject }
+                            continuation.resume(returning: ())
+                        } catch {
+                            // Handle errors
+                            state = .unavailable
+                            continuation.resume(throwing: error)
                         }
                     }
                 }
+            } catch {
+                // Handle errors
+                state = .unavailable
+                print("Error processing image: \(error)")
             }
+        }
     }
 }
 

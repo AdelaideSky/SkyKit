@@ -49,6 +49,30 @@ public struct SKDepthPicture<S: Shape>: View {
     }
 }
 
+public extension Data {
+    
+    // https://arc.net/l/quote/bxfpblgf -> From this Tech Talk session, I learned that to prevent hangs and main thread overload, you need to get async tasks off mainactor by setting the functions called async. That's what i'm doing here by doing async getters.
+    var uiImage: UIImage? {
+        get async {
+            UIImage(data: self)
+        }
+    }
+    
+    #if canImport(UIKit)
+    
+    var image: Image? {
+        get async {
+            if let uiImage = UIImage(data: self) {
+                return Image(uiImage: uiImage)
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    #endif
+}
+
 public struct SKAsyncDepthPicture<S: Shape>: View {
     @Environment(\.isEnabled) var isEnabled
     
@@ -77,14 +101,14 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
                     .resizable()
                     .scaledToFit()
                     .padding(-10)
-                    .blur(radius: foreground == nil || !isEnabled ? 0 : 5)
+                    .blur(radius: foreground == nil || !isEnabled ? 0 : 3)
                     .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude, active: isEnabled && foreground != nil))
                 if let foreground, isEnabled {
                     Image(uiImage: foreground)
                         .resizable()
                         .scaledToFit()
                         .padding(-5)
-                        .shadow(radius: 10)
+                        .shadow(radius: 15)
                         .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude*3))
                 }
             }
@@ -92,19 +116,13 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
             .animation(.easeInOut, value: isEnabled)
             .animation(.easeInOut, value: foregroundData)
             .task(id: imageData) {
-                DispatchQueue(label: "SKAsyncDepthPicture").async {
-                    let image = UIImage(data: imageData)
-                    DispatchQueue.main.sync { self.image = image }
-                }
+                self.image = await imageData.uiImage
             }
             .task(id: foregroundData) {
-                DispatchQueue(label: "SKAsyncDepthPicture").async {
-                    if let foregroundData {
-                        let image = UIImage(data: foregroundData)
-                        DispatchQueue.main.sync { self.foreground = image }
-                    } else {
-                        DispatchQueue.main.sync { self.foreground = nil }
-                    }
+                if let foregroundData {
+                    foreground = await foregroundData.uiImage
+                } else {
+                    foreground = nil
                 }
             }
     }
