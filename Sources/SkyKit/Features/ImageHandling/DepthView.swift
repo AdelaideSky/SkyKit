@@ -119,11 +119,7 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
                 self.image = await imageData.uiImage
             }
             .task(id: foregroundData) {
-                if let foregroundData {
-                    foreground = await foregroundData.uiImage
-                } else {
-                    foreground = nil
-                }
+                foreground = await foregroundData?.uiImage
             }
     }
 }
@@ -175,20 +171,14 @@ struct SKParallaxMotionModifier: ViewModifier {
                 content
             }
         }
-        .onAppear() {
-            manager.start()
-        }
-        .onDisappear() {
-            manager.stop()
-        }
-        .onChange(of: scenePhase) {
+        .task(id: scenePhase) {
             switch scenePhase {
             case .inactive:
-                manager.stop()
+                await manager.stop()
             case .background:
-                manager.stop()
+                await manager.stop()
             case .active:
-                manager.start()
+                await manager.start()
             default:
                 break
             }
@@ -208,11 +198,11 @@ class SKMotionManager: ObservableObject {
     @ObservationIgnored
     private var active: Bool = true
     
-    func stop() {
+    func stop() async {
         self.manager.stopDeviceMotionUpdates()
     }
     
-    func start() {
+    func start() async {
         self.manager.startDeviceMotionUpdates(to: .main) { (motionData, error) in
             guard error == nil else {
                 print(error!)
