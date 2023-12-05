@@ -50,7 +50,7 @@ extension SKNuancedColorfulView {
         var offsetY: CGFloat = 0
         var variant: Variant = .normal
 
-        mutating func randomizeIn(size: CGSize) {
+        mutating func randomizeIn(size: CGSize) async {
             let decision = (size.width + size.height) / 4
             diameter = CGFloat.random(in: (decision * 0.25) ... (decision * 0.75))
             offsetX = CGFloat.random(in: -(size.width / 2) ... +(size.width / 2))

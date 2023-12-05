@@ -60,7 +60,7 @@ public struct SKNuancedColorfulView: View {
     public var body: some View {
         GeometryReader { geo in
             ZStack {
-                ForEach(getItems(geo.size)) { configure in
+                ForEach(randomization) { configure in
                     Circle()
                         .foregroundColor(configure.nuance(color))
                         .opacity(0.5)
@@ -77,71 +77,84 @@ public struct SKNuancedColorfulView: View {
                 .onAppear {
                     if animated && deferLaunch {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            animatedReroll(geo.size)
+                            Task {
+                                await animatedReroll(geo.size)
+                            }
                         }
                     }
                 }
-            .clipped()
-            .blur(radius: blurRadius)
             .onReceive(timer) { _ in
-                animatedReroll(geo.size)
-            }
-            .onChange(of: color) { _, _ in
-                withAnimation(Animation
-                    .interpolatingSpring(stiffness: 20, damping: 1)
-                    .speed(0.2)) {
-                        safeReroll(geo.size)
+                Task {
+                    await animatedReroll(geo.size)
                 }
             }
+            .clipped()
+            .blur(radius: blurRadius)
+            .task(id: color) {
+                await colorChanged(geo.size)
+            }
+        }
+    }
+    func colorChanged(_ size: CGSize) async {
+        if let reroll = await safeReroll(size) {
+            withAnimation(Animation
+                .interpolatingSpring(stiffness: 20, damping: 1)
+                .speed(0.2)) {
+                    self.randomization = reroll
+            }
+        }
+    }
+    func animatedReroll(_ size: CGSize) async {
+        if let reroll = await safeReroll(size) {
+            withAnimation(animation) {
+                self.randomization = reroll
+            }
         }
     }
     
-    func animatedReroll(_ size: CGSize) {
-        withAnimation(animation) {
-            safeReroll(size)
-        }
-    }
+//    func getItems(_ size: CGSize) -> [PointRandomization] {
+//        guard self.size != size else { return randomization }
+//        DispatchQueue.main.async {
+//            self.size = size
+//        }
+//        if let reroll = safeReroll(size, bypassCooldown: true)
+//        return randomization
+//    }
     
-    func getItems(_ size: CGSize) -> [PointRandomization] {
-        guard self.size != size else { return randomization }
-        DispatchQueue.main.async {
-            self.size = size
-            safeReroll(size, bypassCooldown: true)
-        }
-        return randomization
-    }
-    
-    func reroll(_ size: CGSize) {
+    func reroll(_ size: CGSize) async -> [PointRandomization] {
         var randomizationBuilder = [PointRandomization]()
         for i in 0 ..< randomization.count {
-            let randomizationElement: PointRandomization = {
+            let randomizationElement: PointRandomization = await {
                 var builder = PointRandomization()
-                builder.randomizeIn(size: size)
+                await builder.randomizeIn(size: size)
                 builder.id = randomization[i].id
                 return builder
             }()
             randomizationBuilder.append(randomizationElement)
         }
-        randomization = randomizationBuilder
+        
+        return randomizationBuilder
     }
     
-    func safeReroll(_ size: CGSize, bypassCooldown: Bool = false) {
+    func safeReroll(_ size: CGSize, bypassCooldown: Bool = false) async -> [PointRandomization]? {
         if bypassCooldown {
             if !(!animated && initialised) {
-                reroll(size)
+                let reroll = await reroll(size)
                 initialised = true
+                return reroll
             } else {
-                reroll(size)
+                return await reroll(size)
             }
         }
         if updating {
-            guard animated else { return }
+            guard animated else { return nil }
             updating = false
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.updating = true
             }
-            reroll(size)
+            return await reroll(size)
         }
+        return nil
     }
 }
 
