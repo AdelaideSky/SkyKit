@@ -152,42 +152,26 @@ public struct SKDepthToggle: View {
     }
 }
 
-struct SKParallaxMotionModifier: ViewModifier {
-    @Environment(\.scenePhase) var scenePhase
-    
+struct SKParallaxMotionModifier: ViewModifier {    
     @State var manager: SKMotionManager = .shared
     var magnitude: Double
     var active: Bool = true
     
     func body(content: Content) -> some View {
-        Group {
-            if active {
-                content
-                    .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
-                    .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
-            } else {
-                content
-            }
-        }
-        .task(id: scenePhase) {
-            switch scenePhase {
-            case .inactive:
-                await manager.stop()
-            case .background:
-                await manager.stop()
-            case .active:
-                await manager.start()
-            default:
-                break
-            }
+        if active {
+            content
+                .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
+                .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
+        } else {
+            content
         }
     }
 }
 
 @Observable
-class SKMotionManager: ObservableObject {
+public class SKMotionManager: ObservableObject {
 
-    static let shared: SKMotionManager = .init()
+    static public let shared: SKMotionManager = .init()
     
     var pitch: Double = 0.0
     var roll: Double = 0.0
@@ -201,11 +185,11 @@ class SKMotionManager: ObservableObject {
     @ObservationIgnored
     private var queue = OperationQueue()
     
-    func stop() async {
+    public func stop() async {
         self.manager.stopDeviceMotionUpdates()
     }
     
-    func start() async {
+    public func start() async {
         if manager.isDeviceMotionAvailable {
             self.manager.deviceMotionUpdateInterval = 1.0 / 30.0
             self.manager.showsDeviceMovementDisplay = true
