@@ -193,32 +193,31 @@ class SKMotionManager: ObservableObject {
     var roll: Double = 0.0
     
     @ObservationIgnored
-    private var manager: CMMotionManager
+    private var manager = CMMotionManager()
     
     @ObservationIgnored
     private var active: Bool = true
+    
+    @ObservationIgnored
+    private var queue = OperationQueue()
     
     func stop() async {
         self.manager.stopDeviceMotionUpdates()
     }
     
     func start() async {
-        self.manager.startDeviceMotionUpdates(to: .main) { (motionData, error) in
-            guard error == nil else {
-                print(error!)
-                return
-            }
-
-            if let motionData = motionData {
-                self.pitch = motionData.attitude.pitch
-                self.roll = motionData.attitude.roll
-            }
+        if manager.isDeviceMotionAvailable {
+            self.manager.deviceMotionUpdateInterval = 1.0 / 30.0
+            self.manager.showsDeviceMovementDisplay = true
+            
+            self.manager.startDeviceMotionUpdates(using: .xMagneticNorthZVertical,
+                                                 to: self.queue, withHandler: { (data, error) in
+                if let validData = data {
+                    self.roll = validData.attitude.roll
+                    self.pitch = validData.attitude.pitch
+                }
+            })
         }
-    }
-
-    init() {
-        self.manager = CMMotionManager()
-        self.manager.deviceMotionUpdateInterval = 1/30
     }
 }
 
