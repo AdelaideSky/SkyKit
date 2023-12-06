@@ -82,7 +82,6 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
     var imageData: Data
     var foregroundData: Data? = nil
     
-    
     var clipShape: S
     var magnitude: Double
     
@@ -101,7 +100,7 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
                     .scaledToFit()
                     .padding(-10)
                     .blur(radius: foreground == nil || !isEnabled ? 0 : 3)
-                    .modifier(SKParallaxMotionModifier(magnitude: magnitude, active: isEnabled && foreground != nil))
+//                    .modifier(SKParallaxMotionModifier(magnitude: magnitude, active: isEnabled && foreground != nil))
                 if let foreground, isEnabled {
                     Image(uiImage: foreground)
                         .resizable()
@@ -112,8 +111,8 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
                 }
             }
         }.clipShape(clipShape)
-            .animation(.easeInOut, value: isEnabled)
-            .animation(.easeInOut, value: foregroundData)
+//            .animation(.easeInOut, value: isEnabled)
+//            .animation(.easeInOut, value: foregroundData)
             .task(id: imageData) {
                 self.image = await imageData.uiImage
             }
@@ -219,7 +218,7 @@ class SKMotionManager: ObservableObject {
 
     init() {
         self.manager = CMMotionManager()
-        self.manager.deviceMotionUpdateInterval = 1/60
+        self.manager.deviceMotionUpdateInterval = 1/30
     }
 }
 
