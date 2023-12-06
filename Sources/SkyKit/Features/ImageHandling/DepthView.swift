@@ -85,7 +85,6 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
     
     var clipShape: S
     var magnitude: Double
-    @State var manager = SKMotionManager()
     
     public init(_ image: Data, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3) {
         self.imageData = image
@@ -102,14 +101,14 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
                     .scaledToFit()
                     .padding(-10)
                     .blur(radius: foreground == nil || !isEnabled ? 0 : 3)
-                    .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude, active: isEnabled && foreground != nil))
+                    .modifier(SKParallaxMotionModifier(magnitude: magnitude, active: isEnabled && foreground != nil))
                 if let foreground, isEnabled {
                     Image(uiImage: foreground)
                         .resizable()
                         .scaledToFit()
                         .padding(-5)
                         .shadow(radius: 15)
-                        .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude*3))
+                        .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
                 }
             }
         }.clipShape(clipShape)
@@ -157,7 +156,7 @@ public struct SKDepthToggle: View {
 struct SKParallaxMotionModifier: ViewModifier {
     @Environment(\.scenePhase) var scenePhase
     
-    @ObservedObject var manager: SKMotionManager
+    @State var manager: SKMotionManager = .shared
     var magnitude: Double
     var active: Bool = true
     
@@ -189,6 +188,8 @@ struct SKParallaxMotionModifier: ViewModifier {
 @Observable
 class SKMotionManager: ObservableObject {
 
+    static let shared: SKMotionManager = .init()
+    
     var pitch: Double = 0.0
     var roll: Double = 0.0
     
