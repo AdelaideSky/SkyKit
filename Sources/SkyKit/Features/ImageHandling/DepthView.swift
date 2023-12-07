@@ -11,6 +11,41 @@ import Observation
 #if canImport(UIKit)
 import CoreMotion
 
+struct SKAsyncPictureView: View {
+    let data: Data?
+    @State var image: Image? = nil
+    
+    init(_ data: Data?) {
+        self.data = data
+    }
+    
+    var body: some View {
+        Group {
+            if let image {
+                image
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                ProgressView()
+                    .opacity(0.8)
+            }
+        }.task(id: data) {
+            try? await generateImage()
+        }
+    }
+    
+    func generateImage() async throws {
+        try Task.checkCancellation()
+        if let data, let uiImage = UIImage(data: data) {
+            try Task.checkCancellation()
+            image = Image(uiImage: uiImage)
+        } else {
+            image = nil
+        }
+    }
+}
+
+
 public struct SKDepthPicture<S: Shape>: View {
     @Environment(\.isEnabled) var isEnabled
     
@@ -18,7 +53,6 @@ public struct SKDepthPicture<S: Shape>: View {
     var foreground: UIImage? = nil
     var clipShape: S
     var magnitude: Double
-    @State var manager = SKMotionManager()
     
     public init(_ image: UIImage, foreground: UIImage? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3) {
         self.image = image
@@ -34,14 +68,13 @@ public struct SKDepthPicture<S: Shape>: View {
                 .scaledToFit()
                 .padding(-10)
                 .blur(radius: foreground == nil || !isEnabled ? 0 : 5)
-                .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude, active: isEnabled && foreground != nil))
             if let foreground, isEnabled {
                 Image(uiImage: foreground)
                     .resizable()
                     .scaledToFit()
                     .padding(-5)
                     .shadow(radius: 10)
-                    .modifier(SKParallaxMotionModifier(manager: manager, magnitude: magnitude*3))
+                    .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
             }
         }.clipShape(clipShape)
             .animation(.easeInOut, value: isEnabled)
@@ -75,10 +108,7 @@ public extension Data {
 
 public struct SKAsyncDepthPicture<S: Shape>: View {
     @Environment(\.isEnabled) var isEnabled
-    
-    @State var image: UIImage? = nil
-    @State var foreground: UIImage? = nil
-    
+
     var imageData: Data
     var foregroundData: Data? = nil
     
@@ -94,31 +124,19 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
     
     public var body: some View {
         ZStack {
-            if let image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .padding(-10)
-                    .blur(radius: foreground == nil || !isEnabled ? 0 : 3)
+            SKAsyncPictureView(imageData)
+                .padding(-10)
+                .blur(radius: foregroundData == nil || !isEnabled ? 0 : 3)
 //                    .modifier(SKParallaxMotionModifier(magnitude: magnitude, active: isEnabled && foreground != nil))
-                if let foreground, isEnabled {
-                    Image(uiImage: foreground)
-                        .resizable()
-                        .scaledToFit()
-                        .padding(-5)
-                        .shadow(radius: 15)
-                        .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
-                }
+            if let foregroundData, isEnabled {
+                SKAsyncPictureView(foregroundData)
+                    .padding(-5)
+                    .shadow(radius: 15)
+                    .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
             }
         }.clipShape(clipShape)
 //            .animation(.easeInOut, value: isEnabled)
 //            .animation(.easeInOut, value: foregroundData)
-            .task(id: imageData) {
-                self.image = await imageData.uiImage
-            }
-            .task(id: foregroundData) {
-                foreground = await foregroundData?.uiImage
-            }
     }
 }
 public struct SKDepthToggle: View {
