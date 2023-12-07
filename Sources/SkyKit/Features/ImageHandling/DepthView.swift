@@ -20,6 +20,7 @@ class SKImageCache {
     }
 
     func setImage(_ image: UIImage, for hash: Int) {
+        print("Setting for \(hash)")
         cache.setObject(image, forKey: .init(hash))
     }
     
@@ -27,7 +28,11 @@ class SKImageCache {
         cache.removeAllObjects()
     }
     
-    class SKCacheItem {
+    class SKCacheItem: Equatable {
+        static func == (lhs: SKImageCache.SKCacheItem, rhs: SKImageCache.SKCacheItem) -> Bool {
+            lhs.id == rhs.id
+        }
+        
         let id: Int
         
         init(_ id: Int) {
@@ -62,12 +67,12 @@ struct SKAsyncPictureView: View {
     func generateImage() async throws {
         try Task.checkCancellation()
         if let data {
-            print("\(data.hashValue) == \(data.hashValue)")
             if let cached = SKImageCache.shared.getImage(for: data.hashValue) {
                 image = Image(uiImage: cached)
                 
-                print("found image")
+                print("found image for \(data.hashValue)")
             } else {
+                print("Didn't found image for \(data.hashValue)")
                 if let uiImage = UIImage(data: data) {
                     SKImageCache.shared.setImage(uiImage, for: data.hashValue)
                     image = Image(uiImage: uiImage)
