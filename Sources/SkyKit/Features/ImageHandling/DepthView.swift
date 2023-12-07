@@ -64,6 +64,7 @@ struct SKAsyncPictureView: View {
         if let data {
             if let cached = SKImageCache.shared.getImage(for: data.hashValue) {
                 image = Image(uiImage: cached)
+                print("\(data.hashValue) == \(data.hashValue)")
                 print("found image")
             } else {
                 if let uiImage = UIImage(data: data) {
