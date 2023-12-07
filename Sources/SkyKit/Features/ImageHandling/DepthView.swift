@@ -16,6 +16,7 @@ class SKImageCache {
     private var cache = NSCache<SKCacheItem, UIImage>()
 
     func getImage(for hash: Int) -> UIImage? {
+        print("found image")
         return cache.object(forKey: .init(hash))
     }
 
