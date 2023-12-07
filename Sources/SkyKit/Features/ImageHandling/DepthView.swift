@@ -29,10 +29,9 @@ struct SKAsyncPictureView: View {
                 ProgressView()
                     .opacity(0.8)
             }
+        }.task(id: data) {
+            try? await generateImage()
         }
-//        .task(id: data) {
-//            try? await generateImage()
-//        }
     }
     
     func generateImage() async throws {
