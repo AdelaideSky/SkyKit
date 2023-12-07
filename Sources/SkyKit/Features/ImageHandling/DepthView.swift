@@ -28,9 +28,17 @@ class SKImageCache {
         cache.removeAllObjects()
     }
     
-    class SKCacheItem: Equatable {
-        static func == (lhs: SKImageCache.SKCacheItem, rhs: SKImageCache.SKCacheItem) -> Bool {
-            lhs.id == rhs.id
+    final class SKCacheItem: NSObject {
+        
+        override func isEqual(_ object: Any?) -> Bool {
+            guard let other = object as? SKCacheItem else {
+                return false
+            }
+            return id == other.id
+        }
+        
+        override var hash: Int {
+            return id
         }
         
         let id: Int
