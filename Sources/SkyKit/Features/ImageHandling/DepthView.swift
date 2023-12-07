@@ -62,9 +62,10 @@ struct SKAsyncPictureView: View {
     func generateImage() async throws {
         try Task.checkCancellation()
         if let data {
+            print("\(data.hashValue) == \(data.hashValue)")
             if let cached = SKImageCache.shared.getImage(for: data.hashValue) {
                 image = Image(uiImage: cached)
-                print("\(data.hashValue) == \(data.hashValue)")
+                
                 print("found image")
             } else {
                 if let uiImage = UIImage(data: data) {
