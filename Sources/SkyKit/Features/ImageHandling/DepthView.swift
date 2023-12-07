@@ -67,7 +67,7 @@ struct SKAsyncPictureView: View {
                 ProgressView()
                     .opacity(0.8)
             }
-        }.task(id: data) {
+        }.task(id: data, priority: .background) {
             try? await generateImage()
         }
     }
