@@ -49,15 +49,15 @@ class SKImageCache {
     }
 }
 
-struct SKAsyncPictureView: View {
+public struct SKAsyncPictureView: View {
     let data: Data?
     @State var image: Image? = nil
     
-    init(_ data: Data?) {
+    public init(_ data: Data?) {
         self.data = data
     }
     
-    var body: some View {
+    public var body: some View {
         Group {
             if let image {
                 image
