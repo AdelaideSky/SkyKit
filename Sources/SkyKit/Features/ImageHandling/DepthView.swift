@@ -178,8 +178,8 @@ struct SKParallaxMotionModifier: ViewModifier {
     func body(content: Content) -> some View {
         if active {
             content
-                .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
-                .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
+//                .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
+//                .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
         } else {
             content
         }
