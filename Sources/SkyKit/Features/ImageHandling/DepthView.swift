@@ -16,7 +16,6 @@ class SKImageCache {
     private var cache = NSCache<SKCacheItem, UIImage>()
 
     func getImage(for hash: Int) -> UIImage? {
-        print("found image")
         return cache.object(forKey: .init(hash))
     }
 
@@ -65,6 +64,7 @@ struct SKAsyncPictureView: View {
         if let data {
             if let cached = SKImageCache.shared.getImage(for: data.hashValue) {
                 image = Image(uiImage: cached)
+                print("found image")
             } else {
                 if let uiImage = UIImage(data: data) {
                     SKImageCache.shared.setImage(uiImage, for: data.hashValue)
