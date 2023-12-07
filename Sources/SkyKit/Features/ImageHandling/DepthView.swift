@@ -20,7 +20,7 @@ class SKImageCache {
     }
 
     func setImage(_ image: UIImage, for hash: Int) {
-        print("Setting for \(hash)")
+//        print("Setting for \(hash)")
         cache.setObject(image, forKey: .init(hash))
     }
     
@@ -78,9 +78,9 @@ struct SKAsyncPictureView: View {
             if let cached = SKImageCache.shared.getImage(for: data.hashValue) {
                 image = Image(uiImage: cached)
                 
-                print("found image for \(data.hashValue)")
+//                print("found image for \(data.hashValue)")
             } else {
-                print("Didn't found image for \(data.hashValue)")
+//                print("Didn't found image for \(data.hashValue)")
                 if let uiImage = UIImage(data: data) {
                     SKImageCache.shared.setImage(uiImage, for: data.hashValue)
                     image = Image(uiImage: uiImage)
