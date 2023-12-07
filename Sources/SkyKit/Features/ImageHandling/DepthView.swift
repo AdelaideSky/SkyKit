@@ -11,6 +11,31 @@ import Observation
 #if canImport(UIKit)
 import CoreMotion
 
+class SKImageCache {
+    static let shared = SKImageCache()
+    private var cache = NSCache<SKCacheItem, UIImage>()
+
+    func getImage(for hash: Int) -> UIImage? {
+        return cache.object(forKey: .init(hash))
+    }
+
+    func setImage(_ image: UIImage, for hash: Int) {
+        cache.setObject(image, forKey: .init(hash))
+    }
+    
+    func purge() {
+        cache.removeAllObjects()
+    }
+    
+    class SKCacheItem {
+        let id: Int
+        
+        init(_ id: Int) {
+            self.id = id
+        }
+    }
+}
+
 struct SKAsyncPictureView: View {
     let data: Data?
     @State var image: Image? = nil
@@ -36,11 +61,15 @@ struct SKAsyncPictureView: View {
     
     func generateImage() async throws {
         try Task.checkCancellation()
-        if let data, let uiImage = UIImage(data: data) {
-            try Task.checkCancellation()
-            image = Image(uiImage: uiImage)
-        } else {
-            image = nil
+        if let data {
+            if let cached = SKImageCache.shared.getImage(for: data.hashValue) {
+                image = Image(uiImage: cached)
+            } else {
+                if let uiImage = UIImage(data: data) {
+                    SKImageCache.shared.setImage(uiImage, for: data.hashValue)
+                    image = Image(uiImage: uiImage)
+                }
+            }
         }
     }
 }
