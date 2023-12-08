@@ -20,7 +20,7 @@ struct Wave: Shape {
             let path = CGMutablePath()
             
             // calculate some important values up front
-            let width = Double(rect.width)
+            let width = UInt(rect.width)
             let height = Double(rect.height)
             let midHeight = height / 2
 
@@ -31,7 +31,7 @@ struct Wave: Shape {
             let data = wave(width, frequency, strength, midHeight)
             
             // Convert the C array to a Swift array for easier iteration
-            let dataArray = Array(UnsafeBufferPointer(start: data, count: Int(width)))
+            let dataArray = Array(UnsafeBufferPointer(start: data, count: width))
             
             // Iterate over the data array
             for point in dataArray {
