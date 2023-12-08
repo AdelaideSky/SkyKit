@@ -123,7 +123,7 @@ void freeHex(char *array) {
 }
 
 
-xy *wave(double width, double frequency, double strength, double midHeight) {
+xy *wave(unsigned int width, double frequency, double strength, double midHeight) {
     xy *array = malloc((width + 1) * sizeof(xy));
     int x;
 
