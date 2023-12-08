@@ -11,34 +11,57 @@
 #include <time.h>
 #include <math.h>
 
+/*
+ * this is an implementation of a way to approximate
+ * cosine that was discovered in the 7th Century by an
+ * indian mathematician and astronomer called Bhaskara
+ * the first. it's accurate enough for us and is faster
+ * than calling libc's cos(), at least according to
+ * the speedtests on my (Snoolie K)'s x86_64 mac.
+*/
+__attribute__((always_inline)) static double cosBhaskara(double angle) {
+  double doublePi = M_PI*2;
+  double angleSquared = angle*angle;
+  return (doublePi - (4 * angleSquared)) / (doublePi + angleSquared);
+}
+
+/*
+ * This function is only ever called in SKColorWheel at the moment
+ * It is called with HSB values which will always be 0.0-1.0
+*/
+
 xy calcPos(double h, double s, double height, double width) {
     double doublePi = M_PI*2;
     double hDPi = h*doublePi;
     
     double y2 = height/2;
+    double x2 = width/2;
     
-    double sinHDPi = sin(hDPi);
+    double cosHDPi = cosBhaskara(hDPi);
+    /* Calculate sin from the cos, not sure if this is faster idk */
+    double sinHDPi = sqrt(1 - (cosHDPi * cosHDPi));
+    if (hDPi > M_PI) {
+        sinHDPi *= -1;
+    }
     
-    double w = (height-y2)*s;
+    double w;
     
     double lim = atan(height/width)/doublePi;
     
     if ( (h >= lim && h <= 0.5-lim) || (h >= 0.5+lim && h <= 1-lim) ) {
-        w = fabs(height * s * 0.5 / sinHDPi);
+        w = fabs(y2 * s / sinHDPi);
     } else {
-        w = fabs(width * s * 0.5 / cos(hDPi));
+        w = fabs(x2 * s / cosHDPi);
     }
     
     xy answer = {
-        .x = ( ( width / 2 ) + w * cos( h * doublePi ) ),
+        .x = ( x2 + w * cosHDPi ),
         .y = y2 + w * sinHDPi };
     
     return answer;
 }
 
 double calcAngle(double x, double y, double x0, double y0) {
-    double doublePi = M_PI*2;
-
     if (x == x0) {
         if (y0 > y) {
             return 0.75;
@@ -46,6 +69,7 @@ double calcAngle(double x, double y, double x0, double y0) {
             return 0.25;
         }
     } else {
+        double doublePi = M_PI*2;
         if (x > x0) {
             if (y0 >= y) {
                 return 1+( atan( (y-y0) / (x-x0) ) / doublePi);
