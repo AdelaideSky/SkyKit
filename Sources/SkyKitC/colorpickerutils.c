@@ -25,6 +25,12 @@ __attribute__((always_inline)) static double cosBhaskara(double angle) {
   return (doublePi - (4 * angleSquared)) / (doublePi + angleSquared);
 }
 
+/* same thing but for sin */
+__attribute__((always_inline)) static double sinBhaskara(double angle) {
+  double doublePi = M_PI*2;
+  return (16 * angle * (M_PI - angle)) / (5 * doublePi - (4 * angle * (M_PI - angle)));
+}
+
 /*
  * This function is only ever called in SKColorWheel at the moment
  * It is called with HSB values which will always be 0.0-1.0
@@ -124,7 +130,7 @@ xy *wave(double width, double height, double frequency, double strength, double 
     double waveLength = width / frequency;
     for (x = 0; x <= width; x = x + 1) {
         double relativeX = x / waveLength;
-        double sine = sin(relativeX);
+        double sine = sinBhaskara(relativeX);
         
         double y = strength * sine + midHeight;
         
