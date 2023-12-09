@@ -32,6 +32,36 @@ __attribute__((always_inline)) static double sinBhaskara(double angle) {
 }
 
 /*
+ * This is Snoolie K's (me) atan approximation
+ * It's based off this approximation:
+ * y=M_PI_4*x - x*(fabs(x) - 1)*(0.2447 + 0.0663*fabs(x));
+ * The problem with that is it's only accurate for a -1,1 range
+ * Due to this, I have modified this to handle those scenarios.
+ * According to my speedtest on my x86_64 mac, this seems
+ * more than 2 times faster than libc's built in atan()
+ * function. I'm not a mathematician, so this can
+ * probably be improved, but did the best I could and
+ * this should work in the app for now :3.
+*/
+double atanSnoolie(double angle) {
+ /* find formula to use */
+ if (angle > 2.038) {
+  if (angle > 4.0) {
+   return 1.43; /* cap at 1.43 */
+  }
+  return (0.16 * angle) + 0.789;
+ } else if (angle < -1.735) {
+  if (angle < -3.506) {
+   return -1.35; /* cap at -1.35 */
+  }
+  return (0.16 * angle) - 0.789;
+ } else {
+  /* main formula */
+  return M_PI_4 * angle - angle * (fabs(angle) - 1) * (0.2447 - (0.00722 * fabs(angle)));
+ }
+}
+
+/*
  * This function is only ever called in SKColorWheel at the moment
  * It is called with HSB values which will always be 0.0-1.0
 */
@@ -52,7 +82,7 @@ xy calcPos(double h, double s, double height, double width) {
     
     double w;
     
-    double lim = atan(height/width)/doublePi;
+    double lim = atanSnoolie(height/width)/doublePi;
     
     if ( (h >= lim && h <= 0.5-lim) || (h >= 0.5+lim && h <= 1-lim) ) {
         w = fabs(y2 * s / sinHDPi);
@@ -78,12 +108,12 @@ double calcAngle(double x, double y, double x0, double y0) {
         double doublePi = M_PI*2;
         if (x > x0) {
             if (y0 >= y) {
-                return 1+( atan( (y-y0) / (x-x0) ) / doublePi);
+                return 1+( atanSnoolie( (y-y0) / (x-x0) ) / doublePi);
             } else {
-                return atan( (y-y0) / (x-x0) ) / doublePi;
+                return atanSnoolie( (y-y0) / (x-x0) ) / doublePi;
             }
         } else if (x < x0) {
-            return 0.5-(atan( (y0-y) / (x-x0) ) / doublePi );
+            return 0.5-(atanSnoolie( (y0-y) / (x-x0) ) / doublePi );
         } else {
             return 0;
         }
@@ -96,7 +126,7 @@ double calcR(double x,
              double height,
              double angle) {
     double doublePi = M_PI*2;
-    double lim = atan(height/width)/doublePi;
+    double lim = atanSnoolie(height/width)/doublePi;
     
     if ( (angle >= lim && angle <= 0.5-lim) || (angle >= 0.5+lim && angle <= 1-lim) ) {
         double y0 = height/2;
