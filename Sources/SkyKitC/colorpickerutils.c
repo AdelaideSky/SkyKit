@@ -11,24 +11,48 @@
 #include <time.h>
 #include <math.h>
 
+#define PI_SQUARED M_PI*M_PI
+#define ONE_POINT_FIVE_PI M_PI_2*3
+
 /*
- * this is an implementation of a way to approximate
- * cosine that was discovered in the 7th Century by an
- * indian mathematician and astronomer called Bhaskara
- * the first. it's accurate enough for us and is faster
+ * this is an implementation of 2 ways to approximate
+ * cosine. the first was discovered in the 7th Century by
+ * an indian mathematician and astronomer called Bhaskara
+ * the first. when the passed in angle is over M_PI_2,
+ * it instead calls a formula thought of by me (Snoolie
+ * K). Perhaps someone else thought of this before me,
+ * but I haven't seen anyone else come up with this...
+ * this is accurate enough for us and is faster
  * than calling libc's cos(), at least according to
- * the speedtests on my (Snoolie K)'s x86_64 mac.
+ * the speedtests on my x86_64 mac.
+ * Also, we only ever call this in calcPos() and only
+ * theoretically need to support a range of 0 to M_PI*2.
 */
-__attribute__((always_inline)) static double cosBhaskara(double angle) {
-  double doublePi = M_PI*2;
+__attribute__((always_inline)) static double cosBhaskaraAndSnoolie(double angle) {
+  if (angle > M_PI_2) {
+    /*
+     * Bhaskara's formula seems to only approximate the range (-M_PI_2,M_PI_2)
+     * So, if we are larger, we use another formula I thought of.
+     * Perhaps someone else thought of this before me, but I haven't
+     * seen anyone else come up with this cosine approximation...
+     * unlike bhaskara's it *does* have some inaccuracy but tbh we
+     * shouldn't need to worry about the margin of error in this
+     * context since it's small enough to not matter. I'm not a
+     * mathematician however so this probably isn't perfect, if
+     * someone more knowledgable than me could tweak it a bit to
+     * be faster or more accurate that would be great :P.
+    */
+    double c = (angle - ONE_POINT_FIVE_PI) / M_PI;
+    double preWarp = (c - c * fabs(c));
+    return preWarp * (3 + (fabs(preWarp) * 4));
+  }
   double angleSquared = angle*angle;
-  return (doublePi - (4 * angleSquared)) / (doublePi + angleSquared);
+  return (PI_SQUARED - (4 * angleSquared)) / (PI_SQUARED + angleSquared);
 }
 
 /* same thing but for sin */
 __attribute__((always_inline)) static double sinBhaskara(double angle) {
-  double doublePi = M_PI*2;
-  return (16 * angle * (M_PI - angle)) / (5 * doublePi - (4 * angle * (M_PI - angle)));
+  return (16 * angle * (M_PI - angle)) / (5 * PI_SQUARED - (4 * angle * (M_PI - angle)));
 }
 
 /*
@@ -73,7 +97,7 @@ xy calcPos(double h, double s, double height, double width) {
     double y2 = height/2;
     double x2 = width/2;
     
-    double cosHDPi = cosBhaskara(hDPi);
+    double cosHDPi = cosBhaskaraAndSnoolie(hDPi);
     /* Calculate sin from the cos, not sure if this is faster idk */
     double sinHDPi = sqrt(1 - (cosHDPi * cosHDPi));
     if (hDPi > M_PI) {
