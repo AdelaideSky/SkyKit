@@ -50,7 +50,7 @@ __attribute__((always_inline)) static double cosBhaskaraAndSnoolie(double angle)
   return (PI_SQUARED - (4 * angleSquared)) / (PI_SQUARED + angleSquared);
 }
 
-/* same thing but for sin */
+/* same thing but for sin. this is only called in wave() */
 __attribute__((always_inline)) static double sinBhaskara(double angle) {
   return (16 * angle * (M_PI - angle)) / (5 * PI_SQUARED - (4 * angle * (M_PI - angle)));
 }
