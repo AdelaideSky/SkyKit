@@ -28,6 +28,8 @@
  * Also, we only ever call this in calcPos() and only
  * theoretically need to support a range of 0 to M_PI*2.
 */
+#define M_PI_10 M_PI/10 /* PLEASE compile with compiler optimizations to save a div... */
+
 __attribute__((always_inline)) static double cosBhaskaraAndSnoolie(double angle) {
   if (angle > M_PI_2) {
     /*
@@ -42,13 +44,14 @@ __attribute__((always_inline)) static double cosBhaskaraAndSnoolie(double angle)
      * someone more knowledgable than me could tweak it a bit to
      * be faster or more accurate that would be great :P.
     */
-    double c = (angle - ONE_POINT_FIVE_PI) / M_PI;
-    double preWarp = (c - c * fabs(c));
-    return preWarp * (3 + (fabs(preWarp) * 4));
+    double b = (angle - ONE_POINT_FIVE_PI);
+    double preWarp = (b * (fabs(b) - M_PI));
+    return preWarp * (-M_PI_10 - (fabs(preWarp) * 0.03693172));
   }
   double angleSquared = angle*angle;
   return (PI_SQUARED - (4 * angleSquared)) / (PI_SQUARED + angleSquared);
 }
+
 
 /* same thing but for sin. this is only called in wave() */
 __attribute__((always_inline)) static double sinBhaskara(double angle) {
