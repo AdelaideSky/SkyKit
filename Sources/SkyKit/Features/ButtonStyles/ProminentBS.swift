@@ -17,6 +17,7 @@ public struct ProminentButtonStyle: ButtonStyle {
             configuration.label
                 .font(.headline)
                 .padding(15)
+                .shadow(radius: 10)
             Spacer()
         }
             .background {
