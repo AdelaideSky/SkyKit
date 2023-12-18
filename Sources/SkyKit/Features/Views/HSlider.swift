@@ -59,14 +59,16 @@ public struct SKHSlider: View {
                         let touchZoneWidth = geometry.size.width - CGFloat(self.sliderHeight)
                         
                         // Calculate newValue within the adjusted touch zone
-                        let newValue = min(max(range.lowerBound, (value.location.x - knobHalfWidth) / touchZoneWidth * (range.upperBound - range.lowerBound) + range.lowerBound), range.upperBound)
+                        let lowerBound = range.lowerBound
+                        let upperBound = range.upperBound
+                        let newValue = min(max(lowerBound, (value.location.x - knobHalfWidth) / touchZoneWidth * (upperBound - lowerBound) + lowerBound), upperBound)
                         
                         
                         
                         
                         if Int(newValue) != Int(self.value) {
-                            if newValue == range.upperBound {performHaptic()}
-                            else if newValue == range.lowerBound {performHaptic()}
+                            if newValue == upperBound {performHaptic()}
+                            else if newValue == lowerBound {performHaptic()}
                         }
                         self.value = Float(newValue)
                     })
@@ -79,9 +81,10 @@ public struct SKHSlider: View {
         }.frame(height: CGFloat(sliderHeight))
     }
     public func offset(_ geo: GeometryProxy) -> CGFloat {
-        var answer = CGFloat((CGFloat(self.value) - range.lowerBound) / (range.upperBound - range.lowerBound)) * (geo.size.width - CGFloat(self.sliderHeight))
+        let sliderHeight = CGFloat(self.sliderHeight)
+        var answer = CGFloat((CGFloat(self.value) - range.lowerBound) / (range.upperBound - range.lowerBound)) * (geo.size.width - sliderHeight)
         
-        answer = max(min(answer-CGFloat(self.sliderHeight)*0.05, geo.size.width-(CGFloat(self.sliderHeight)*1.1)), -CGFloat(self.sliderHeight)*0.05)
+        answer = max(min(answer-sliderHeight*0.05, geo.size.width-(sliderHeight*1.1)), -sliderHeight*0.05)
         return answer
     }
 }

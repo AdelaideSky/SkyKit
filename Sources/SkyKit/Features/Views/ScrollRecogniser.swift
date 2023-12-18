@@ -156,13 +156,8 @@ public struct ScrollReader<Content: View>: View {
                                       height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
                   }
               } else if self.boundsY == 0...0 {
-                  if self.boundsX == 0...0 {
-                      answer = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX),
+                  answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
                                       height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
-                  } else {
-                      answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
-                                      height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
-                  }
               } else {
                   answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
                                   height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
@@ -231,13 +226,8 @@ public struct BindableScrollReader<Content: View>: View {
                                       height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
                   }
               } else if self.boundsY == 0...0 {
-                  if self.boundsX == 0...0 {
-                      answer = CGSize(width: invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX),
+                  answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
                                       height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
-                  } else {
-                      answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
-                                      height: invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY))
-                  }
               } else {
                   answer = CGSize(width: min(max(invert ? (offset.width - event.deltaX) : (offset.width + event.deltaX), boundsX.lowerBound), boundsX.upperBound),
                                   height: min(max(invert ? (offset.height - event.deltaY) : (offset.height + event.deltaY), boundsY.lowerBound), boundsY.upperBound))
