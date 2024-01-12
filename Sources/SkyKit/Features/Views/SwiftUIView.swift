@@ -7,12 +7,18 @@
 
 import SwiftUI
 
-struct SwiftUIView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+public struct GlowViewModifier: ViewModifier {
+    public func body(content: Content) -> some View {
+        content
+            .background(
+                content
+                    .blur(radius: 4)
+            )
     }
 }
 
-#Preview {
-    SwiftUIView()
+public extension View {
+    func glow() -> some View {
+        self.modifier(GlowViewModifier())
+    }
 }
