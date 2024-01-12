@@ -12,7 +12,7 @@ public struct SKMetalNoiseTexture: View {
     public var body: some View {
         Rectangle()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .colorEffect(ShaderLibrary.noise())
+            .colorEffect(SkyKitShaders.noise())
     }
 }
 
