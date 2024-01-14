@@ -36,18 +36,15 @@ public struct SKFlexHStack: Layout {
     let horizontaleSpacing: Double
     let verticalSpacing: Double
     
-    let alignment: HorizontalAlignment
-    
-    public init(horizontaleSpacing: Double, verticalSpacing: Double, alignment: HorizontalAlignment = .leading) {
+    public init(horizontaleSpacing: Double, verticalSpacing: Double) {
         self.horizontaleSpacing = horizontaleSpacing
         self.verticalSpacing = verticalSpacing
-        self.alignment = alignment
     }
     
-    public init(spacing: Double, alignment: HorizontalAlignment = .leading) {
+    public init(spacing: Double) {
         self.horizontaleSpacing = spacing
         self.verticalSpacing = spacing
-        self.alignment = alignment
+        
     }
 
     public func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
@@ -61,27 +58,15 @@ public struct SKFlexHStack: Layout {
     public func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let minHeight = subviews.map { $0.sizeThatFits(proposal).height }.reduce(0) { max($0, $1).rounded(.up) }
         var pt = CGPoint(x: bounds.minX, y: bounds.minY + 3)
-        
+    
         for subview in subviews.sorted(by: { $0.priority > $1.priority }) {
             let width = subview.sizeThatFits(proposal).width
-            
+        
             if (pt.x +  width) > bounds.maxX {
-                // Adjust the horizontal alignment within the row based on the alignment parameter
-                let alignmentOffset: CGFloat
-                switch alignment {
-                case .leading:
-                    alignmentOffset = 0
-                case .center:
-                    alignmentOffset = (bounds.width - pt.x) / 2
-                case .trailing:
-                    alignmentOffset = bounds.width - pt.x
-                default: alignmentOffset = 0
-                }
-                pt.x = bounds.minX + alignmentOffset
-                
+                pt.x = bounds.minX
                 pt.y += minHeight + verticalSpacing
             }
-            
+        
             subview.place(at: pt, anchor: .topLeading, proposal: proposal)
             pt.x += width + horizontaleSpacing
         }
