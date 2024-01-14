@@ -36,15 +36,18 @@ public struct SKFlexHStack: Layout {
     let horizontaleSpacing: Double
     let verticalSpacing: Double
     
-    public init(horizontaleSpacing: Double, verticalSpacing: Double) {
+    let alignment: HorizontalAlignment
+    
+    public init(horizontaleSpacing: Double, verticalSpacing: Double, alignment: HorizontalAlignment = .leading) {
         self.horizontaleSpacing = horizontaleSpacing
         self.verticalSpacing = verticalSpacing
+        self.alignment = alignment
     }
     
-    public init(spacing: Double) {
+    public init(spacing: Double, alignment: HorizontalAlignment = .leading) {
         self.horizontaleSpacing = spacing
         self.verticalSpacing = spacing
-        
+        self.alignment = alignment
     }
 
     public func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
@@ -63,7 +66,13 @@ public struct SKFlexHStack: Layout {
             let width = subview.sizeThatFits(proposal).width
         
             if (pt.x +  width) > bounds.maxX {
-                pt.x = bounds.minX
+                if alignment == .leading {
+                    pt.x = bounds.minX
+                } else if alignment == .center {
+                    pt.x = bounds.minX + (bounds.width - pt.x) / 2
+                } else {
+                    pt.x = bounds.maxX - width
+                }
                 pt.y += minHeight + verticalSpacing
             }
         
