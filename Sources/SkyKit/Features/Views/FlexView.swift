@@ -61,22 +61,28 @@ public struct SKFlexHStack: Layout {
     public func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let minHeight = subviews.map { $0.sizeThatFits(proposal).height }.reduce(0) { max($0, $1).rounded(.up) }
         var pt = CGPoint(x: bounds.minX, y: bounds.minY + 3)
-    
+        
         for subview in subviews.sorted(by: { $0.priority > $1.priority }) {
             let width = subview.sizeThatFits(proposal).width
-        
-            if (pt.x +  width) > bounds.maxX {
-                if alignment == .leading {
-                    pt.x = bounds.minX
-                } else if alignment == .center {
-                    pt.x = bounds.minX + (bounds.width - pt.x) / 2
-                } else {
-                    pt.x = bounds.maxX - width
-                }
+            
+            if (pt.x + width) > bounds.maxX {
+                pt.x = bounds.minX
                 pt.y += minHeight + verticalSpacing
             }
-        
-            subview.place(at: pt, anchor: .topLeading, proposal: proposal)
+            
+            let yOrigin: CGFloat
+            switch alignment {
+            case .leading:
+                yOrigin = pt.y
+            case .center:
+                yOrigin = pt.y + (minHeight - subview.sizeThatFits(proposal).height) / 2
+            case .trailing:
+                yOrigin = pt.y + minHeight - subview.sizeThatFits(proposal).height
+            default: yOrigin = pt.y
+            }
+            
+            subview.place(at: CGPoint(x: pt.x, y: yOrigin), anchor: .topLeading, proposal: proposal)
+            
             pt.x += width + horizontaleSpacing
         }
     }
