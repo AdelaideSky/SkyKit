@@ -221,12 +221,24 @@ struct SKParallaxMotionModifier: ViewModifier {
     var active: Bool = true
     
     func body(content: Content) -> some View {
-        if active {
-            content
-                .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
-                .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
-        } else {
-            content
+        Group {
+            if active {
+                content
+                    .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
+                    .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
+                
+            } else {
+                content
+            }
+        }.onAppear {
+            Task {
+                await manager.start()
+            }
+        }
+        .onDisappear {
+            Task {
+                await manager.start()
+            }
         }
     }
 }
