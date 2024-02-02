@@ -124,8 +124,16 @@ public struct HapticBuilder {
         patterns
     }
     
-    public static func buildBlock<Elements>(_ elements: Elements) -> [HapticPattern] where Elements: Sequence, Elements.Element == HapticPattern {
-        Array(elements)
+    public static func buildBlock(_ patterns: [HapticPattern]...) -> [HapticPattern] {
+        patterns.flatMap { $0 }
+    }
+    
+    public static func buildEither(first patterns: [HapticPattern]) -> [HapticPattern] {
+        patterns
+    }
+    
+    public static func buildEither(second patterns: [HapticPattern]) -> [HapticPattern] {
+        patterns
     }
 }
 
@@ -135,8 +143,16 @@ public struct HapticTransientEventsBuilder {
         events
     }
     
-    public static func buildBlock<Elements>(_ elements: Elements) -> [HapticTransientEvent] where Elements: Sequence, Elements.Element == HapticTransientEvent {
-        Array(elements)
+    public static func buildBlock(_ events: [HapticTransientEvent]...) -> [HapticTransientEvent] {
+        events.flatMap { $0 }
+    }
+    
+    public static func buildEither(first events: [HapticTransientEvent]) -> [HapticTransientEvent] {
+        events
+    }
+    
+    public static func buildEither(second events: [HapticTransientEvent]) -> [HapticTransientEvent] {
+        events
     }
 }
 
@@ -146,9 +162,18 @@ public struct HapticContinuousEventsBuilder {
         events
     }
     
-    public static func buildBlock<Elements>(_ elements: Elements) -> [HapticContinuousEvent] where Elements: Sequence, Elements.Element == HapticContinuousEvent {
-        Array(elements)
+    public static func buildBlock(_ events: [HapticContinuousEvent]...) -> [HapticContinuousEvent] {
+        events.flatMap { $0 }
     }
+    
+    public static func buildEither(first events: [HapticContinuousEvent]) -> [HapticContinuousEvent] {
+        events
+    }
+    
+    public static func buildEither(second events: [HapticContinuousEvent]) -> [HapticContinuousEvent] {
+        events
+    }
+    
 }
 
 //MARK: - Patterns
