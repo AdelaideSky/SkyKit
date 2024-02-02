@@ -30,7 +30,7 @@ public enum SKVibration {
         print("Vibrations are not yet supported on macOS !")
     }
     #elseif canImport(UIKit)
-    public static func vibrate(with type: SKVibration) {
+    public static func vibrate(with type: SKVibration, intensity: CGFloat = 1) {
         switch type {
         case .error:
             UINotificationFeedbackGenerator().notificationOccurred(.error)
@@ -39,15 +39,15 @@ public enum SKVibration {
         case .warning:
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
         case .light:
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: intensity)
         case .medium:
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred(intensity: intensity)
         case .heavy:
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred(intensity: intensity)
         case .soft:
-            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+            UIImpactFeedbackGenerator(style: .soft).impactOccurred(intensity: intensity)
         case .rigid:
-            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+            UIImpactFeedbackGenerator(style: .rigid).impactOccurred(intensity: intensity)
         case .selection:
             UISelectionFeedbackGenerator().selectionChanged()
         case .oldSchool:
