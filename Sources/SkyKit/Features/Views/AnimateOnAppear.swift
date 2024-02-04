@@ -15,7 +15,11 @@ struct AnimateOnAppearModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onAppear { animate.toggle() }
-            .animation(animation, value: animate)
+            .animation(animation) { content in
+                content
+                    .opacity(animate ? 1 : 0)
+                
+            }
     }
 }
 
