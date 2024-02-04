@@ -24,7 +24,7 @@ struct AnimateOnAppearModifier: ViewModifier {
 }
 
 extension View {
-    func appearAnimation(_ animation: Animation) -> some View {
+    public func appearAnimation(_ animation: Animation) -> some View {
         modifier(AnimateOnAppearModifier(animation: animation))
     }
 }
