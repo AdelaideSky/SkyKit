@@ -77,7 +77,7 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
             }
             .cornerRadius(10)
             .symbolVariant(configuration.isPressed ? .fill : .none)
-            .sensoryFeedback(.impact(weight: .light, intensity: 0.5), trigger: configuration.isPressed)
+            .sensoryFeedback(.impact(flexibility: .solid, intensity: 0.5), trigger: configuration.isPressed)
     }
 }
 
