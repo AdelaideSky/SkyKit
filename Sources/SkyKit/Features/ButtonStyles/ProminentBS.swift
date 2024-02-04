@@ -44,6 +44,12 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.isEnabled) private var isEnabled
     
+    let feedback: SensoryFeedback?
+    
+    public init(_ feedback: SensoryFeedback? = .impact(flexibility: .solid, intensity: 0.5)) {
+        self.feedback = feedback
+    }
+    
     
     public func makeBody(configuration: Self.Configuration) -> some View {
         HStack {
@@ -77,7 +83,7 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
             }
             .cornerRadius(10)
             .symbolVariant(configuration.isPressed ? .fill : .none)
-            .sensoryFeedback(.impact(flexibility: .solid, intensity: 0.5), trigger: configuration.isPressed)
+            .sensoryFeedback(feedback ?? .impact(intensity: 0), trigger: configuration.isPressed)
     }
 }
 
