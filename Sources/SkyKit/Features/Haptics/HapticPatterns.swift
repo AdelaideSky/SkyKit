@@ -7,8 +7,7 @@
 
 import SwiftUI
 import CoreHaptics
-
-
+import AVKit
 
 public protocol HapticPattern {
     func pattern() -> CHHapticPattern?
@@ -32,9 +31,10 @@ fileprivate extension CHHapticEngine? {
         guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
 
         do {
-            self = try CHHapticEngine()
+            self = try CHHapticEngine(audioSession: .sharedInstance())
             self?.isAutoShutdownEnabled = true
             self?.isMutedForAudio = true
+            try? AVAudioSession.sharedInstance().setActive(false)
             try self?.start()
         } catch {
             print("There was an error creating the engine: \(error.localizedDescription)")
@@ -194,6 +194,7 @@ public struct TransientHapticsPattern: HapticPattern {
     public func play(withEngine engine: CHHapticEngine) {
         if let pattern = pattern() {
             let player = try? engine.makePlayer(with: pattern)
+            
             try? player?.start(atTime: CHHapticTimeImmediate)
         }
     }
