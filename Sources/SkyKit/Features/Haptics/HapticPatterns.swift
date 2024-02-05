@@ -34,6 +34,7 @@ fileprivate extension CHHapticEngine? {
         do {
             self = try CHHapticEngine()
             self?.isAutoShutdownEnabled = true
+            self?.isMutedForAudio = true
             try self?.start()
         } catch {
             print("There was an error creating the engine: \(error.localizedDescription)")
