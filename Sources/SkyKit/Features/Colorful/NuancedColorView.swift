@@ -7,6 +7,8 @@
 import SwiftUI
 
 public struct SKNuancedColorfulView: View {
+    @Environment(\.isEnabled) var isEnabled
+    
     @State var size: CGSize = .init()
     @State var randomization: [PointRandomization]
     
@@ -89,6 +91,7 @@ public struct SKNuancedColorfulView: View {
                 }
             .onReceive(timer) { _ in
                 Task {
+                    guard isEnabled else { return }
                     await animatedReroll(geo.size)
                 }
             }
@@ -141,6 +144,7 @@ public struct SKNuancedColorfulView: View {
     }
     
     func safeReroll(_ size: CGSize, bypassCooldown: Bool = false) async -> [PointRandomization]? {
+        guard isEnabled else { return nil }
         if bypassCooldown {
             if !(!animated && initialised) {
                 let reroll = await reroll(size)
