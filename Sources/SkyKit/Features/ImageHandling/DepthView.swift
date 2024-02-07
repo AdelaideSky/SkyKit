@@ -224,7 +224,7 @@ struct SKParallaxMotionModifier: ViewModifier {
         Group {
             if active {
                 content
-                    .offset(x: CGFloat(manager.roll * magnitude), y: CGFloat(manager.pitch * magnitude))
+                    .offset(x: CGFloat(min(max(manager.roll * magnitude, -magnitude/3), magnitude/3)), y: CGFloat(min(max(manager.pitch * magnitude, -magnitude/3), magnitude/3)))
                     .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
                 
             } else {
@@ -247,31 +247,47 @@ struct SKParallaxMotionModifier: ViewModifier {
 public class SKMotionManager: ObservableObject {
 
     static public let shared: SKMotionManager = .init()
-    
+
     var pitch: Double = 0.0
     var roll: Double = 0.0
-    
+
+    private var referencePitch: Double = 0.0
+    private var referenceRoll: Double = 0.0
+
+    private var isReferenceSet = false
+
     @ObservationIgnored
     private var manager = CMMotionManager()
-    
+
     @ObservationIgnored
     private var active: Bool = true
-    
+
     public func stop() async {
         self.manager.stopDeviceMotionUpdates()
+        self.isReferenceSet = false
     }
-    
+
     public func start() async {
         if manager.isDeviceMotionAvailable {
             self.manager.deviceMotionUpdateInterval = 1.0 / 20.0
             self.manager.startDeviceMotionUpdates(to: .main) { [weak self] data, error in
                 guard let motion = data?.attitude else { return }
-                self?.roll = motion.roll
-                self?.pitch = motion.pitch
+                
+                if !(self?.isReferenceSet ?? false) {
+                    self?.setReferencePosition(motion)
+                }
+                
+                self?.roll = motion.roll - (self?.referenceRoll ?? 0.0)
+                self?.pitch = motion.pitch - (self?.referencePitch ?? 0.0)
             }
         }
     }
-}
 
+    private func setReferencePosition(_ motion: CMAttitude) {
+        self.referenceRoll = motion.roll
+        self.referencePitch = motion.pitch
+        self.isReferenceSet = true
+    }
+}
 
 #endif
