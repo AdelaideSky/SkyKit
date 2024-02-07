@@ -224,7 +224,7 @@ struct SKParallaxMotionModifier: ViewModifier {
         Group {
             if active {
                 content
-                    .offset(x: CGFloat(min(max(manager.roll * magnitude, -magnitude/2), magnitude/2)), y: CGFloat(min(max(manager.pitch * magnitude, -magnitude/2), magnitude/2)))
+                    .offset(x: CGFloat(min(max(manager.roll * magnitude, -magnitude/1.5), magnitude/1.5)), y: CGFloat(min(max(manager.pitch * magnitude, -magnitude/1.5), magnitude/1.5)))
                     .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
                 
             } else {
@@ -251,11 +251,6 @@ public class SKMotionManager: ObservableObject {
     var pitch: Double = 0.0
     var roll: Double = 0.0
 
-    private var referencePitch: Double = 0.0
-    private var referenceRoll: Double = 0.0
-
-    private var isReferenceSet = false
-
     @ObservationIgnored
     private var manager = CMMotionManager()
 
@@ -264,7 +259,6 @@ public class SKMotionManager: ObservableObject {
 
     public func stop() async {
         self.manager.stopDeviceMotionUpdates()
-        self.isReferenceSet = false
     }
 
     public func start() async {
@@ -273,20 +267,10 @@ public class SKMotionManager: ObservableObject {
             self.manager.startDeviceMotionUpdates(to: .main) { [weak self] data, error in
                 guard let motion = data?.attitude else { return }
                 
-                if !(self?.isReferenceSet ?? false) {
-                    self?.setReferencePosition(motion)
-                }
-                
-                self?.roll = motion.roll - (self?.referenceRoll ?? 0.0)
-                self?.pitch = motion.pitch - (self?.referencePitch ?? 0.0)
+                self?.roll = motion.roll
+                self?.pitch = motion.pitch
             }
         }
-    }
-
-    private func setReferencePosition(_ motion: CMAttitude) {
-        self.referenceRoll = motion.roll
-        self.referencePitch = motion.pitch
-        self.isReferenceSet = true
     }
 }
 
