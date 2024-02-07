@@ -224,7 +224,7 @@ struct SKParallaxMotionModifier: ViewModifier {
         Group {
             if active {
                 content
-                    .offset(x: CGFloat(min(max(manager.roll * magnitude, -magnitude/2.5), magnitude/2.5)), y: CGFloat(min(max(manager.pitch * magnitude, -magnitude/2.5), magnitude/2.5)))
+                    .offset(x: CGFloat(min(max(manager.roll * magnitude, -magnitude/2), magnitude/2)), y: CGFloat(min(max(manager.pitch * magnitude, -magnitude/2), magnitude/2)))
                     .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
                 
             } else {
