@@ -8,6 +8,7 @@ import SwiftUI
 
 public struct SKNuancedColorfulView: View {
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.scenePhase) var scenePhase
     
     @State var size: CGSize = .init()
     @State var randomization: [PointRandomization]
@@ -90,9 +91,11 @@ public struct SKNuancedColorfulView: View {
                     }
                 }
             .onReceive(timer) { _ in
-                Task {
-                    guard isEnabled else { return }
-                    await animatedReroll(geo.size)
+                if scenePhase != .background {
+                    Task {
+                        guard isEnabled else { return }
+                        await animatedReroll(geo.size)
+                    }
                 }
             }
             .clipped()
