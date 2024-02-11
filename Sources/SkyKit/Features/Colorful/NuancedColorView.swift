@@ -46,7 +46,7 @@ public struct SKNuancedColorfulView: View {
         self.color = basecolor
         self.amount = amount
 
-        if deferLaunch {
+        if !(!deferLaunch && !animated) {
             var builder = [PointRandomization]()
             for _ in 0 ..< amount {
                 builder.append(.init())
