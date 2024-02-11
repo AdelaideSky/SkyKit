@@ -8,10 +8,9 @@ import SwiftUI
 
 public struct SKNuancedColorfulView: View {
     @Environment(\.isEnabled) var isEnabled
-    @Environment(\.scenePhase) var scenePhase
     
     @State var size: CGSize = .init()
-    @State var randomization: [PointRandomization]
+    @State var randomization: [PointRandomization] = []
     
     @State private var updating = true
     @State private var initialised = false
@@ -21,6 +20,7 @@ public struct SKNuancedColorfulView: View {
     private let animated: Bool
     private let deferLaunch: Bool
     private let blurRadius: CGFloat
+    private let amount: Int
     
     private var timer = Timer
         .publish(every: 5, on: .main, in: .common)
@@ -44,12 +44,15 @@ public struct SKNuancedColorfulView: View {
         self.animated = animated
         
         self.color = basecolor
+        self.amount = amount
 
-        var builder = [PointRandomization]()
-        for _ in 0 ..< amount {
-            builder.append(.init())
+        if deferLaunch {
+            var builder = [PointRandomization]()
+            for _ in 0 ..< amount {
+                builder.append(.init())
+            }
+            _randomization = State(initialValue: builder)
         }
-        _randomization = State(initialValue: builder)
         
         if animated {
             self.timer = Timer
@@ -86,16 +89,14 @@ public struct SKNuancedColorfulView: View {
                         }
                     } else {
                         Task {
-                            randomization = await reroll(geo.size)
+                            await setup(geo.size)
                         }
                     }
                 }
             .onReceive(timer) { _ in
-                if scenePhase != .background {
-                    Task {
-                        guard isEnabled else { return }
-                        await animatedReroll(geo.size)
-                    }
+                Task {
+                    guard isEnabled else { return }
+                    await animatedReroll(geo.size)
                 }
             }
             .clipped()
@@ -144,6 +145,19 @@ public struct SKNuancedColorfulView: View {
         }
         
         return randomizationBuilder
+    }
+    
+    func setup(_ size: CGSize) async {
+        var builder = [PointRandomization]()
+        for _ in 0 ..< amount {
+            let randomizationElement: PointRandomization = await {
+                var builder = PointRandomization()
+                await builder.randomizeIn(size: size)
+                return builder
+            }()
+            builder.append(randomizationElement)
+        }
+        randomization = builder
     }
     
     func safeReroll(_ size: CGSize, bypassCooldown: Bool = false) async -> [PointRandomization]? {
