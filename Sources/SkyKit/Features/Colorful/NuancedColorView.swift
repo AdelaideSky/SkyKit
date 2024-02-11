@@ -87,9 +87,13 @@ public struct SKNuancedColorfulView: View {
                                 await animatedReroll(geo.size)
                             }
                         }
-                    } else {
+                    } else if !animated && !deferLaunch {
                         Task {
                             await setup(geo.size)
+                        }
+                    } else {
+                        Task {
+                            randomization = await reroll(geo.size)
                         }
                     }
                 }
