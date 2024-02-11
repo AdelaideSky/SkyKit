@@ -35,68 +35,63 @@ public struct SKFlexibleView<Data: RandomAccessCollection, Content: View>: View 
 public struct SKFlexHStack: Layout {
     let horizontalSpacing: Double
     let verticalSpacing: Double
-
+    
     public init(horizontalSpacing: Double, verticalSpacing: Double) {
         self.horizontalSpacing = horizontalSpacing
         self.verticalSpacing = verticalSpacing
     }
-
+    
     public init(spacing: Double) {
         self.horizontalSpacing = spacing
         self.verticalSpacing = spacing
+        
     }
 
     public func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        // Use lazy evaluation to avoid unnecessary calculations
-        let minHeight = subviews.lazy.map { $0.sizeThatFits(proposal).height }.max() ?? 0
-        let nbRows = calculateNumberOrRow(for: subviews.lazy.map { $0.sizeThatFits(proposal) }, with: proposal.width!)
-
-        // Calculate height using lazy evaluation
-        let height = Double(nbRows) * minHeight + max(Double(nbRows - 1), 0) * verticalSpacing
+        let nbRows = Double(calculateNumberOrRow(for: subviews, with: proposal.width!))
+        let minHeight = subviews.map { $0.sizeThatFits(proposal).height }.reduce(0) { max($0, $1).rounded(.up) }
+        let height = nbRows * minHeight + max(nbRows - 1, 0) * verticalSpacing
 
         return CGSize(width: proposal.width!, height: height + 6)
     }
 
     public func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        // Use lazy evaluation to avoid unnecessary calculations
-        let minHeight = subviews.lazy.map { $0.sizeThatFits(proposal).height }.max() ?? 0
+        let minHeight = subviews.map { $0.sizeThatFits(proposal).height }.reduce(0) { max($0, $1).rounded(.up) }
         var pt = CGPoint(x: bounds.minX, y: bounds.minY + 3)
-
+    
         for subview in subviews.sorted(by: { $0.priority > $1.priority }) {
             let width = subview.sizeThatFits(proposal).width
-
-            // Lazy evaluation for x position
-            let isXWillGoBeyondBounds = pt.x + width > bounds.maxX
-            if isXWillGoBeyondBounds {
+        
+            if (pt.x +  width) > bounds.maxX {
                 pt.x = bounds.minX
                 pt.y += minHeight + verticalSpacing
             }
-
+        
             subview.place(at: pt, anchor: .topLeading, proposal: proposal)
             pt.x += width + horizontalSpacing
         }
     }
 
-    func calculateNumberOrRow(for subviewSizes: LazyMapSequence<Subviews, CGSize>, with width: Double) -> Int {
+    func calculateNumberOrRow(for subviews: Subviews, with width: Double) -> Int {
         var nbRows = 0
         var x: Double = 0
-
-        for subviewSize in subviewSizes {
-            let addedX = subviewSize.width + horizontalSpacing
-
-            // Lazy evaluation for x position
-            if x + addedX > width {
+    
+        for subview in subviews {
+            let addedX = subview.sizeThatFits(.unspecified).width + horizontalSpacing
+        
+            let isXWillGoBeyondBounds =  x + addedX > width
+            if isXWillGoBeyondBounds {
                 x = 0
                 nbRows += 1
             }
-
+        
             x += addedX
         }
-
+    
         if x > 0 {
             nbRows += 1
         }
-
+    
         return nbRows
     }
 }
