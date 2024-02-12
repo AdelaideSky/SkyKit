@@ -57,7 +57,7 @@ public class SKTranscriptionTape {
     
     public var state: RecognitionState = .stopped
     
-    @MainActor public var transcript: String = ""
+    public var transcript: String = ""
     
     @ObservationIgnored
     private var audioEngine: AVAudioEngine?
