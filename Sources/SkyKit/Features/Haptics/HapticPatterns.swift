@@ -31,10 +31,12 @@ fileprivate extension CHHapticEngine? {
         guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
 
         do {
-            self = try CHHapticEngine(audioSession: .sharedInstance())
+            let session = AVAudioSession.sharedInstance()
+            try? session.setCategory(.soloAmbient, mode: .default, options: .mixWithOthers)
+            self = try CHHapticEngine(audioSession: session)
             self?.isAutoShutdownEnabled = true
             self?.isMutedForAudio = true
-            try? AVAudioSession.sharedInstance().setActive(false)
+            self?.playsHapticsOnly = true
             try self?.start()
         } catch {
             print("There was an error creating the engine: \(error.localizedDescription)")
