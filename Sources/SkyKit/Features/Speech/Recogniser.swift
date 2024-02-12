@@ -15,7 +15,7 @@ import Observation
 
 /// A helper for transcribing speech to text using SFSpeechRecognizer and AVAudioEngine.
 @Observable
-public class SpeechRecognizer {
+public class SKTranscriptionTape {
     enum RecognizerError: Error {
         case nilRecognizer
         case notAuthorizedToRecognize
