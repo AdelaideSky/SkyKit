@@ -108,7 +108,7 @@ public class SKTranscriptionTape {
                 state = .error(.notAuthorizedToRecognize)
                 return
             }
-            guard await AVAudioSession.sharedInstance().hasPermissionToRecord() else {
+            guard await AVAudioApplication.shared.hasPermissionToRecord() else {
                 state = .error(.notPermittedToRecord)
                 return
             }
