@@ -84,16 +84,6 @@ public class SKTranscriptionTape {
             return
         }
         recognizer?.defaultTaskHint = .dictation
-        Task {
-            guard await SFSpeechRecognizer.hasAuthorizationToRecognize() else {
-                state = .error(.notAuthorizedToRecognize)
-                return
-            }
-            guard await AVAudioSession.sharedInstance().hasPermissionToRecord() else {
-                state = .error(.notPermittedToRecord)
-                return
-            }
-        }
     }
     
     
@@ -113,24 +103,34 @@ public class SKTranscriptionTape {
      The resulting transcription is continuously written to the published `transcript` property.
      */
     public func transcribe() {
-        guard let recognizer, recognizer.isAvailable else {
-            state = .error(.recognizerIsUnavailable)
-            return
-        }
-        
-        self.state = .starting
-        
-        do {
-            let (audioEngine, request) = try Self.prepareEngine()
-            self.audioEngine = audioEngine
-            self.request = request
-            self.task = recognizer.recognitionTask(with: request, resultHandler: { [weak self] result, error in
-                self?.recognitionHandler(audioEngine: audioEngine, result: result, error: error)
-            })
-            self.state = .transcribing
-        } catch {
-            self.reset()
-            state = .error(.cantSetupEngine)
+        Task {
+            guard await SFSpeechRecognizer.hasAuthorizationToRecognize() else {
+                state = .error(.notAuthorizedToRecognize)
+                return
+            }
+            guard await AVAudioSession.sharedInstance().hasPermissionToRecord() else {
+                state = .error(.notPermittedToRecord)
+                return
+            }
+            guard let recognizer, recognizer.isAvailable else {
+                state = .error(.recognizerIsUnavailable)
+                return
+            }
+            
+            self.state = .starting
+            
+            do {
+                let (audioEngine, request) = try Self.prepareEngine()
+                self.audioEngine = audioEngine
+                self.request = request
+                self.task = recognizer.recognitionTask(with: request, resultHandler: { [weak self] result, error in
+                    self?.recognitionHandler(audioEngine: audioEngine, result: result, error: error)
+                })
+                self.state = .transcribing
+            } catch {
+                self.reset()
+                state = .error(.cantSetupEngine)
+            }
         }
     }
     
