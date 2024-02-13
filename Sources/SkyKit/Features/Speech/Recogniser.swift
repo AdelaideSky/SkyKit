@@ -23,7 +23,7 @@ public class SKTranscriptionTape {
         case recognizerIsUnavailable
         case cantSetupEngine
         
-        var message: String {
+        public var message: String {
             switch self {
             case .nilRecognizer: return "Speech recognition unavailable for locale"
             case .notAuthorizedToRecognize: return "Not authorized to recognize speech"
