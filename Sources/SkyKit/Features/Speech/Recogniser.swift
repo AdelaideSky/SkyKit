@@ -120,19 +120,12 @@ public class SKTranscriptionTape {
             self.state = .starting
             
             do {
-                print("preparing engine")
-
                 let (audioEngine, request) = try Self.prepareEngine()
-                print("setting task")
-
                 self.audioEngine = audioEngine
                 self.request = request
-
                 self.task = recognizer.recognitionTask(with: request, resultHandler: { [weak self] result, error in
                     self?.recognitionHandler(audioEngine: audioEngine, result: result, error: error)
                 })
-                print("setting state")
-
                 self.state = .transcribing
             } catch {
                 self.reset()
