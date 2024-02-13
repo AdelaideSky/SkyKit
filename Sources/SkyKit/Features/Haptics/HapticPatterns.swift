@@ -32,7 +32,7 @@ fileprivate extension CHHapticEngine? {
 
         do {
             let session = AVAudioSession.sharedInstance()
-            try? session.setCategory(.soloAmbient, mode: .default, options: .mixWithOthers)
+            try? session.setCategory(.ambient, mode: .default, options: .mixWithOthers)
             self = try CHHapticEngine(audioSession: session)
             self?.isAutoShutdownEnabled = true
             self?.isMutedForAudio = true
