@@ -16,18 +16,20 @@ import Observation
 /// A helper for transcribing speech to text using SFSpeechRecognizer and AVAudioEngine.
 @Observable
 public class SKTranscriptionTape {
-    enum RecognizerError: Error {
+    public enum RecognizerError: Error {
         case nilRecognizer
         case notAuthorizedToRecognize
         case notPermittedToRecord
         case recognizerIsUnavailable
+        case cantSetupEngine
         
         var message: String {
             switch self {
-            case .nilRecognizer: return "Can't initialize speech recognizer"
+            case .nilRecognizer: return "Speech recognition unavailable for locale"
             case .notAuthorizedToRecognize: return "Not authorized to recognize speech"
             case .notPermittedToRecord: return "Not permitted to record audio"
             case .recognizerIsUnavailable: return "Recognizer is unavailable"
+            case .cantSetupEngine: return "Unable to start audio engine"
             }
         }
     }
@@ -37,7 +39,7 @@ public class SKTranscriptionTape {
         case starting
         case transcribing
         case stopping
-        case error(String)
+        case error(RecognizerError)
         
         public var label: String {
             switch self {
@@ -49,8 +51,8 @@ public class SKTranscriptionTape {
                 "Transcribing"
             case .stopping:
                 "Stopping..."
-            case .error(let string):
-                "Error: \(string)"
+            case .error(let error):
+                "\(error.message)"
             }
         }
     }
@@ -78,17 +80,17 @@ public class SKTranscriptionTape {
     public init() {
         recognizer = SFSpeechRecognizer()
         guard recognizer != nil else {
-            state = .error("Unable to initialise")
+            state = .error(.nilRecognizer)
             return
         }
         recognizer?.defaultTaskHint = .dictation
         Task {
             guard await SFSpeechRecognizer.hasAuthorizationToRecognize() else {
-                state = .error("Unauthorised: can't transcribe")
+                state = .error(.notAuthorizedToRecognize)
                 return
             }
             guard await AVAudioSession.sharedInstance().hasPermissionToRecord() else {
-                state = .error("Unauthorised: can't record")
+                state = .error(.notPermittedToRecord)
                 return
             }
         }
@@ -112,7 +114,7 @@ public class SKTranscriptionTape {
      */
     public func transcribe() {
         guard let recognizer, recognizer.isAvailable else {
-            state = .error("Recogniser is unavailable")
+            state = .error(.recognizerIsUnavailable)
             return
         }
         
@@ -128,7 +130,7 @@ public class SKTranscriptionTape {
             self.state = .transcribing
         } catch {
             self.reset()
-            state = .error("Something went wrong")
+            state = .error(.cantSetupEngine)
         }
     }
     
