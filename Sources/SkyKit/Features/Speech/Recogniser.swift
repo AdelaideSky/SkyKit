@@ -194,7 +194,7 @@ public class SKTranscriptionTape {
 }
 
 
-extension SFSpeechRecognizer {
+public extension SFSpeechRecognizer {
     static func hasAuthorizationToRecognize() async -> Bool {
         await withCheckedContinuation { continuation in
             requestAuthorization { status in
@@ -205,10 +205,10 @@ extension SFSpeechRecognizer {
 }
 
 
-extension AVAudioSession {
+public extension AVAudioApplication {
     func hasPermissionToRecord() async -> Bool {
         await withCheckedContinuation { continuation in
-            requestRecordPermission { authorized in
+            AVAudioApplication.requestRecordPermission { authorized in
                 continuation.resume(returning: authorized)
             }
         }
