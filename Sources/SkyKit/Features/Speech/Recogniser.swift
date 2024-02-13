@@ -133,7 +133,7 @@ public class SKTranscriptionTape {
     }
     
     /// Reset the speech recognizer.
-    public func reset() {
+    public func stop() {
         state = .stopping
         task?.cancel()
         audioEngine?.stop()
@@ -141,6 +141,11 @@ public class SKTranscriptionTape {
         request = nil
         task = nil
         state = .stopped
+    }
+    
+    public func reset() {
+        stop()
+        transcript = ""
     }
     
     private static func prepareEngine() throws -> (AVAudioEngine, SFSpeechAudioBufferRecognitionRequest) {
