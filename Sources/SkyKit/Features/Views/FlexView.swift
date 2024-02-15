@@ -32,36 +32,36 @@ public struct SKFlexibleView<Data: RandomAccessCollection, Content: View>: View 
 }
 
 @available(iOS 16.0, *)
-struct SKFlexHStack : Layout {
+public struct SKFlexHStack: Layout {
     
     var alignment: HorizontalAlignment = .center
     let horizontalSpacing: Double
     let verticalSpacing: Double
     
-    public init(horizontalSpacing: Double, verticalSpacing: Double, alignment: HorizontalAlignment = .leading) {
+    public init(horizontalSpacing: Double = 7, verticalSpacing: Double = 7, alignment: HorizontalAlignment = .leading) {
         self.horizontalSpacing = horizontalSpacing
         self.verticalSpacing = verticalSpacing
         self.alignment = alignment
     }
     
-    public init(spacing: Double, alignment: HorizontalAlignment = .leading) {
+    public init(spacing: Double = 7, alignment: HorizontalAlignment = .leading) {
         self.horizontalSpacing = spacing
         self.verticalSpacing = spacing
         self.alignment = alignment
         
     }
 
-    func makeCache(subviews: Subviews) -> Cache {
+    public func makeCache(subviews: Subviews) -> Cache {
         return .init(rows: [], height: 0)
     }
     
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
+    public func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
         let maxWidth = proposal.width ?? 0
         cache = caculateRows(maxWidth, proposal: proposal, subviews: subviews)
         return .init(width: maxWidth, height: cache.height)
     }
     
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
+    public func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
         var origin = bounds.origin
         var subviews = subviews
         for row in cache.rows {
@@ -134,7 +134,7 @@ struct SKFlexHStack : Layout {
 
 extension SKFlexHStack {
     
-    struct Cache {
+    public struct Cache {
         let rows: [Row]
         let height: CGFloat
         
