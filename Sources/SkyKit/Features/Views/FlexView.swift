@@ -38,13 +38,13 @@ struct SKFlexHStack : Layout {
     let horizontalSpacing: Double
     let verticalSpacing: Double
     
-    public init(horizontalSpacing: Double, verticalSpacing: Double, alignment: HorizontalAlignment = .center) {
+    public init(horizontalSpacing: Double, verticalSpacing: Double, alignment: HorizontalAlignment = .leading) {
         self.horizontalSpacing = horizontalSpacing
         self.verticalSpacing = verticalSpacing
         self.alignment = alignment
     }
     
-    public init(spacing: Double, alignment: HorizontalAlignment = .center) {
+    public init(spacing: Double, alignment: HorizontalAlignment = .leading) {
         self.horizontalSpacing = spacing
         self.verticalSpacing = spacing
         self.alignment = alignment
