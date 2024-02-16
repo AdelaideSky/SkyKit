@@ -217,7 +217,7 @@ extension UIColor {
     }
 }
 
-extension UIColor {
+public extension UIColor {
     func lighter(_ componentDelta: CGFloat = 0.1) -> UIColor {
         return makeColor(componentDelta: componentDelta)
     }
