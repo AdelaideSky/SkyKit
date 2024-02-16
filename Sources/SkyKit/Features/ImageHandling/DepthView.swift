@@ -174,8 +174,10 @@ public extension Data {
     #endif
 }
 
-public struct SKAsyncDepthPicture<S: Shape>: View {
+public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
     @Environment(\.isEnabled) var isEnabled
+    
+    @ViewBuilder var placeholder: () -> Placeholder
 
     var imageData: Data
     var foregroundData: Data? = nil
@@ -183,19 +185,19 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
     var clipShape: S
     var magnitude: Double
     
-    public init(_ image: Data, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3) {
+    public init(_ image: Data, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3, @ViewBuilder placeholder: @escaping () -> Placeholder) {
         self.imageData = image
         self.foregroundData = foreground
         self.clipShape = clipShape
         self.magnitude = magnitude
+        self.placeholder = placeholder
     }
     
     public var body: some View {
         ZStack {
-            SKAsyncPictureView(imageData)
+            SKAsyncPictureView(imageData, placeholder: placeholder)
                 .padding(-10)
                 .blur(radius: foregroundData == nil || !isEnabled ? 0 : 3)
-//                    .modifier(SKParallaxMotionModifier(magnitude: magnitude, active: isEnabled && foreground != nil))
             if let foregroundData, isEnabled {
                 SKAsyncPictureView(foregroundData)
                     .padding(-5)
@@ -203,10 +205,19 @@ public struct SKAsyncDepthPicture<S: Shape>: View {
                     .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
             }
         }.clipShape(clipShape)
-//            .animation(.easeInOut, value: isEnabled)
-//            .animation(.easeInOut, value: foregroundData)
     }
 }
+
+extension SKAsyncDepthPicture where Placeholder == EmptyView {
+    public init(_ image: Data, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3) {
+        self.imageData = image
+        self.foregroundData = foreground
+        self.clipShape = clipShape
+        self.magnitude = magnitude
+        self.placeholder = { EmptyView() }
+    }
+}
+
 public struct SKDepthToggle: View {
     @Binding var enabled: Bool
     let state: SKAnalysisState
