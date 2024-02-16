@@ -205,6 +205,7 @@ public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
                     .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
             }
         }.clipShape(clipShape)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
