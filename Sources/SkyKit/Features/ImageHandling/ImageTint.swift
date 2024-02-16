@@ -20,12 +20,19 @@ public struct ImageTintViewModifier: ViewModifier {
     @State var referenceControler: ImageTintControler = .init()
     
     public func body(content: Content) -> some View {
-        content
-            .environment(controler ?? referenceControler)
-            .tint(controler?.tint ?? (referenceControler.tint ?? .accentColor))
-            .task(id: data) {
-                await loadColor()
-            }
+        if let controler {
+            content
+                .task(id: data) {
+                    await loadColor()
+                }
+        } else {
+            content
+                .environment(referenceControler)
+                .tint(referenceControler.tint ?? .accentColor)
+                .task(id: data) {
+                    await loadColor()
+                }
+        }
     }
     
     func loadColor() async {
