@@ -49,12 +49,15 @@ class SKImageCache {
     }
 }
 
-public struct SKAsyncPictureView: View {
+public struct SKAsyncPictureView<Placeholder: View>: View {
     let data: Data?
     @State var image: Image? = nil
     
-    public init(_ data: Data?) {
+    @ViewBuilder var placeholder: () -> Placeholder
+    
+    public init(_ data: Data?, @ViewBuilder placeholder: @escaping () -> Placeholder) {
         self.data = data
+        self.placeholder = placeholder
     }
     
     public var body: some View {
@@ -71,6 +74,8 @@ public struct SKAsyncPictureView: View {
             }.task(id: data, priority: .background) {
                 try? await generateImage()
             }
+        } else {
+            placeholder()
         }
     }
     
@@ -90,6 +95,14 @@ public struct SKAsyncPictureView: View {
             }
         }
     }
+}
+
+extension SKAsyncPictureView where Placeholder == EmptyView {
+    public init(_ data: Data?) {
+        self.data = data
+        self.placeholder = { EmptyView() }
+    }
+    
 }
 
 
