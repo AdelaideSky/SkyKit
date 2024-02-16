@@ -30,14 +30,14 @@ public class SKImageCache {
     
     final public class SKCacheItem: NSObject {
         
-        override func isEqual(_ object: Any?) -> Bool {
+        public override func isEqual(_ object: Any?) -> Bool {
             guard let other = object as? SKCacheItem else {
                 return false
             }
             return id == other.id
         }
         
-        override var hash: Int {
+        public override var hash: Int {
             return id
         }
         
