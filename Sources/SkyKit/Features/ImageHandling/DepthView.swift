@@ -58,17 +58,19 @@ public struct SKAsyncPictureView: View {
     }
     
     public var body: some View {
-        Group {
-            if let image {
-                image
-                    .resizable()
-                    .scaledToFit()
-            } else {
-                ProgressView()
-                    .opacity(0.8)
+        if let data {
+            Group {
+                if let image {
+                    image
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    ProgressView()
+                        .opacity(0.8)
+                }
+            }.task(id: data, priority: .background) {
+                try? await generateImage()
             }
-        }.task(id: data, priority: .background) {
-            try? await generateImage()
         }
     }
     
