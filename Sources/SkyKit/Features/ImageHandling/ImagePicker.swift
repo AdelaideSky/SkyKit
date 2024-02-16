@@ -22,6 +22,7 @@ public struct SKImagePicker<Content: View>: View {
     @State var photoItem: PhotosPickerItem? = nil
     
     @State var displayPicker: Bool = false
+    @State var displayCrop: Bool = false
     
     let onDismiss: (UIImage?) -> ()
     
@@ -42,28 +43,40 @@ public struct SKImagePicker<Content: View>: View {
                 .foregroundStyle(.tint)
         }).buttonStyle(.plain)
             .photosPicker(isPresented: $displayPicker, selection: $photoItem, matching: .images)
-//            .sheet(isPresented: $displayPicker) {
-//                PhotosPicker(selection: $photoItem, matching: .images, label: { EmptyView() })
-//                    .photosPickerStyle(.inline)
-//                    .ignoresSafeArea(edges: .bottom)
-//            }
-            .fullScreenCover(item: $image) { image in
+            .fullScreenCover(isPresented: $displayCrop) {
                 Group {
-                    CropView(image, shape: shape) { result in
-                        if let result {
-                            onDismiss(result)
+                    if let image {
+                        CropView(image, shape: shape) { result in
+                            if let result {
+                                onDismiss(result)
+                            }
+                        }.onDisappear() {
+                            self.image = nil
+                            self.photoItem = nil
                         }
-                    }.onDisappear() {
-                        self.image = nil
-                        self.photoItem = nil
+                    } else {
+                        VStack {
+                            ProgressView()
+                                .padding(5)
+                            Text("Downloading from iCloud")
+                                .foregroundStyle(.secondary)
+                                .font(.caption2)
+                                .opacity(0.8)
+                        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(.ultraThickMaterial)
+                            .ignoresSafeArea()
                     }
                 }.animation(.easeInOut, value: image)
                     .interactiveDismissDisabled(true)
             }
             .task(id: photoItem) {
                 displayPicker = false
-                if let photoItem, let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
-                    self.image = image
+                
+                if let photoItem {
+                    displayCrop = true
+                    if let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                        self.image = image
+                    }
                 }
             }
     }
@@ -110,7 +123,6 @@ struct CropView: View {
                         .scaleEffect(scale)
                         .offset(offset)
                         .opacity(0.7)
-//                        .blur(radius: blur)
                         .overlay(
                             GeometryReader { geometry in
                                 Color.clear
