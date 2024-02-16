@@ -179,7 +179,7 @@ public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
     
     @ViewBuilder var placeholder: () -> Placeholder
 
-    var imageData: Data
+    var imageData: Data?
     var foregroundData: Data? = nil
     
     var clipShape: S
