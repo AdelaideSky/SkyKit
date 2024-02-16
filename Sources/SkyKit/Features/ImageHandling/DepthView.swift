@@ -61,8 +61,8 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
     }
     
     public var body: some View {
-        if let data {
-            Group {
+        Group {
+            if let data {
                 if let image {
                     image
                         .resizable()
@@ -71,11 +71,11 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
                     ProgressView()
                         .opacity(0.8)
                 }
-            }.task(id: data, priority: .background) {
-                try? await generateImage()
+            } else {
+                placeholder()
             }
-        } else {
-            placeholder()
+        }.task(id: data, priority: .background) {
+            try? await generateImage()
         }
     }
     
