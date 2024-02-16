@@ -51,13 +51,15 @@ class SKImageCache {
 
 public struct SKAsyncPictureView<Placeholder: View>: View {
     let data: Data?
+    let contentMode: ContentMode
     @State var image: Image? = nil
     
     @ViewBuilder var placeholder: () -> Placeholder
     
-    public init(_ data: Data?, @ViewBuilder placeholder: @escaping () -> Placeholder) {
+    public init(_ data: Data?, @ViewBuilder placeholder: @escaping () -> Placeholder, contentMode: ContentMode = .fit) {
         self.data = data
         self.placeholder = placeholder
+        self.contentMode = contentMode
     }
     
     public var body: some View {
@@ -66,7 +68,7 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
                 if let image {
                     image
                         .resizable()
-                        .scaledToFit()
+                        .aspectRatio(contentMode: contentMode)
                 } else {
                     ProgressView()
                         .opacity(0.8)
@@ -98,9 +100,10 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
 }
 
 extension SKAsyncPictureView where Placeholder == EmptyView {
-    public init(_ data: Data?) {
+    public init(_ data: Data?, contentMode: ContentMode = .fit) {
         self.data = data
         self.placeholder = { EmptyView() }
+        self.contentMode = contentMode
     }
     
 }
