@@ -11,24 +11,24 @@ import Observation
 #if canImport(UIKit)
 import CoreMotion
 
-class SKImageCache {
-    static let shared = SKImageCache()
+public class SKImageCache {
+    public static let shared = SKImageCache()
     private var cache = NSCache<SKCacheItem, UIImage>()
 
-    func getImage(for hash: Int) -> UIImage? {
+    public func getImage(for hash: Int) -> UIImage? {
         return cache.object(forKey: .init(hash))
     }
 
-    func setImage(_ image: UIImage, for hash: Int) {
+    public func setImage(_ image: UIImage, for hash: Int) {
 //        print("Setting for \(hash)")
         cache.setObject(image, forKey: .init(hash))
     }
     
-    func purge() {
+    public func purge() {
         cache.removeAllObjects()
     }
     
-    final class SKCacheItem: NSObject {
+    final public class SKCacheItem: NSObject {
         
         override func isEqual(_ object: Any?) -> Bool {
             guard let other = object as? SKCacheItem else {
