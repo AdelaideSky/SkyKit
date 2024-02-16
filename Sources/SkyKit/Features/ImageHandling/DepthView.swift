@@ -185,7 +185,7 @@ public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
     var clipShape: S
     var magnitude: Double
     
-    public init(_ image: Data, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3, @ViewBuilder placeholder: @escaping () -> Placeholder) {
+    public init(_ image: Data?, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3, @ViewBuilder placeholder: @escaping () -> Placeholder) {
         self.imageData = image
         self.foregroundData = foreground
         self.clipShape = clipShape
@@ -209,7 +209,7 @@ public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
 }
 
 extension SKAsyncDepthPicture where Placeholder == EmptyView {
-    public init(_ image: Data, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3) {
+    public init(_ image: DataN, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3) {
         self.imageData = image
         self.foregroundData = foreground
         self.clipShape = clipShape
