@@ -15,12 +15,16 @@ public struct GlowViewModifier: ViewModifier {
         self.opacity = opacity
     }
     public func body(content: Content) -> some View {
-        content
-            .background(
-                content
-                    .blur(radius: radius)
-                    .opacity(opacity)
-            )
+        if radius > 0 {
+            content
+                .background(
+                    content
+                        .blur(radius: radius)
+                        .opacity(opacity)
+                )
+        } else {
+            content
+        }
     }
 }
 
