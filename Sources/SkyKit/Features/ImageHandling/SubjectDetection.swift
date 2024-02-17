@@ -9,19 +9,12 @@
 import SwiftUI
 import Vision
 
-class SKSubjectDetectionHandlerModel {
-    func process(_ image: UIImage?, state: Binding<SKAnalysisState>) async {
-        // Your asynchronous code here
-    }
-}
 struct SKSubjectDetectionHandler: ViewModifier {
     
-    @Binding var image: UIImage?
-    @Binding var foreground: UIImage?
+    @Binding var image: Data?
+    @Binding var foreground: Data?
     
     @Binding var state: SKAnalysisState
-    
-    
     
     func body(content: Content) -> some View {
         content
@@ -36,7 +29,8 @@ struct SKSubjectDetectionHandler: ViewModifier {
             state = .inProgress
             
             let request = VNGenerateForegroundInstanceMaskRequest()
-            let handler = VNImageRequestHandler(cgImage: image.cgImage!)
+            let handler = VNImageRequestHandler(cgImage: CGImage(pngDataProviderSource: .init(data: image as CFData)!, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!)
+            
             
             do {
                 try await withCheckedThrowingContinuation { continuation in
@@ -51,7 +45,7 @@ struct SKSubjectDetectionHandler: ViewModifier {
                             }
                             
                             if let buffer = try? result.generateMaskedImage(ofInstances: result.allInstances, from: handler, croppedToInstancesExtent: false) {
-                                let foreground = UIImage(pixelBuffer: buffer)
+                                let foreground = UIImage(pixelBuffer: buffer)?.pngData()
                                 state = .successfull
                                 self.foreground = foreground
                             } else {
@@ -75,7 +69,7 @@ struct SKSubjectDetectionHandler: ViewModifier {
 }
 
 extension View {
-    public func subjectDetectionHandler(_ image: Binding<UIImage?>, foreground: Binding<UIImage?>, state: Binding<SKAnalysisState>) -> some View {
+    public func subjectDetectionHandler(_ image: Binding<Data?>, foreground: Binding<Data?>, state: Binding<SKAnalysisState>) -> some View {
         self
             .modifier(SKSubjectDetectionHandler(image: image, foreground: foreground, state: state))
     }
