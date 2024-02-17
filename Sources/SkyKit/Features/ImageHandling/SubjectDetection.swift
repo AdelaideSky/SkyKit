@@ -18,8 +18,10 @@ struct SKSubjectDetectionHandler: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .task(id: image) {
-                await processImage()
+            .onChange(of: image) {
+                Task {
+                    await processImage()
+                }
             }
     }
     
@@ -30,7 +32,6 @@ struct SKSubjectDetectionHandler: ViewModifier {
             
             let request = VNGenerateForegroundInstanceMaskRequest()
             let handler = VNImageRequestHandler(cgImage: CGImage(pngDataProviderSource: .init(data: image as CFData)!, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!)
-            
             
             do {
                 try await withCheckedThrowingContinuation { continuation in
