@@ -28,7 +28,7 @@ public struct ImageTintViewModifier: ViewModifier {
         } else {
             content
                 .environment(referenceControler)
-                .tint(referenceControler.tint?.lighter(colorScheme == .dark ? 0.4 : 0.25) ?? .accentColor)
+                .tint(referenceControler.tint?.lighter(colorScheme == .dark ? 0.45 : 0.25) ?? .accentColor)
                 .task(id: data) {
                     await loadColor()
                 }
