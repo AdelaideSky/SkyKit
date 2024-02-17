@@ -35,22 +35,10 @@ public struct ImageTintViewModifier: ViewModifier {
     }
     
     func loadColor() async {
-        if (controler?.tint ?? referenceControler.tint) != nil {
-            let color = await getColor()
-            
-            withAnimation(.easeInOut(duration: 0.5)) {
-                if let controler {
-                    controler.tint = color
-                } else {
-                    referenceControler.tint = color
-                }
-            }
+        if let controler {
+            controler.tint = await getColor()
         } else {
-            if let controler {
-                controler.tint = await getColor()
-            } else {
-                referenceControler.tint = await getColor()
-            }
+            referenceControler.tint = await getColor()
         }
     }
     
