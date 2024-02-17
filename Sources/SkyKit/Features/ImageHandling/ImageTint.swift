@@ -15,7 +15,6 @@ public struct ImageTintViewModifier: ViewModifier {
     //Its a bit hacky but it works SURPRISINGLY WELL (i mean not using any weird api or exploit bugs, its just a reasonning i never saw anywhere else and i feel it should be avoided because edges cases can be annoying, but in this case consequences will be at worst unnacurate transitions on tints or wrong tints so..) It works by looking if a parent already used the modifier by checking if a controler isnt already there, if not fallbacks to its own controler that will go in the environment of the children. This allows usecases where a child modify the image, leading to a fallback to the old image tint before updating.
     
     var data: Data?
-    var fallbackToAccent: Bool = true
     
     @State var referenceControler: ImageTintControler = .init()
     
@@ -74,7 +73,7 @@ public struct ImageTintViewModifier: ViewModifier {
             }
         }
         
-        return fallbackToAccent ? Color("AccentColor") : nil
+        return nil
     }
 }
 
