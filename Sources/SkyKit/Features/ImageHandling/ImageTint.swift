@@ -22,14 +22,14 @@ public struct ImageTintViewModifier: ViewModifier {
     public func body(content: Content) -> some View {
         if let controler {
             content
-                .task(id: data?.hashValue ?? 0 + colorScheme.hashValue) {
+                .task(id: data) {
                     await loadColor()
                 }
         } else {
             content
                 .environment(referenceControler)
-                .tint(referenceControler.tint ?? .accentColor)
-                .task(id: data?.hashValue ?? 0 + colorScheme.hashValue) {
+                .tint(referenceControler.tint?.lighter(colorScheme == .dark ? 0.4 : 0.25) ?? .accentColor)
+                .task(id: data) {
                     await loadColor()
                 }
         }
@@ -70,7 +70,7 @@ public struct ImageTintViewModifier: ViewModifier {
             }
             
             if let image, let uiColor = await image.averageColor {
-                return Color(uiColor: uiColor.lighter(colorScheme == .dark ? 0.4 : 0.25))
+                return Color(uiColor: uiColor)
             }
         }
         
