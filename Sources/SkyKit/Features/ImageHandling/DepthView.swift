@@ -194,18 +194,22 @@ public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
     }
     
     public var body: some View {
-        ZStack {
-            SKAsyncPictureView(imageData, placeholder: placeholder)
-                .padding(-10)
-                .blur(radius: foregroundData == nil || !isEnabled ? 0 : 3)
-            if let foregroundData, isEnabled {
-                SKAsyncPictureView(foregroundData)
-                    .padding(-5)
-                    .shadow(radius: 15)
-                    .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
-            }
-        }.clipShape(clipShape)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        if let imageData {
+            ZStack {
+                SKAsyncPictureView(imageData)
+                    .padding(-10)
+                    .blur(radius: foregroundData == nil || !isEnabled ? 0 : 3)
+                if let foregroundData, isEnabled {
+                    SKAsyncPictureView(foregroundData)
+                        .padding(-5)
+                        .shadow(radius: 15)
+                        .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
+                }
+            }.clipShape(clipShape)
+        } else {
+            placeholder()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
     }
 }
 
