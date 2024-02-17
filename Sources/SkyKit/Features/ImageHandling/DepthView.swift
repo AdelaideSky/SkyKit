@@ -104,10 +104,10 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
     }
 }
 
-extension SKAsyncPictureView where Placeholder == EmptyView {
+extension SKAsyncPictureView where Placeholder == Spacer {
     public init(_ data: Data?, contentMode: ContentMode? = .fit) {
         self.data = data
-        self.placeholder = { EmptyView() }
+        self.placeholder = { Spacer() }
         self.contentMode = contentMode
     }
     
@@ -209,13 +209,13 @@ public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
     }
 }
 
-extension SKAsyncDepthPicture where Placeholder == EmptyView {
+extension SKAsyncDepthPicture where Placeholder == Spacer {
     public init(_ image: Data?, foreground: Data? = nil, clipShape: S = RoundedRectangle(cornerRadius: 10), magnitude: Double = 3) {
         self.imageData = image
         self.foregroundData = foreground
         self.clipShape = clipShape
         self.magnitude = magnitude
-        self.placeholder = { EmptyView() }
+        self.placeholder = { Spacer() }
     }
 }
 
