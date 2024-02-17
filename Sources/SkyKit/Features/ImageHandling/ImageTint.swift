@@ -70,7 +70,7 @@ public struct ImageTintViewModifier: ViewModifier {
             }
             
             if let image, let uiColor = await image.averageColor {
-                return Color(uiColor: uiColor.lighter(colorScheme == .dark ? 0.4 : -0.1))
+                return Color(uiColor: uiColor.lighter(colorScheme == .dark ? 0.4 : 0.25))
             }
         }
         
