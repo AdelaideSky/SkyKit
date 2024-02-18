@@ -31,7 +31,17 @@ struct SKSubjectDetectionHandler: ViewModifier {
             state = .inProgress
             
             let request = VNGenerateForegroundInstanceMaskRequest()
-            let handler = VNImageRequestHandler(cgImage: CGImage(pngDataProviderSource: .init(data: image as CFData)!, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!)
+            
+            var cgImage = CGImage(pngDataProviderSource: .init(data: image as CFData)!, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+            if cgImage == nil {
+                cgImage = CGImage(jpegDataProviderSource: .init(data: image as CFData)!, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+            }
+            
+            guard cgImage != nil else {
+                state = .noSubject
+                return
+            }
+            let handler = VNImageRequestHandler(cgImage: cgImage!)
             
             do {
                 try await withCheckedThrowingContinuation { continuation in
