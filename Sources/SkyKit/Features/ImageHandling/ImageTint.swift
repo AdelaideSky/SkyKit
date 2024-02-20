@@ -28,6 +28,7 @@ public struct ImageTintViewModifier: ViewModifier {
                     .tint(tint.lighter(colorScheme == .dark ? 0.45 : 0.25))
             } else {
                 content
+                    .environment(referenceControler)
             }
         }.task(id: data) {
             await loadColor()
