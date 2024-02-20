@@ -255,15 +255,18 @@ public struct SKDepthToggle: View {
 }
 
 struct SKParallaxMotionModifier: ViewModifier {    
+    @State var orientation = UIDeviceOrientation.unknown
     @State var manager: SKMotionManager = .shared
+    
     var magnitude: Double
     var active: Bool = true
     
     func body(content: Content) -> some View {
         Group {
             if active {
+                let (xOffset, yOffset) = calculateOffset()
                 content
-                    .offset(x: CGFloat(min(max(manager.roll * magnitude, -magnitude/1.5), magnitude/1.5)), y: CGFloat(min(max(manager.pitch * magnitude, -magnitude/1.5), magnitude/1.5)))
+                    .offset(x: xOffset, y: yOffset)
                     .animation(.easeInOut(duration: 0.3), value: manager.roll+manager.pitch)
                 
             } else {
@@ -279,7 +282,33 @@ struct SKParallaxMotionModifier: ViewModifier {
                 await manager.start()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            orientation = UIDevice.current.orientation
+        }
     }
+    
+    private func calculateOffset() -> (Double, Double) {
+            var xOffset = manager.roll * magnitude
+            var yOffset = manager.pitch * magnitude
+            
+            switch orientation {
+            case .landscapeLeft, .landscapeRight:
+                // Swap x and y offsets in landscape mode
+                (xOffset, yOffset) = (yOffset, xOffset)
+            case .portraitUpsideDown:
+                // Reverse both offsets in upside-down portrait mode
+                xOffset *= -1
+                yOffset *= -1
+            default:
+                break
+            }
+            
+            // Clamp offsets within a certain range
+            xOffset = min(max(xOffset, -magnitude / 1.5), magnitude / 1.5)
+            yOffset = min(max(yOffset, -magnitude / 1.5), magnitude / 1.5)
+            
+            return (xOffset, yOffset)
+        }
 }
 
 @Observable
