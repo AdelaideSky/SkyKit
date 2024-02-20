@@ -12,7 +12,7 @@ import Speech
 import SwiftUI
 import Observation
 
-
+#if os(iOS)
 /// A helper for transcribing speech to text using SFSpeechRecognizer and AVAudioEngine.
 @Observable
 public class SKTranscriptionTape {
@@ -214,3 +214,4 @@ public extension AVAudioApplication {
         }
     }
 }
+#endif

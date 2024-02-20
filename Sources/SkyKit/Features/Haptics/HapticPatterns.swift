@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreHaptics
 import AVKit
-
+#if os(iOS)
 public protocol HapticPattern {
     func pattern() -> CHHapticPattern?
     func play(withEngine engine: CHHapticEngine)
@@ -376,3 +376,4 @@ public enum TransientHapticEventStyle {
         }
     }
 }
+#endif
