@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Observation
-
+#if os(iOS)
 public struct ImageTintViewModifier: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(ImageTintControler.self) var controler: ImageTintControler?
@@ -94,3 +94,4 @@ public extension UIImage {
     }
     
 }
+#endif
