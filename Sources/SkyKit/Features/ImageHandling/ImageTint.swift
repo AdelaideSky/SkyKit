@@ -19,19 +19,18 @@ public struct ImageTintViewModifier: ViewModifier {
     @State var referenceControler: ImageTintControler = .init()
     
     public func body(content: Content) -> some View {
-        Group {
-            if let controler {
-                content
-            } else if let tint = referenceControler.tint {
-                content
-                    .environment(referenceControler)
-                    .tint(tint.lighter(colorScheme == .dark ? 0.45 : 0.25))
-            } else {
-                content
-                    .environment(referenceControler)
-            }
-        }.task(id: data) {
-            await loadColor()
+        if let controler {
+            content
+                .task(id: data) {
+                    await loadColor()
+                }
+        } else {
+            content
+                .environment(referenceControler)
+                .tint(controler?.tint?.lighter(colorScheme == .dark ? 0.45 : 0.25) ?? Color.accentColor)
+                .task(id: data) {
+                    await loadColor()
+                }
         }
     }
     
