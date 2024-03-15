@@ -8,14 +8,19 @@
 import SwiftUI
 import SkyKitC
 
-struct Wave: Shape {
+public struct Wave: Shape {
     // how high our waves should be
     var strength: Double
 
     // how frequent our waves should be
     var frequency: Double
     
-    func path(in rect: CGRect) -> Path {
+    public init(strength: Double, frequency: Double) {
+        self.strength = strength
+        self.frequency = frequency
+    }
+    
+    public func path(in rect: CGRect) -> Path {
         autoreleasepool {
             let path = CGMutablePath()
             

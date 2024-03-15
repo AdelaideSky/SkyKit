@@ -10,10 +10,18 @@ import SwiftUI
 private struct BlurModifier: ViewModifier {
     public let isIdentity: Bool
     public var intensity: CGFloat
+    public let ignoresSafeArea: Bool
     public func body(content: Content) -> some View {
-        content
-            .blur(radius: isIdentity ? intensity : 0)
-            .opacity(isIdentity ? 0 : 1)
+        if isIdentity && ignoresSafeArea {
+            content
+                .blur(radius: isIdentity ? intensity : 0)
+                .opacity(isIdentity ? 0 : 1)
+                .ignoresSafeArea()
+        } else {
+            content
+                .blur(radius: isIdentity ? intensity : 0)
+                .opacity(isIdentity ? 0 : 1)
+        }
     }
 }
 
@@ -24,23 +32,25 @@ public extension AnyTransition {
 
     static var blurWithoutScale: AnyTransition {
         .modifier(
-            active: BlurModifier(isIdentity: true, intensity: 5),
-            identity: BlurModifier(isIdentity: false, intensity: 5)
+            active: BlurModifier(isIdentity: true, intensity: 5, ignoresSafeArea: false),
+            identity: BlurModifier(isIdentity: false, intensity: 5, ignoresSafeArea: false)
         )
     }
 
     static func blur(
         intensity: CGFloat = 5,
         scale: CGFloat = 0.8,
-        scaleAnimation animation: Animation = .spring()
+        scaleAnimation animation: Animation = .spring(),
+        ignoresSafeArea: Bool = false
     ) -> AnyTransition {
         .scale(scale: scale)
             .animation(animation)
             .combined(
                 with: .modifier(
-                    active: BlurModifier(isIdentity: true, intensity: intensity),
-                    identity: BlurModifier(isIdentity: false, intensity: intensity)
+                    active: BlurModifier(isIdentity: true, intensity: intensity, ignoresSafeArea: ignoresSafeArea),
+                    identity: BlurModifier(isIdentity: false, intensity: intensity, ignoresSafeArea: ignoresSafeArea)
                 )
             )
     }
+    
 }

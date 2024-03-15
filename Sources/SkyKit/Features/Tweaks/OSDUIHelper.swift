@@ -63,8 +63,14 @@ import AppKit
                    totalChiclets: CUnsignedInt,
                    locked: Bool)
     
-//    "showFullScreenImage:onDisplayID:priority:msecToAnimate:
     func showFullScreenImage(_ img: OSDImage, onDisplayID: CGDirectDisplayID, priority: CUnsignedInt, msecToAnimate: CUnsignedInt)
+    
+    func showImageAtPath(_ path: String,
+                         onDisplayID: CGDirectDisplayID,
+                         priority: CUnsignedInt,
+                         msecUntilFade: CUnsignedInt,
+                         withText: String?)
+    
 }
 
 public struct SKSystemHUD {
@@ -84,7 +90,7 @@ public struct SKSystemHUD {
                           onDisplayID: CGDirectDisplayID = CGMainDisplayID(),
                           priority: CUnsignedInt = 0x1f4,
                           msecUntilFade: CUnsignedInt = 2000,
-                          withText: String?) {
+                          withText: String? = nil) {
         getHelper().showImage(img, onDisplayID: onDisplayID, priority: priority, msecUntilFade: msecUntilFade, withText: withText)
     }
     
@@ -118,6 +124,14 @@ public struct SKSystemHUD {
                                     percent: Double,
                                     locked: Bool = false) {
         getHelper().showImage(img, onDisplayID: onDisplayID, priority: priority, msecUntilFade: msecUntilFade, filledChiclets: UInt32(percent*100), totalChiclets: 10000, locked: locked)
+    }
+    
+    public static func showImage(_ path: String,
+                                    onDisplayID: CGDirectDisplayID = CGMainDisplayID(),
+                                    priority: CUnsignedInt = 0x1f4,
+                                    msecUntilFade: CUnsignedInt = 2000,
+                                    withText: String? = nil) {
+        getHelper().showImageAtPath(path, onDisplayID: onDisplayID, priority: priority, msecUntilFade: msecUntilFade, withText: withText)
     }
 }
 #endif
