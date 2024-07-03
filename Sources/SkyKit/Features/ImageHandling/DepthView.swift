@@ -11,7 +11,8 @@ import Observation
 #if canImport(UIKit)
 import CoreMotion
 
-public final class SKImageCache {
+@MainActor
+public class SKImageCache {
     public static let shared = SKImageCache()
     private var cache = NSCache<SKCacheItem, UIImage>()
 
