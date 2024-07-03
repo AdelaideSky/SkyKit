@@ -15,7 +15,7 @@ public struct SKNoiseTexture: View {
             .colorEffect(SkyKitShaders.noise())
     }
 }
-
+#if !os(visionOS)
 @available(*, deprecated, renamed: "SKNoiseTexture", message: "Switched to a Metal shader system, more efficient, more sharp. You may still want to use the legacy visuals though, as the pixels are bigger. Though, this isn't recommended")
 public struct SKOldNoiseTexture: View {
     
@@ -58,3 +58,4 @@ public struct SKOldNoiseTexture: View {
         }
     }
 }
+#endif

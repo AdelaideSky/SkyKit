@@ -15,7 +15,7 @@ let performHaptic = {
         feedbackgen.selectionChanged()
     }
 }
-#else
+#elseif os(macOS)
 let performHaptic = { NSHapticFeedbackManager.defaultPerformer.perform(.levelChange, performanceTime: .drawCompleted) }
 #endif
 
@@ -63,11 +63,12 @@ public struct SKHSlider: View {
                         
                         
                         
-                        
+                        #if !os(visionOS)
                         if Int(newValue) != Int(self.value) {
                             if newValue == range.upperBound {performHaptic()}
                             else if newValue == range.lowerBound {performHaptic()}
                         }
+                        #endif
                         self.value = Float(newValue)
                     })
                         .onEnded() {_ in

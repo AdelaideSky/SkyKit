@@ -4,7 +4,7 @@
 //
 //  Created by Adélaïde Sky on 26/09/2023.
 //
-
+#if !os(visionOS)
 import Foundation
 import SwiftUI
 #if canImport(UIKit)
@@ -58,3 +58,4 @@ public enum SKVibration {
     
 }
 
+#endif

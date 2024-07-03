@@ -12,10 +12,11 @@ import SkyKitC
 
 #if os(iOS)
 public typealias SystemImage = UIImage
-#else
+#elseif os(macOS)
 public typealias SystemImage = NSImage
 #endif
 
+#if !os(visionOS)
 public struct SKNoiseGenerator {
     @AppStorage("fr.adesky.skyKit.noiseCache") var cache: [UInt32] = []
     
@@ -61,3 +62,4 @@ public struct SKNoiseGenerator {
     }
 }
 
+#endif

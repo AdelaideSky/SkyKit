@@ -44,11 +44,13 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.isEnabled) private var isEnabled
     
+    #if !os(visionOS)
     let feedback: SensoryFeedback?
     
     public init(_ feedback: SensoryFeedback? = .impact(flexibility: .solid, intensity: 0.5)) {
         self.feedback = feedback
     }
+    #endif
     
     
     public func makeBody(configuration: Self.Configuration) -> some View {
@@ -83,7 +85,9 @@ public struct ProminentShadowedButtonStyle: ButtonStyle {
             }
             .cornerRadius(10)
             .symbolVariant(configuration.isPressed ? .fill : .none)
+            #if !os(visionOS)
             .sensoryFeedback(feedback ?? .impact(intensity: 0), trigger: configuration.isPressed)
+            #endif
     }
 }
 

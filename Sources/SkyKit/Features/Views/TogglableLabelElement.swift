@@ -49,7 +49,9 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
             }
             .onTapGesture {
                 if isEnabled {
+                    #if !os(visionOS)
                     performHaptic()
+                    #endif
                     if list.contains(where: {$0 == element}) {
                         list.removeAll(where: {$0 == element})
                     } else {

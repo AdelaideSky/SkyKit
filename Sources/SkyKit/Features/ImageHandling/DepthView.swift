@@ -203,12 +203,31 @@ public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
                     SKAsyncPictureView(foregroundData)
                         .padding(-5)
                         .shadow(radius: 15)
+//                        .modifier(SKFadedEdgesViewModifier())
                         .modifier(SKParallaxMotionModifier(magnitude: magnitude*3))
                 }
             }.clipShape(clipShape)
         } else {
             placeholder()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
+
+
+struct SKFadedEdgesViewModifier: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+                .blur(radius: 7)
+                .shadow(radius: 10)
+            content
+                .mask {
+                    content
+                        .scaleEffect(0.98, anchor: .center)
+                        .blur(radius: 7)
+                }
         }
     }
 }
@@ -282,9 +301,11 @@ struct SKParallaxMotionModifier: ViewModifier {
                 await manager.start()
             }
         }
+        #if !os(visionOS)
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
             orientation = UIDevice.current.orientation
         }
+        #endif
     }
     
     private func calculateOffset() -> (Double, Double) {

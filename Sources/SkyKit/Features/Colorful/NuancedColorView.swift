@@ -187,7 +187,7 @@ public struct SKNuancedColorfulView: View {
     }
 }
 
-#if os(iOS)
+#if canImport(UIKit)
 
 extension UIColor {
     private func makeColor(componentDelta: CGFloat) -> UIColor {
