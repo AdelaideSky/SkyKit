@@ -135,7 +135,7 @@ public struct SKDepthPicture<S: Shape>: View {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFit()
-                .padding(isEnabled ? 0 : -10)
+                .padding(isEnabled ? -10 : 0)
                 .blur(radius: foreground == nil || !isEnabled ? 0 : 5)
             if let foreground, isEnabled {
                 Image(uiImage: foreground)
@@ -198,7 +198,7 @@ public struct SKAsyncDepthPicture<S: Shape, Placeholder: View>: View {
         if let imageData {
             ZStack {
                 SKAsyncPictureView(imageData)
-                    .padding(isEnabled ? 0 : -10)
+                    .padding(isEnabled ? -10 : 0)
                     .blur(radius: foregroundData == nil || !isEnabled ? 0 : 3)
                 if let foregroundData, isEnabled {
                     SKAsyncPictureView(foregroundData)
