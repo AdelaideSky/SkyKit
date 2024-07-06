@@ -53,14 +53,16 @@ public class SKImageCache {
 public struct SKAsyncPictureView<Placeholder: View>: View {
     let data: Data?
     let contentMode: ContentMode?
+    let animation: Animation?
     @State var image: Image? = nil
     
     @ViewBuilder var placeholder: () -> Placeholder
     
-    public init(_ data: Data?, @ViewBuilder placeholder: @escaping () -> Placeholder, contentMode: ContentMode? = .fit) {
+    public init(_ data: Data?, @ViewBuilder placeholder: @escaping () -> Placeholder, contentMode: ContentMode? = .fit, animation: Animation? = nil) {
         self.data = data
         self.placeholder = placeholder
         self.contentMode = contentMode
+        self.animation = animation
     }
     
     public var body: some View {
@@ -82,9 +84,10 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
             } else {
                 placeholder()
             }
-        }.task(id: data, priority: .background) {
-            try? await generateImage()
-        }
+        }.animation(animation, value: image)
+            .task(id: data, priority: .background) {
+                try? await generateImage()
+            }
     }
     
     func generateImage() async throws {
