@@ -74,6 +74,15 @@ extension View {
     public func imageTint(_ data: Data?) -> some View {
         modifier(ImageTintViewModifier(data: data))
     }
+    
+    @ViewBuilder
+    public func imageTint(_ data: Data?, isOn: Bool) -> some View {
+        if isOn {
+            modifier(ImageTintViewModifier(data: data))
+        } else {
+            self
+        }
+    }
 }
 
 public extension UIImage {
