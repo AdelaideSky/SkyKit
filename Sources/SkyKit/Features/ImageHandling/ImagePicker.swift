@@ -15,6 +15,85 @@ public enum SKShapeType {
     case square
 }
 
+public struct SKImagePickerModifier: ViewModifier {
+    let onDismiss: (UIImage?) -> ()
+    
+    let shape: SKShapeType
+    
+    @Binding var isShown: Bool
+    
+    @State var image: UIImage? = nil
+    @State var photoItem: PhotosPickerItem? = nil
+    
+    @State var displayPicker: Bool = false
+    @State var displayCrop: Bool = false
+    
+    public init(_ isShown: Binding<Bool>, onDismiss: @escaping (UIImage?) -> Void, shape: SKShapeType) {
+        self.onDismiss = onDismiss
+        self.shape = shape
+        self._isShown = isShown
+    }
+    
+    public func body(content: Content) -> some View {
+        content
+            .photosPicker(isPresented: $displayPicker, selection: $photoItem, matching: .images)
+            .fullScreenCover(isPresented: $displayCrop) {
+                Group {
+                    if let image {
+                        CropView(image, shape: shape) { result in
+                            if let result {
+                                onDismiss(result)
+                                
+                            }
+                        }.onDisappear() {
+                            self.image = nil
+                            self.photoItem = nil
+                            isShown = false
+                        }
+                    } else {
+                        VStack {
+                            ProgressView()
+                                .padding(5)
+                            Text("Downloading from iCloud")
+                                .foregroundStyle(.secondary)
+                                .font(.caption2)
+                                .opacity(0.8)
+                        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(.ultraThickMaterial)
+                            .ignoresSafeArea()
+                    }
+                }.animation(.easeInOut, value: image)
+                    .interactiveDismissDisabled(true)
+            }
+            .task(id: photoItem) {
+                displayPicker = false
+                
+                if let photoItem {
+                    displayCrop = true
+                    if let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                        self.image = image
+                    }
+                }
+            }
+            .onChange(of: displayPicker) {
+                if photoItem == nil && !displayPicker { isShown = false }
+            }
+            .onChange(of: isShown) {
+                if isShown {
+                    displayPicker = true
+                }
+            }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func skImagePicker(_ isShown: Binding<Bool>, onDismiss: @escaping (UIImage?) -> Void, shape: SKShapeType = .square) -> some View {
+        self
+            .modifier(SKImagePickerModifier(isShown, onDismiss: onDismiss, shape: shape))
+    }
+}
+    
 public struct SKImagePicker<Content: View>: View {
     @ViewBuilder let content: () -> (Content)
     
