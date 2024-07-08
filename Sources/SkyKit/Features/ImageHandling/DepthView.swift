@@ -66,16 +66,18 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
     }
     
     public var body: some View {
-        Group {
-            if let data {
+        ZStack {
+            if data != nil {
                 if let image {
                     if let contentMode {
                         image
                             .resizable()
                             .aspectRatio(contentMode: contentMode)
+                            .transition(.opacity)
                     } else {
                         image
                             .resizable()
+                            .transition(.opacity)
                     }
                 } else {
                     ProgressView()
