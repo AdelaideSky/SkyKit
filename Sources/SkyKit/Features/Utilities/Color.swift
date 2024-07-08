@@ -9,51 +9,85 @@ import Foundation
 import SwiftUI
 import SkyKitC
 
-public extension Color {
-    var hex: String {
-        autoreleasepool {
-            let components = self.getRGB()
-            guard let str = rgbToHexString(Double(components.0), Double(components.1), Double(components.2)) else { return "ERROR" }
-            let answer = String(cString: str)
-            freeHex(str)
-            return answer
-        }
+extension Color: Codable {
+    public init(hex: String) {
+        let rgba = hex.toRGBA()
+        
+        self.init(.sRGB,
+                  red: Double(rgba.r),
+                  green: Double(rgba.g),
+                  blue: Double(rgba.b),
+                  opacity: Double(rgba.alpha))
     }
     
-    init?(hex: String) {
-        guard !hex.contains(where: { !$0.isHexDigit }) && (hex.count == 6 || hex.count == 8) else { return nil }
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let hex = try container.decode(String.self)
         
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.init(hex: hex)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(toHex)
+    }
+    
+    public var toHex: String {
+        return toHex()
+    }
+    
+    public func toHex(alpha: Bool = false) -> String {
+        let resolved = resolve(in: EnvironmentValues())
+        
+        let r = resolved.red
+        let g = resolved.green
+        let b = resolved.blue
+        var a = resolved.opacity
+        
+        if alpha {
+            return String(format: "%02lX%02lX%02lX%02lX",
+                          lroundf(r * 255),
+                          lroundf(g * 255),
+                          lroundf(b * 255),
+                          lroundf(a * 255))
+        }
+        else {
+            return String(format: "%02lX%02lX%02lX",
+                          lroundf(r * 255),
+                          lroundf(g * 255),
+                          lroundf(b * 255))
+        }
+    }
+}
+
+extension String {
+    public func toRGBA() -> (r: CGFloat, g: CGFloat, b: CGFloat, alpha: CGFloat) {
+        var hexSanitized = self.trimmingCharacters(in: .whitespacesAndNewlines)
         hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-
+        
         var rgb: UInt64 = 0
-
+        
         var r: CGFloat = 0.0
         var g: CGFloat = 0.0
         var b: CGFloat = 0.0
         var a: CGFloat = 1.0
-
+        
         let length = hexSanitized.count
-
-        guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else {
-            return nil
-        }
-
+        
+        Scanner(string: hexSanitized).scanHexInt64(&rgb)
+        
         if length == 6 {
             r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
             g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
             b = CGFloat(rgb & 0x0000FF) / 255.0
-
-        } else if length == 8 {
+        }
+        else if length == 8 {
             r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
             g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
             b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
             a = CGFloat(rgb & 0x000000FF) / 255.0
-
-        } else {
-            return nil
         }
         
-        self.init(red: r, green: g, blue: b, opacity: a)
+        return (r, g, b, a)
     }
 }

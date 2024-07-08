@@ -44,7 +44,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                         .fill(shouldHighlight ? .white : .gray.opacity(0.3))
                 } else {
                     Capsule()
-                        .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6")!)
+                        .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
                 }
             }
             .onTapGesture {
