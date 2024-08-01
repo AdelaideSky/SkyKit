@@ -88,16 +88,12 @@ public struct SKRGBHexEditor: View, Equatable {
                             hex = String(value.dropLast(newValue.count-6))
                             return
                         }
-                        if let newColor = Color(hex: value) {
-                            selection = newColor
-                            onSubmit()
-                        } else {
-                            hex = value
-                        }
+                        selection = Color(hex: value)
+                        onSubmit()
                     })).multilineTextAlignment(.center)
                         .focused($focusedField, equals: 4)
                         .onSubmit {
-                            hex = selection.hex.uppercased()
+                            hex = selection.toHex.uppercased()
                         }
                     Spacer(minLength: 0)
                 }.frame(minWidth: 75, maxWidth: .infinity)
@@ -113,7 +109,7 @@ public struct SKRGBHexEditor: View, Equatable {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         focusedField = nil // Remove initial focus
                     }
-                    hex = selection.hex.uppercased()
+                    hex = selection.toHex.uppercased()
                     let rgb = selection.getRGB()
                     
                     red = rgb.0
@@ -124,7 +120,7 @@ public struct SKRGBHexEditor: View, Equatable {
             .onChange(of: selection) { newValue in
                 if !holdUpdates {
                     DispatchQueue(label: "SKRGBHexEditorUpdate").async {
-                        hex = selection.hex.uppercased()
+                        hex = selection.toHex.uppercased()
                         let rgb = selection.getRGB()
                         red = rgb.0
                         green = rgb.1
@@ -135,7 +131,7 @@ public struct SKRGBHexEditor: View, Equatable {
             .onChange(of: holdUpdates) { newValue in
                 if !newValue {
                     DispatchQueue(label: "SKRGBHexEditorUpdate").async {
-                        hex = selection.hex.uppercased()
+                        hex = selection.toHex.uppercased()
                         let rgb = selection.getRGB()
                         red = rgb.0
                         green = rgb.1
