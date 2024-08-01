@@ -91,8 +91,8 @@ public extension SKColorMind {
                     do {
                         var tmpColors: [Color] = []
                         
-                        let json = try? JSON(data: response.data!)
-                        for color in json!["result"].arrayValue {
+                        let json = try JSON(data: response.data!)
+                        for color in json["result"].arrayValue {
                             
                             #if os(macOS)
                             let color = NSColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
@@ -103,6 +103,8 @@ public extension SKColorMind {
                             #endif
                         }
                         continuation.resume(returning: tmpColors)
+                    } catch {
+                        print("Error parsing result: invalid JSON")
                     }
                 }
         }
@@ -121,8 +123,8 @@ public extension SKColorMind {
                 do {
                     var tmpColors: [Color] = []
                     
-                    let json = try? JSON(data: response.data!)
-                    for color in json!["result"].arrayValue {
+                    let json = try JSON(data: response.data!)
+                    for color in json["result"].arrayValue {
                         
                         #if os(macOS)
                         let color = NSColor(red: CGFloat(color[0].floatValue), green: CGFloat(color[1].floatValue), blue: CGFloat(color[2].floatValue), alpha: CGFloat(1))
@@ -133,6 +135,8 @@ public extension SKColorMind {
                         #endif
                     }
                     self.palette = tmpColors
+                } catch {
+                    print("Error parsing result: invalid JSON")
                 }
             }
     }
