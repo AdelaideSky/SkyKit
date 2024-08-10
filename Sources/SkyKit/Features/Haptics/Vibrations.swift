@@ -25,11 +25,11 @@ public enum SKVibration {
     case oldSchool
     
     #if os(macOS)
-    public static func vibrate(with type: SKVibration) {
+    public static func vibrate(with type: SKVibration, intensity: CGFloat = 1) {
         print("Vibrations are not yet supported on macOS !")
     }
     #elseif os(visionOS)
-    public static func vibrate(with type: SKVibration) {
+    public static func vibrate(with type: SKVibration, intensity: CGFloat = 1) {
         print("Vibrations are not yet supported on macOS !")
     }
     #elseif os(iOS)
