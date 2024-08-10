@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Observation
-#if os(iOS)
+#if canImport(UIKit)
 public struct ImageTintViewModifier: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(ImageTintControler.self) var controler: ImageTintControler?
