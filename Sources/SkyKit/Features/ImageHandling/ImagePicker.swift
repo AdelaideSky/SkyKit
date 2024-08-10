@@ -8,7 +8,7 @@
 import SwiftUI
 import PhotosUI
 
-#if os(iOS)
+#if canImport(UIKit)
 
 public enum SKShapeType {
     case circle
