@@ -12,7 +12,7 @@ import Speech
 import SwiftUI
 import Observation
 
-#if os(iOS)
+#if canImport(UIKit)
 /// A helper for transcribing speech to text using SFSpeechRecognizer and AVAudioEngine.
 @Observable
 public class SKTranscriptionTape {
