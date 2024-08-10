@@ -4,7 +4,6 @@
 //
 //  Created by Adélaïde Sky on 26/09/2023.
 //
-#if !os(visionOS)
 import Foundation
 import SwiftUI
 #if canImport(UIKit)
@@ -29,7 +28,11 @@ public enum SKVibration {
     public static func vibrate(with type: SKVibration) {
         print("Vibrations are not yet supported on macOS !")
     }
-    #elseif canImport(UIKit)
+    #elseif os(visionOS)
+    public static func vibrate(with type: SKVibration) {
+        print("Vibrations are not yet supported on macOS !")
+    }
+    #elseif os(iOS)
     public static func vibrate(with type: SKVibration, intensity: CGFloat = 1) {
         switch type {
         case .error:
@@ -57,5 +60,3 @@ public enum SKVibration {
     #endif
     
 }
-
-#endif
