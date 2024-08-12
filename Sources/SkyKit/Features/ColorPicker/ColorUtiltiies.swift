@@ -45,22 +45,20 @@ extension Color {
 }
 #else
 extension Color {
-//    func getHSB() -> (CGFloat, CGFloat, CGFloat) {
-//        autoreleasepool {
-//            guard let nsColor = NSColor(self).usingColorSpace(.deviceRGB) else {
-//                return (0, 0, 0)
-//            }
-//            
-//            var hue: CGFloat = 0
-//            var saturation: CGFloat = 0
-//            var brightness: CGFloat = 0
-//            var alpha: CGFloat = 0
-//            
-//            nsColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-//            
-//            return (hue, saturation, brightness)
-//        }
-//    }
+    func getHSB() -> (CGFloat, CGFloat, CGFloat) {
+        autoreleasepool {
+            let uiColor = UIColor(self)
+            
+            var hue: CGFloat = 0
+            var saturation: CGFloat = 0
+            var brightness: CGFloat = 0
+            var alpha: CGFloat = 0
+            
+            uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+            
+            return (hue, saturation, brightness)
+        }
+    }
     func getRGB() -> (CGFloat, CGFloat, CGFloat) {
         autoreleasepool {
             let uiColor = UIColor(self) 

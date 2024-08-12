@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SkyKitC
-#if os(macOS)
+
 fileprivate func calcPosition(_ color: Color, size: CGSize) -> CGPoint {
     autoreleasepool {
         let hsb = color.getHSB()
@@ -93,6 +93,7 @@ public struct SKColorWheel: View {
     }
     
     public var body: some View {
+        #if os(macOS)
         if scrollControls {
             BindableScrollReader(xRange: 10...(geo.size.width-10), yRange: 10...(geo.size.height-10), value: .init(get: {
                 return .init(width: knobPosition.x, height: knobPosition.y)
@@ -159,6 +160,28 @@ public struct SKColorWheel: View {
                     }
             )
         }
+        #else
+        content.simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    isDragging = true
+                    DispatchQueue(label: "SKColorWheelUpdate").async {
+                        autoreleasepool {
+                            let newPos = CGPoint(x: min(max(value.location.x, 10), geo.size.width-10), y: min(max(value.location.y, 10), geo.size.height-10))
+                            let angle = angle(newPos)
+                            let newSelection = Color(hue: angle, saturation: r(newPos, angle: angle), brightness: brightness)
+                            DispatchQueue.main.async {
+                                selection = newSelection
+                            }
+                        }
+                    }
+                }
+                .onEnded { _ in
+                    isDragging = false
+                    onSubmit()
+                }
+        )
+        #endif
     }
     
     func updatePosition() {
@@ -171,4 +194,3 @@ public struct SKColorWheel: View {
         }
     }
 }
-#endif
