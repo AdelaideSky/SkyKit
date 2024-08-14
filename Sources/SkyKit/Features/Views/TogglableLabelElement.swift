@@ -26,41 +26,42 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
         self.label = label
     }
     public var body: some View {
-        Group {
-            if colorScheme == .dark {
-                Text(label)
-                    .foregroundStyle(shouldHighlight ? .black : .white)
-            } else {
-                Text(label)
-                    .foregroundStyle(shouldHighlight ? .white : .black)
-            }
-        }
-            .font(.system(size: 15))
-            .padding(.horizontal, 13)
-            .padding(.vertical, 9)
-            .background {
-                if colorScheme == .dark {
-                    Capsule()
-                        .fill(shouldHighlight ? .white : .gray.opacity(0.3))
+        Button(action: {
+            if isEnabled {
+                #if !os(visionOS)
+                performHaptic()
+                #endif
+                if list.contains(where: {$0 == element}) {
+                    list.removeAll(where: {$0 == element})
                 } else {
-                    Capsule()
-                        .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
+                    list.append(element)
                 }
             }
-            .onTapGesture {
-                if isEnabled {
-                    #if !os(visionOS)
-                    performHaptic()
-                    #endif
-                    if list.contains(where: {$0 == element}) {
-                        list.removeAll(where: {$0 == element})
+        }, label: {
+            Group {
+                if colorScheme == .dark {
+                    Text(label)
+                        .foregroundStyle(shouldHighlight ? .black : .white)
+                } else {
+                    Text(label)
+                        .foregroundStyle(shouldHighlight ? .white : .black)
+                }
+            }
+                .font(.system(size: 15))
+                .padding(.horizontal, 13)
+                .padding(.vertical, 9)
+                .background {
+                    if colorScheme == .dark {
+                        Capsule()
+                            .fill(shouldHighlight ? .white : .gray.opacity(0.3))
                     } else {
-                        list.append(element)
+                        Capsule()
+                            .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
                     }
                 }
-            }
+        })
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
             .opacity(0.9)
-            .hoverEffect(.highlight)
-            .clipShape( Capsule())
     }
 }
