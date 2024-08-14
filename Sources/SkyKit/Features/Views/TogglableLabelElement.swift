@@ -20,6 +20,14 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
         return list.contains(where: {$0 == element})
     }
     
+    var tintColor: Color {
+        if colorScheme == .dark {
+            return shouldHighlight ? .white : .gray.opacity(0.3)
+        } else {
+            return shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6")
+        }
+    }
+    
     public init(_ element: Element, label: String, list: Binding<[Element]>) {
         self.element = element
         self._list = list
@@ -48,18 +56,18 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                 }
             }
                 .font(.system(size: 15))
-                .padding(.horizontal, 13)
-                .padding(.vertical, 9)
-                .background {
-                    if colorScheme == .dark {
-                        Capsule()
-                            .fill(shouldHighlight ? .white : .gray.opacity(0.3))
-                    } else {
-                        Capsule()
-                            .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
-                    }
-                }
-        })
+//                .padding(.horizontal, 13)
+//                .padding(.vertical, 9)
+//                .background {
+//                    if colorScheme == .dark {
+//                        Capsule()
+//                            .fill(shouldHighlight ? .white : .gray.opacity(0.3))
+//                    } else {
+//                        Capsule()
+//                            .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
+//                    }
+//                }
+        }).tint(tintColor)
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
             .opacity(0.9)
