@@ -70,7 +70,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
         }).tint(tintColor)
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
-        .controlSize(.mini)
+        .controlSize(.small)
             .opacity(0.9)
     }
 }
