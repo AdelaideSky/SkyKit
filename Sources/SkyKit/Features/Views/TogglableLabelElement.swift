@@ -60,5 +60,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                 }
             }
             .opacity(0.9)
+            .hoverEffect(.highlight)
+            .clipShape( Capsule())
     }
 }
