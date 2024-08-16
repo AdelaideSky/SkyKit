@@ -70,7 +70,6 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                 .clipShape(.capsule)
         }).buttonStyle(.plain)
             .clipShape(.capsule)
-            .controlSize(.small)
             .opacity(0.9)
     }
 }
