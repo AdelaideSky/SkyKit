@@ -59,28 +59,47 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                 .padding(.horizontal, 13)
                 .padding(.vertical, 9)
                 .background {
-                    if colorScheme == .dark {
-                        Capsule()
-                            .fill(shouldHighlight ? .white : .gray.opacity(0.3))
+                    if shouldHighlight {
+                        Rectangle()
+                            .fill(colorScheme == .dark ? .white : .black.opacity(0.5))
                     } else {
-                        Capsule()
-                            .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
+                        Rectangle()
+                            .fill(.thinMaterial)
                     }
                 }
-        })
-//        .background {
-//            if colorScheme == .dark {
-//                                    Capsule()
-//                                        .fill(shouldHighlight ? .white : .gray.opacity(0.3))
-//                                } else {
-//                                    Capsule()
-//                                        .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
-//                                }
-//        }
-        .buttonStyle(.borderless)
-        .buttonBorderShape(.capsule)
-        .clipShape(.capsule)
-        .controlSize(.small)
+                .clipShape(.capsule)
+        }).buttonStyle(.plain)
+            .clipShape(.capsule)
+            .controlSize(.small)
             .opacity(0.9)
     }
 }
+//Button(action: {
+//    print("e")
+//}, label: {
+//    Group {
+//        if colorScheme == .dark {
+//            Text("label")
+//                .foregroundStyle(.white)
+//        } else {
+//            Text("label")
+//                .foregroundStyle(.black)
+//        }
+//    }
+//        .font(.system(size: 15))
+//        .padding(.horizontal, 13)
+//        .padding(.vertical, 9)
+//        .background {
+//            
+//            Rectangle()
+//                .fill(.thinMaterial)
+//        }
+//        .clipShape(.capsule)
+//})
+//
+//.buttonStyle(.plain)
+////                .buttonBorderShape(.capsule)
+//
+//.clipShape(.capsule)
+//.controlSize(.small)
+//    .opacity(0.9)
