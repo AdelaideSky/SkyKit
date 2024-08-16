@@ -68,6 +68,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                     }
                 }
                 .clipShape(.capsule)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }).buttonStyle(.plain)
             .clipShape(.capsule)
             .opacity(0.9)
