@@ -56,20 +56,30 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
                 }
             }
                 .font(.system(size: 15))
-//                .padding(.horizontal, 13)
-//                .padding(.vertical, 9)
-//                .background {
-//                    if colorScheme == .dark {
-//                        Capsule()
-//                            .fill(shouldHighlight ? .white : .gray.opacity(0.3))
-//                    } else {
-//                        Capsule()
-//                            .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
-//                    }
-//                }
-        }).tint(tintColor)
-        .buttonStyle(.bordered)
+                .padding(.horizontal, 13)
+                .padding(.vertical, 9)
+                .background {
+                    if colorScheme == .dark {
+                        Capsule()
+                            .fill(shouldHighlight ? .white : .gray.opacity(0.3))
+                    } else {
+                        Capsule()
+                            .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
+                    }
+                }
+        })
+//        .background {
+//            if colorScheme == .dark {
+//                                    Capsule()
+//                                        .fill(shouldHighlight ? .white : .gray.opacity(0.3))
+//                                } else {
+//                                    Capsule()
+//                                        .fill(shouldHighlight ? .black.opacity(0.5) : Color(hex: "F6F6F6"))
+//                                }
+//        }
+        .buttonStyle(.borderless)
         .buttonBorderShape(.capsule)
+        .clipShape(.capsule)
         .controlSize(.small)
             .opacity(0.9)
     }
