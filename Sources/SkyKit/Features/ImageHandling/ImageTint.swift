@@ -19,6 +19,9 @@ public struct ImageTintViewModifier: ViewModifier {
     @State var referenceControler: ImageTintControler = .init()
     
     public func body(content: Content) -> some View {
+        #if os(visionOS)
+        content
+        #else
         if let controler {
             content
                 .task(id: data) {
@@ -32,6 +35,7 @@ public struct ImageTintViewModifier: ViewModifier {
                     await loadColor()
                 }
         }
+        #endif
     }
     
     func loadColor() async {
