@@ -54,15 +54,17 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
     let data: Data?
     let contentMode: ContentMode?
     let animation: Animation?
+    let priority: TaskPriority
     @State var image: Image? = nil
     
     @ViewBuilder var placeholder: () -> Placeholder
     
-    public init(_ data: Data?, @ViewBuilder placeholder: @escaping () -> Placeholder, contentMode: ContentMode? = .fit, animation: Animation? = nil) {
+    public init(_ data: Data?, @ViewBuilder placeholder: @escaping () -> Placeholder, contentMode: ContentMode? = .fit, animation: Animation? = nil, priority: TaskPriority = .background) {
         self.data = data
         self.placeholder = placeholder
         self.contentMode = contentMode
         self.animation = animation
+        self.priority = priority
     }
     
     public var body: some View {
@@ -87,7 +89,7 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
                 placeholder()
             }
         }.animation(animation, value: image)
-            .task(id: data, priority: .background) {
+            .task(id: data, priority: priority) {
                 try? await generateImage()
             }
     }
