@@ -113,11 +113,12 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
 }
 
 extension SKAsyncPictureView where Placeholder == Spacer {
-    public init(_ data: Data?, contentMode: ContentMode? = .fit, animation: Animation? = nil) {
+    public init(_ data: Data?, contentMode: ContentMode? = .fit, animation: Animation? = nil, priority: TaskPriority = .background) {
         self.data = data
         self.placeholder = { Spacer() }
         self.contentMode = contentMode
         self.animation = animation
+        self.priority = priority
     }
     
 }
