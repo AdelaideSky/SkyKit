@@ -69,29 +69,39 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
     
     public var body: some View {
         ZStack {
-            if data != nil {
-                if let image {
-                    if let contentMode {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: contentMode)
-                            .transition(.opacity)
-                    } else {
-                        image
-                            .resizable()
-                            .transition(.opacity)
-                    }
+            if let animation {
+                content
+                    .animation(animation, value: image)
+            } else {
+                content
+            }
+            
+        }.task(id: data, priority: priority) {
+            try? await generateImage()
+        }
+    }
+    
+    @ViewBuilder
+    var content: some View {
+        if data != nil {
+            if let image {
+                if let contentMode {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: contentMode)
+                        .transition(.opacity)
                 } else {
-                    ProgressView()
-                        .opacity(0.8)
+                    image
+                        .resizable()
+                        .transition(.opacity)
                 }
             } else {
-                placeholder()
+                ProgressView()
+                    .opacity(0.8)
             }
-        }.animation(animation, value: image)
-            .task(id: data, priority: priority) {
-                try? await generateImage()
-            }
+        } else {
+            placeholder()
+        }
     }
     
     func generateImage() async throws {
