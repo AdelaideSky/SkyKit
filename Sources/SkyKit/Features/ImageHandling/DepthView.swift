@@ -96,8 +96,16 @@ public struct SKAsyncPictureView<Placeholder: View>: View {
                         .transition(.opacity)
                 }
             } else {
-                ProgressView()
-                    .opacity(0.8)
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .opacity(0.8)
+                        Spacer()
+                    }
+                    Spacer()
+                }
             }
         } else {
             placeholder()
