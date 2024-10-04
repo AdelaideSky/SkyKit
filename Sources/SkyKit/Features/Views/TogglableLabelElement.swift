@@ -33,6 +33,13 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
         self._list = list
         self.label = label
     }
+    
+    public init(_ element: Element, label: String, list: Binding<[Element]>) {
+        self.element = element
+        self._list = list
+        self.label = .init(label)
+    }
+    
     public var body: some View {
         Button(action: {
             if isEnabled {
