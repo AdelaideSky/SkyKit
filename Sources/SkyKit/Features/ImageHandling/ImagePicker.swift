@@ -311,32 +311,43 @@ struct CropView: View {
             .navigationBarTitle("Move and scale")
             .toolbar {
                 ToolbarItemGroup(placement: .bottomBar) {
-                    Button {
+                    Button("Cancel") {
                         dismiss()
-                    } label: {
-                        Text("Cancel")
-                            .foregroundStyle(.background)
-                            .padding(.vertical, 5)
-                            .frame(width: 80)
-                            .background {
-                                Capsule()
-                                    .fill(Color(uiColor: UIColor.label).opacity(0.9))
-                            }
-                    }
+                    }.buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+//                        .tint(.thinMaterial)
+//                    Button {
+//                        dismiss()
+//                    } label: {
+//                        Text("Cancel")
+//                            .foregroundStyle(.background)
+//                            .padding(.vertical, 5)
+//                            .frame(width: 80)
+//                            .background {
+//                                Capsule()
+//                                    .fill(Color(uiColor: UIColor.label).opacity(0.9))
+//                            }
+//                    }
                     Spacer()
-                    Button {
+                    Button("Save") {
                         onComplete(crop(image))
                         dismiss()
-                    } label: {
-                        Text("Save")
-                            .foregroundStyle(.background)
-                            .padding(.vertical, 5)
-                            .frame(width: 60)
-                            .background {
-                                Capsule()
-                                    .fill(Color(uiColor: UIColor.label).opacity(0.9))
-                            }
-                    }
+                    }.buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+//                        .tint(.thinMaterial)
+//                    Button {
+//                        onComplete(crop(image))
+//                        dismiss()
+//                    } label: {
+//                        Text("Save")
+//                            .foregroundStyle(.background)
+//                            .padding(.vertical, 5)
+//                            .frame(width: 60)
+//                            .background {
+//                                Capsule()
+//                                    .fill(Color(uiColor: UIColor.label).opacity(0.9))
+//                            }
+//                    }
                 }
             }
             .ignoresSafeArea()
