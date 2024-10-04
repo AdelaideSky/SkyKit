@@ -13,7 +13,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
     
     var element: Element
     @Binding var list: [Element]
-    var label: String
+    var label: LocalizedStringKey
     
     var shouldHighlight: Bool {
         guard isEnabled else { return false }
@@ -28,7 +28,7 @@ public struct SKTogglableLabelElement<Element: Equatable>: View {
         }
     }
     
-    public init(_ element: Element, label: String, list: Binding<[Element]>) {
+    public init(_ element: Element, label: LocalizedStringKey, list: Binding<[Element]>) {
         self.element = element
         self._list = list
         self.label = label
