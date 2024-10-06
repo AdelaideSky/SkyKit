@@ -98,7 +98,6 @@ public struct SKImagePicker<Content: View>: View {
     @ViewBuilder let content: () -> (Content)
     
     @State var image: UIImage? = nil
-    @State var finishedDownloading = false
     @State var photoItem: PhotosPickerItem? = nil
     
     @State var displayPicker: Bool = false
@@ -124,7 +123,17 @@ public struct SKImagePicker<Content: View>: View {
         }).buttonStyle(.plain)
             .photosPicker(isPresented: $displayPicker, selection: $photoItem, matching: .images)
             .fullScreenCover(isPresented: $displayCrop) {
-                Group {
+                ZStack {
+                    VStack {
+                        ProgressView()
+                            .padding(5)
+                        Text("Downloading from iCloud")
+                            .foregroundStyle(.secondary)
+                            .font(.caption2)
+                            .opacity(0.8)
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(.ultraThickMaterial)
+                        .ignoresSafeArea()
                     if let image {
                         CropView(image, shape: shape) { result in
                             if let result {
@@ -134,20 +143,8 @@ public struct SKImagePicker<Content: View>: View {
                             self.image = nil
                             self.photoItem = nil
                         }
-                    } else if finishedDownloading {
-                        VStack {
-                            ProgressView()
-                                .padding(5)
-                            Text("Downloading from iCloud")
-                                .foregroundStyle(.secondary)
-                                .font(.caption2)
-                                .opacity(0.8)
-                        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(.ultraThickMaterial)
-                            .ignoresSafeArea()
                     }
                 }.animation(.easeInOut, value: image)
-                    .animation(.easeInOut, value: finishedDownloading)
                     .interactiveDismissDisabled(true)
             }
             .task(id: photoItem) {
@@ -157,7 +154,6 @@ public struct SKImagePicker<Content: View>: View {
                     displayCrop = true
                     if let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
                         self.image = image
-                        self.finishedDownloading = true
                     }
                 }
             }
