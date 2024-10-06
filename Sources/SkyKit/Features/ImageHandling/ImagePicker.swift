@@ -98,6 +98,7 @@ public struct SKImagePicker<Content: View>: View {
     @ViewBuilder let content: () -> (Content)
     
     @State var image: UIImage? = nil
+    @State var finishedDownloading = false
     @State var photoItem: PhotosPickerItem? = nil
     
     @State var displayPicker: Bool = false
@@ -133,7 +134,7 @@ public struct SKImagePicker<Content: View>: View {
                             self.image = nil
                             self.photoItem = nil
                         }
-                    } else {
+                    } else if finishedDownloading {
                         VStack {
                             ProgressView()
                                 .padding(5)
@@ -146,6 +147,7 @@ public struct SKImagePicker<Content: View>: View {
                             .ignoresSafeArea()
                     }
                 }.animation(.easeInOut, value: image)
+                    .animation(.easeInOut, value: finishedDownloading)
                     .interactiveDismissDisabled(true)
             }
             .task(id: photoItem) {
@@ -155,6 +157,7 @@ public struct SKImagePicker<Content: View>: View {
                     displayCrop = true
                     if let data = try? await photoItem.loadTransferable(type: Data.self), let image = UIImage(data: data) {
                         self.image = image
+                        self.finishedDownloading = true
                     }
                 }
             }
