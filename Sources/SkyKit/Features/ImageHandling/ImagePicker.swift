@@ -76,7 +76,6 @@ public struct SKImagePickerModifier: ViewModifier {
                                         .padding(20)
                                 }
                             }
-                            .padding(.horizontal)
                     }
                 }.animation(.easeInOut, value: image)
                     .interactiveDismissDisabled(true)
@@ -166,7 +165,6 @@ public struct SKImagePicker<Content: View>: View {
                                     .padding(20)
                             }
                         }
-                        .padding(.horizontal)
                     
                     if let image {
                         CropView(image, shape: shape) { result in
