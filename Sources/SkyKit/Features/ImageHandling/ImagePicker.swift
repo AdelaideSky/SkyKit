@@ -65,16 +65,24 @@ public struct SKImagePickerModifier: ViewModifier {
                             }
                         }.overlay {
                             VStack {
-                                HStack {
-                                    Spacer()
-                                    Button("Cancel", systemImage: "xmark") {
-                                        displayCrop = false
-                                    }.buttonStyle(.bordered)
-                                        .buttonBorderShape(.circle)
-                                        .labelStyle(.iconOnly)
-                                        .bold()
-                                }
+//                                HStack {
+//                                    Spacer()
+//                                    Button("Cancel", systemImage: "xmark") {
+//                                        displayCrop = false
+//                                    }.buttonStyle(.bordered)
+//                                        .buttonBorderShape(.circle)
+//                                        .labelStyle(.iconOnly)
+//                                        .bold()
+//                                }
                                 Spacer()
+                                Button("Cancel", systemImage: "xmark") {
+                                    displayCrop = false
+                                }.buttonStyle(.plain)
+                                    .bold()
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                    .padding()
+                                
                             }
                         }
                         .padding(.horizontal)
