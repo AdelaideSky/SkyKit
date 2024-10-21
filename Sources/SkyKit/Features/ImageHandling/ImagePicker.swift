@@ -125,12 +125,17 @@ public struct SKImagePicker<Content: View>: View {
             .fullScreenCover(isPresented: $displayCrop) {
                 ZStack {
                     VStack {
+                        Spacer()
                         ProgressView()
                             .padding(5)
                         Text("Downloading from iCloud")
                             .foregroundStyle(.secondary)
                             .font(.caption2)
                             .opacity(0.8)
+                        Spacer()
+                        Button("Cancel") {
+                            displayCrop = false
+                        }.buttonStyle(.plain).padding()
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(.ultraThickMaterial)
                         .ignoresSafeArea()
