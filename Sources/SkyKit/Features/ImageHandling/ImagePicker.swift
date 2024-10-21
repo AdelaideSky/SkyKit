@@ -73,7 +73,7 @@ public struct SKImagePickerModifier: ViewModifier {
                                         .bold()
                                         .font(.caption2)
                                         .foregroundColor(.secondary)
-                                        .padding(20)
+                                        .padding(30)
                                 }
                             }
                     }
@@ -162,7 +162,7 @@ public struct SKImagePicker<Content: View>: View {
                                     .bold()
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
-                                    .padding(20)
+                                    .padding(30)
                             }
                         }
                     
