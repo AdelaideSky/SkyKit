@@ -73,7 +73,7 @@ public struct SKImagePickerModifier: ViewModifier {
 //                                            .tint(.thinMaterial)
                                     }
                                     Spacer()
-                                }
+                                }.safeAreaPadding()
                             }
                     }
                 }.animation(.easeInOut, value: image)
@@ -160,7 +160,7 @@ public struct SKImagePicker<Content: View>: View {
 //                                            .tint(.thinMaterial)
                                 }
                                 Spacer()
-                            }
+                            }.safeAreaPadding()
                         }
                     if let image {
                         CropView(image, shape: shape) { result in
