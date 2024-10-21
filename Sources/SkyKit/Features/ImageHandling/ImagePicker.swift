@@ -69,6 +69,8 @@ public struct SKImagePickerModifier: ViewModifier {
                                         }.buttonStyle(.bordered)
                                             .buttonBorderShape(.circle)
                                             .labelStyle(.iconOnly)
+                                            .bold()
+                                            .controlSize(.small)
 //                                            .tint(.thinMaterial)
                                     }
                                     Spacer()
