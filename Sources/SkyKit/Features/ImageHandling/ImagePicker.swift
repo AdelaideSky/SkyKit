@@ -63,7 +63,9 @@ public struct SKImagePickerModifier: ViewModifier {
                             Button("Cancel") {
                                 displayCrop = false
                             }.buttonStyle(.plain)
-                                .padding()
+                                .padding(50)
+                                .foregroundStyle(.secondary)
+                                .font(.caption2)
                         }.frame(maxWidth: .infinity, maxHeight: .infinity)
                             .background(.ultraThickMaterial)
                             .ignoresSafeArea()
@@ -141,7 +143,10 @@ public struct SKImagePicker<Content: View>: View {
                         Spacer()
                         Button("Cancel") {
                             displayCrop = false
-                        }.buttonStyle(.plain).padding()
+                        }.buttonStyle(.plain)
+                            .padding(50)
+                            .foregroundStyle(.secondary)
+                            .font(.caption2)
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(.ultraThickMaterial)
                         .ignoresSafeArea()
