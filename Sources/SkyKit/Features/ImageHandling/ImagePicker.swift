@@ -60,15 +60,21 @@ public struct SKImagePickerModifier: ViewModifier {
                                 .font(.caption2)
                                 .opacity(0.8)
                             Spacer()
-                            Button("Cancel") {
-                                displayCrop = false
-                            }.buttonStyle(.plain)
-                                .padding(50)
-                                .foregroundStyle(.secondary)
-                                .font(.caption2)
                         }.frame(maxWidth: .infinity, maxHeight: .infinity)
                             .background(.ultraThickMaterial)
                             .ignoresSafeArea()
+                            .overlay {
+                                VStack {
+                                    HStack {
+                                        Spacer()
+                                        Button("Cancel", systemImage: "xmark") {
+                                            displayCrop = false
+                                        }.buttonStyle(.bordered)
+//                                            .tint(.thinMaterial)
+                                    }
+                                    Spacer()
+                                }
+                            }
                     }
                 }.animation(.easeInOut, value: image)
                     .interactiveDismissDisabled(true)
@@ -141,15 +147,21 @@ public struct SKImagePicker<Content: View>: View {
                             .font(.caption2)
                             .opacity(0.8)
                         Spacer()
-                        Button("Cancel") {
-                            displayCrop = false
-                        }.buttonStyle(.plain)
-                            .padding(50)
-                            .foregroundStyle(.secondary)
-                            .font(.caption2)
                     }.frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(.ultraThickMaterial)
                         .ignoresSafeArea()
+                        .overlay {
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    Button("Cancel", systemImage: "xmark") {
+                                        displayCrop = false
+                                    }.buttonStyle(.bordered)
+//                                            .tint(.thinMaterial)
+                                }
+                                Spacer()
+                            }
+                        }
                     if let image {
                         CropView(image, shape: shape) { result in
                             if let result {
