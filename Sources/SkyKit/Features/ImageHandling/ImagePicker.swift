@@ -60,8 +60,7 @@ public struct SKImagePickerModifier: ViewModifier {
                                 .font(.caption2)
                                 .opacity(0.8)
                             Spacer()
-                        }.containerRelativeFrame(.horizontal)
-                            .overlay {
+                        }.overlay {
                                 VStack {
                                     HStack {
                                         Spacer()
@@ -76,6 +75,7 @@ public struct SKImagePickerModifier: ViewModifier {
                                 }
                             }
                             .padding()
+                            .containerRelativeFrame(.horizontal)
                     }
                 }.animation(.easeInOut, value: image)
                     .interactiveDismissDisabled(true)
