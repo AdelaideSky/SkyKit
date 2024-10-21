@@ -14,7 +14,7 @@ public struct ImageTintViewModifier: ViewModifier {
     
     //Its a bit hacky but it works SURPRISINGLY WELL (i mean not using any weird api or exploit bugs, its just a reasonning i never saw anywhere else and i feel it should be avoided because edges cases can be annoying, but in this case consequences will be at worst unnacurate transitions on tints or wrong tints so..) It works by looking if a parent already used the modifier by checking if a controler isnt already there, if not fallbacks to its own controler that will go in the environment of the children. This allows usecases where a child modify the image, leading to a fallback to the old image tint before updating.
     
-    var data: Data?
+    var data: Data
     
     @State var referenceControler: ImageTintControler = .init()
     
@@ -22,7 +22,7 @@ public struct ImageTintViewModifier: ViewModifier {
 //        #if os(visionOS)
 //        content
 //        #else
-        if let controler {
+        if controler != nil {
             content
                 .task(id: data) {
                     await loadColor()
@@ -48,21 +48,19 @@ public struct ImageTintViewModifier: ViewModifier {
     
     func getColor() async -> Color? {
         
-        if let data {
-            var image: UIImage? = nil
-            
-            if let cached = SKImageCache.shared.getImage(for: data.hashValue) {
-                image = cached
-            } else {
-                if let uiImage = UIImage(data: data) {
-                    SKImageCache.shared.setImage(uiImage, for: data.hashValue)
-                    image = uiImage
-                }
+        var image: UIImage? = nil
+        
+        if let cached = SKImageCache.shared.getImage(for: data.hashValue) {
+            image = cached
+        } else {
+            if let uiImage = UIImage(data: data) {
+                SKImageCache.shared.setImage(uiImage, for: data.hashValue)
+                image = uiImage
             }
-            
-            if let image, let uiColor = await image.averageColor {
-                return Color(uiColor: uiColor)
-            }
+        }
+        
+        if let image, let uiColor = await image.averageColor {
+            return Color(uiColor: uiColor)
         }
         
         return nil
@@ -75,13 +73,18 @@ public class ImageTintControler {
 }
 
 extension View {
+    @ViewBuilder
     public func imageTint(_ data: Data?) -> some View {
-        modifier(ImageTintViewModifier(data: data))
+        if let data {
+            modifier(ImageTintViewModifier(data: data))
+        } else {
+            self
+        }
     }
     
     @ViewBuilder
     public func imageTint(_ data: Data?, isOn: Bool) -> some View {
-        if isOn {
+        if isOn, let data {
             modifier(ImageTintViewModifier(data: data))
         } else {
             self
