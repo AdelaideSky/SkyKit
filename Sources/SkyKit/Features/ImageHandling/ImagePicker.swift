@@ -60,22 +60,24 @@ public struct SKImagePickerModifier: ViewModifier {
                                 .font(.caption2)
                                 .opacity(0.8)
                             Spacer()
-                        }.overlay {
-                                VStack {
-                                    HStack {
-                                        Spacer()
-                                        Button("Cancel", systemImage: "xmark") {
-                                            displayCrop = false
-                                        }.buttonStyle(.bordered)
-                                            .buttonBorderShape(.circle)
-                                            .labelStyle(.iconOnly)
-                                            .bold()
-                                    }
-                                    Spacer()
-                                }
+                            HStack {
+                                Spacer()
                             }
-                            .padding()
-                            .containerRelativeFrame(.horizontal)
+                        }.overlay {
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    Button("Cancel", systemImage: "xmark") {
+                                        displayCrop = false
+                                    }.buttonStyle(.bordered)
+                                        .buttonBorderShape(.circle)
+                                        .labelStyle(.iconOnly)
+                                        .bold()
+                                }
+                                Spacer()
+                            }
+                        }
+                        .padding()
                     }
                 }.animation(.easeInOut, value: image)
                     .interactiveDismissDisabled(true)
