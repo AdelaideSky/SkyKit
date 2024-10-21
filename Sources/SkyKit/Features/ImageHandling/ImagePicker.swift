@@ -60,10 +60,7 @@ public struct SKImagePickerModifier: ViewModifier {
                                 .font(.caption2)
                                 .opacity(0.8)
                             Spacer()
-                        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(.ultraThickMaterial)
-                            .ignoresSafeArea()
-                            .overlay {
+                        }.overlay {
                                 VStack {
                                     HStack {
                                         Spacer()
@@ -80,6 +77,7 @@ public struct SKImagePickerModifier: ViewModifier {
                     }
                 }.animation(.easeInOut, value: image)
                     .interactiveDismissDisabled(true)
+                    .presentationBackground(.ultraThinMaterial)
             }
             .task(id: photoItem) {
                 displayPicker = false
