@@ -75,13 +75,13 @@ public struct SKImagePickerModifier: ViewModifier {
 //                                        .bold()
 //                                }
                                 Spacer()
-                                Button("Cancel", systemImage: "xmark") {
+                                Button("Cancel") {
                                     displayCrop = false
                                 }.buttonStyle(.plain)
                                     .bold()
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
-                                    .padding()
+                                    .padding(20)
                                 
                             }
                         }
