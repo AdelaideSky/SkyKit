@@ -77,7 +77,7 @@ public struct SKImagePickerModifier: ViewModifier {
                                 Spacer()
                             }
                         }
-                        .padding()
+                        .padding(.horizontal)
                     }
                 }.animation(.easeInOut, value: image)
                     .interactiveDismissDisabled(true)
@@ -151,21 +151,25 @@ public struct SKImagePicker<Content: View>: View {
                             .font(.caption2)
                             .opacity(0.8)
                         Spacer()
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(.ultraThickMaterial)
-                        .ignoresSafeArea()
-                        .overlay {
-                            VStack {
-                                HStack {
-                                    Spacer()
-                                    Button("Cancel", systemImage: "xmark") {
-                                        displayCrop = false
-                                    }.buttonStyle(.bordered)
-//                                            .tint(.thinMaterial)
-                                }
-                                Spacer()
-                            }.safeAreaPadding()
+                        HStack {
+                            Spacer()
                         }
+                    }.overlay {
+                        VStack {
+                            HStack {
+                                Spacer()
+                                Button("Cancel", systemImage: "xmark") {
+                                    displayCrop = false
+                                }.buttonStyle(.bordered)
+                                    .buttonBorderShape(.circle)
+                                    .labelStyle(.iconOnly)
+                                    .bold()
+                            }
+                            Spacer()
+                        }
+                    }
+                    .padding(.horizontal)
+                    
                     if let image {
                         CropView(image, shape: shape) { result in
                             if let result {
