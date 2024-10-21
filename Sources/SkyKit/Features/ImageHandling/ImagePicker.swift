@@ -63,23 +63,24 @@ public struct SKImagePickerModifier: ViewModifier {
                             HStack {
                                 Spacer()
                             }
-                        }.overlay {
-                            VStack {
-                                Spacer()
-                                Button("Cancel") {
-                                    displayCrop = false
-                                }.buttonStyle(.plain)
-                                    .bold()
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                                    .padding(20)
+                        }.background(.thinMaterial)
+                            .overlay {
+                                VStack {
+                                    Spacer()
+                                    Button("Cancel") {
+                                        displayCrop = false
+                                    }.buttonStyle(.plain)
+                                        .bold()
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                        .padding(20)
+                                }
                             }
-                        }
-                        .padding(.horizontal)
+                            .padding(.horizontal)
                     }
                 }.animation(.easeInOut, value: image)
                     .interactiveDismissDisabled(true)
-                    .presentationBackground(.thinMaterial)
+//                    .presentationBackground(.thinMaterial)
             }
             .task(id: photoItem) {
                 displayPicker = false
@@ -152,19 +153,20 @@ public struct SKImagePicker<Content: View>: View {
                         HStack {
                             Spacer()
                         }
-                    }.overlay {
-                        VStack {
-                            Spacer()
-                            Button("Cancel") {
-                                displayCrop = false
-                            }.buttonStyle(.plain)
-                                .bold()
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                                .padding(20)
+                    }.background(.thinMaterial)
+                        .overlay {
+                            VStack {
+                                Spacer()
+                                Button("Cancel") {
+                                    displayCrop = false
+                                }.buttonStyle(.plain)
+                                    .bold()
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                    .padding(20)
+                            }
                         }
-                    }
-                    .padding(.horizontal)
+                        .padding(.horizontal)
                     
                     if let image {
                         CropView(image, shape: shape) { result in
