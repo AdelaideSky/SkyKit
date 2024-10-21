@@ -65,15 +65,6 @@ public struct SKImagePickerModifier: ViewModifier {
                             }
                         }.overlay {
                             VStack {
-//                                HStack {
-//                                    Spacer()
-//                                    Button("Cancel", systemImage: "xmark") {
-//                                        displayCrop = false
-//                                    }.buttonStyle(.bordered)
-//                                        .buttonBorderShape(.circle)
-//                                        .labelStyle(.iconOnly)
-//                                        .bold()
-//                                }
                                 Spacer()
                                 Button("Cancel") {
                                     displayCrop = false
@@ -82,7 +73,6 @@ public struct SKImagePickerModifier: ViewModifier {
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
                                     .padding(20)
-                                
                             }
                         }
                         .padding(.horizontal)
@@ -164,16 +154,14 @@ public struct SKImagePicker<Content: View>: View {
                         }
                     }.overlay {
                         VStack {
-                            HStack {
-                                Spacer()
-                                Button("Cancel", systemImage: "xmark") {
-                                    displayCrop = false
-                                }.buttonStyle(.bordered)
-                                    .buttonBorderShape(.circle)
-                                    .labelStyle(.iconOnly)
-                                    .bold()
-                            }
                             Spacer()
+                            Button("Cancel") {
+                                displayCrop = false
+                            }.buttonStyle(.plain)
+                                .bold()
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .padding(20)
                         }
                     }
                     .padding(.horizontal)
