@@ -75,7 +75,7 @@ public struct SKImagePickerModifier: ViewModifier {
 //                                            .tint(.thinMaterial)
                                     }
                                     Spacer()
-                                }.padding(.top, 20).padding()
+                                }.padding()
                             }
                     }
                 }.animation(.easeInOut, value: image)
