@@ -70,10 +70,12 @@ public struct SKImagePickerModifier: ViewModifier {
                                         Button("Cancel", systemImage: "xmark") {
                                             displayCrop = false
                                         }.buttonStyle(.bordered)
+                                            .buttonBorderShape(.circle)
+                                            .labelStyle(.iconOnly)
 //                                            .tint(.thinMaterial)
                                     }
                                     Spacer()
-                                }.safeAreaPadding()
+                                }.padding(.top, 20).padding()
                             }
                     }
                 }.animation(.easeInOut, value: image)
