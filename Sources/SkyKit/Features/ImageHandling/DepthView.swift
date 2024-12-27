@@ -300,23 +300,19 @@ public struct SKDepthToggle: View {
             .disabled(state != .successfull)
     }
 }
-
 struct SKParallaxMotionModifier: ViewModifier {
     @State var orientation = UIDeviceOrientation.unknown
     @State var manager: SKMotionManager = .shared
-
+    @State private var xOffsetAccumulator: Double = 0.0
+    @State private var yOffsetAccumulator: Double = 0.0
+    
     var magnitude: Double
     var active: Bool = true
     
-    // State variables for relative motion
-    @State private var lastRoll: Double = 0.0
-    @State private var lastPitch: Double = 0.0
-    @State private var xOffset: Double = 0.0
-    @State private var yOffset: Double = 0.0
-
     func body(content: Content) -> some View {
         Group {
             if active {
+                let (xOffset, yOffset) = calculateOffset()
                 content
                     .offset(x: xOffset, y: yOffset)
                     .animation(.easeInOut(duration: 0.3), value: xOffset + yOffset)
@@ -331,7 +327,7 @@ struct SKParallaxMotionModifier: ViewModifier {
         }
         .onDisappear {
             Task {
-                await manager.start()
+                await manager.stop()
             }
         }
         #if !os(visionOS)
@@ -339,26 +335,40 @@ struct SKParallaxMotionModifier: ViewModifier {
             orientation = UIDevice.current.orientation
         }
         #endif
-        .onChange(of: manager.roll) { updateOffsets() }
-        .onChange(of: manager.pitch) { updateOffsets() }
     }
-
-    private func updateOffsets() {
-        // Calculate changes in roll and pitch
-        let rollChange = manager.roll - lastRoll
-        let pitchChange = manager.pitch - lastPitch
-
-        // Update relative offsets
-        xOffset += rollChange * magnitude
-        yOffset += pitchChange * magnitude
-
-        // Clamp offsets within a range
-        xOffset = min(max(xOffset, -magnitude), magnitude)
-        yOffset = min(max(yOffset, -magnitude), magnitude)
-
-        // Update last roll and pitch
-        lastRoll = manager.roll
-        lastPitch = manager.pitch
+    
+    private func calculateOffset() -> (Double, Double) {
+        let rollDelta = manager.roll * magnitude
+        let pitchDelta = manager.pitch * magnitude
+        
+        // Accumulate offsets based on motion deltas
+        xOffsetAccumulator += rollDelta
+        yOffsetAccumulator += pitchDelta
+        
+        // Adjust for orientation
+        switch orientation {
+        case .landscapeLeft, .landscapeRight:
+            // Swap x and y offsets in landscape mode
+            let temp = xOffsetAccumulator
+            xOffsetAccumulator = yOffsetAccumulator
+            yOffsetAccumulator = temp
+        case .portraitUpsideDown:
+            // Reverse both offsets in upside-down portrait mode
+            xOffsetAccumulator *= -1
+            yOffsetAccumulator *= -1
+        default:
+            break
+        }
+        
+        // Clamp the offsets to avoid edge cases
+        xOffsetAccumulator = clamp(xOffsetAccumulator, -magnitude * 1.5, magnitude * 1.5)
+        yOffsetAccumulator = clamp(yOffsetAccumulator, -magnitude * 1.5, magnitude * 1.5)
+        
+        return (xOffsetAccumulator, yOffsetAccumulator)
+    }
+    
+    private func clamp(_ value: Double, _ minValue: Double, _ maxValue: Double) -> Double {
+        return min(max(value, minValue), maxValue)
     }
 }
 
